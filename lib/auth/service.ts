@@ -6,7 +6,7 @@
 
 import { executeQuery, executeQuerySingle } from '../db/postgres'
 import { hashPassword, comparePassword, validatePassword, generateResetToken } from './password'
-import type { TokenPair } from './jwt';
+import type { TokenPair } from './jwt'
 import { createTokenPair } from './jwt'
 
 export interface RegisterInput {

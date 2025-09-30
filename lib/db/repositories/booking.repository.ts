@@ -1,5 +1,5 @@
 import { executeQuery, executeQuerySingle } from '../postgres'
-import type { Booking, MembershipCredit, CreditTransaction, User} from '../types';
+import type { Booking, MembershipCredit, CreditTransaction, User } from '../types'
 import { Workspace } from '../types'
 
 /**

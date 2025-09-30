@@ -5,11 +5,11 @@
  * Uses Viem to query the blockchain and Supabase for caching results.
  */
 
-import type { Address } from 'viem';
+import type { Address } from 'viem'
 import { createPublicClient, http } from 'viem'
 import { mainnet, base, sepolia, baseSepolia } from 'viem/chains'
 import { CITIZEN_SPACE_NFT_CONTRACT } from './contract'
-import type { NftVerificationResponse, NftVerificationCache } from './types';
+import type { NftVerificationResponse, NftVerificationCache } from './types'
 import { NftVerification } from './types'
 
 // Cache TTL in milliseconds (24 hours)

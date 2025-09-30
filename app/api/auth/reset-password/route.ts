@@ -3,7 +3,7 @@
  * Reset password using token from email
  */
 
-import type { NextRequest} from 'next/server';
+import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { resetPassword, AuthenticationError } from '@/lib/auth/service'
 

@@ -1,4 +1,4 @@
-import type { Workspace} from '../db/types';
+import type { Workspace } from '../db/types'
 import { User, MembershipPlan } from '../db/types'
 
 /**

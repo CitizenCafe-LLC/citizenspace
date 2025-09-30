@@ -3,9 +3,9 @@
  * Protects routes and validates JWT tokens
  */
 
-import type { NextRequest} from 'next/server';
+import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
-import type { TokenPayload } from './jwt';
+import type { TokenPayload } from './jwt'
 import { verifyToken, extractTokenFromHeader } from './jwt'
 
 export interface AuthenticatedRequest extends NextRequest {

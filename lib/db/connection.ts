@@ -7,7 +7,7 @@
  * @module lib/db/connection
  */
 
-import type { PoolClient, QueryResult, QueryResultRow } from 'pg';
+import type { PoolClient, QueryResult, QueryResultRow } from 'pg'
 import { Pool } from 'pg'
 
 // Connection pool configuration

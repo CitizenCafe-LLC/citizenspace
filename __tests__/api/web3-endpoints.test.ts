@@ -96,7 +96,6 @@ describe('Web3 API Endpoints', () => {
     it('should connect wallet without NFT ownership', async () => {
       mockSupabase.single.mockResolvedValue({ data: null, error: null })
       mockSupabase.update.mockResolvedValue({ error: null })
-
       ;(verifyNftOwnership as jest.Mock).mockResolvedValue({
         verified: true,
         nft_holder: false,
@@ -204,7 +203,6 @@ describe('Web3 API Endpoints', () => {
     it('should continue even if NFT verification fails', async () => {
       mockSupabase.single.mockResolvedValue({ data: null, error: null })
       mockSupabase.update.mockResolvedValue({ error: null })
-
       ;(verifyNftOwnership as jest.Mock).mockRejectedValue(new Error('Blockchain error'))
 
       mockRequest = new NextRequest('http://localhost:3000/api/auth/wallet-connect', {
@@ -224,7 +222,6 @@ describe('Web3 API Endpoints', () => {
       const upperCaseWallet = '0xABCDEF1234567890ABCDEF1234567890ABCDEF12'
       mockSupabase.single.mockResolvedValue({ data: null, error: null })
       mockSupabase.update.mockResolvedValue({ error: null })
-
       ;(verifyNftOwnership as jest.Mock).mockResolvedValue({
         verified: true,
         nft_holder: false,
@@ -561,7 +558,6 @@ describe('Web3 API Endpoints', () => {
         data: { wallet_address: mockWalletAddress },
         error: null,
       })
-
       ;(verifyNftOwnership as jest.Mock).mockResolvedValue({
         verified: true,
         nft_holder: true,

@@ -7,7 +7,7 @@
 
 import { createRouteHandlerClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
-import type { NextRequest} from 'next/server';
+import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
 export interface NftHolderCheckResult {

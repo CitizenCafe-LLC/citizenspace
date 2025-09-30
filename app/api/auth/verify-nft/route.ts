@@ -8,7 +8,7 @@
  * - force_refresh: boolean - bypass cache and check on-chain
  */
 
-import type { NextRequest} from 'next/server';
+import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { verifyNftOwnership } from '@/lib/web3/nft-verification'
 import { executeQuerySingle } from '@/lib/db/postgres'

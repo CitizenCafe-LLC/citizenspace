@@ -3,7 +3,7 @@
  * PUT /api/auth/me - Update current user profile
  */
 
-import type { NextRequest} from 'next/server';
+import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { requireAuth } from '@/middleware/auth'
 import { getUserById, updateUserProfile, AuthenticationError } from '@/lib/auth/service'

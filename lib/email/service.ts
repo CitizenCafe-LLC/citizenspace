@@ -3,7 +3,7 @@
  * Handles sending transactional emails using Nodemailer
  */
 
-import type { Transporter } from 'nodemailer';
+import type { Transporter } from 'nodemailer'
 import nodemailer from 'nodemailer'
 
 // Email configuration from environment variables

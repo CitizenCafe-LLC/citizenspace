@@ -59,7 +59,6 @@ describe('NFT Verification Service', () => {
     mockPublicClient = {
       readContract: jest.fn(),
     }
-
     ;(createPublicClient as jest.Mock).mockReturnValue(mockPublicClient)
 
     // Set up environment variables

@@ -1,4 +1,4 @@
-import type { QueryResult } from 'pg';
+import type { QueryResult } from 'pg'
 import { Pool } from 'pg'
 
 /**

@@ -1,13 +1,5 @@
-import type {
-  SiteSettings,
-  MenuItem,
-  MembershipPlan,
-  Event,
-  Partner,
-  Testimonial} from './types';
-import {
-  FeatureCard,
-} from './types'
+import type { SiteSettings, MenuItem, MembershipPlan, Event, Partner, Testimonial } from './types'
+import { FeatureCard } from './types'
 
 // Site Configuration
 export const siteSettings: SiteSettings = {

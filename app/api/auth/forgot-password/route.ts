@@ -3,7 +3,7 @@
  * Initiate password reset process
  */
 
-import type { NextRequest} from 'next/server';
+import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { initiatePasswordReset } from '@/lib/auth/service'
 

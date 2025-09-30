@@ -3,7 +3,7 @@
  * Refresh access token using refresh token
  */
 
-import type { NextRequest} from 'next/server';
+import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { verifyToken, createAccessToken } from '@/lib/auth/jwt'
 import { getUserById, AuthenticationError } from '@/lib/auth/service'

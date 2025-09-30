@@ -4,7 +4,7 @@
  */
 
 import { supabaseAdmin } from '../supabase/client'
-import type { TokenPayload, TokenPair } from './jwt';
+import type { TokenPayload, TokenPair } from './jwt'
 import { createTokenPair, verifyToken } from './jwt'
 import { AuthenticationError } from './service'
 
