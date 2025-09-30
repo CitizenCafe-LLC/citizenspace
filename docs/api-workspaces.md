@@ -35,20 +35,20 @@ Get a paginated list of all workspaces with optional filtering.
 
 #### Query Parameters
 
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| `page` | integer | No | 1 | Page number for pagination |
-| `limit` | integer | No | 20 | Items per page (max: 100) |
-| `sortBy` | string | No | created_at | Field to sort by |
-| `sortOrder` | string | No | desc | Sort order: `asc` or `desc` |
-| `type` | string | No | - | Filter by workspace type |
-| `resource_category` | string | No | - | Filter by category: `desk` or `meeting-room` |
-| `min_capacity` | integer | No | - | Minimum capacity |
-| `max_capacity` | integer | No | - | Maximum capacity |
-| `min_price` | number | No | - | Minimum hourly price |
-| `max_price` | number | No | - | Maximum hourly price |
-| `amenities` | string | No | - | Comma-separated amenities (e.g., "WiFi,Monitor") |
-| `available` | boolean | No | - | Filter by availability status |
+| Parameter           | Type    | Required | Default    | Description                                      |
+| ------------------- | ------- | -------- | ---------- | ------------------------------------------------ |
+| `page`              | integer | No       | 1          | Page number for pagination                       |
+| `limit`             | integer | No       | 20         | Items per page (max: 100)                        |
+| `sortBy`            | string  | No       | created_at | Field to sort by                                 |
+| `sortOrder`         | string  | No       | desc       | Sort order: `asc` or `desc`                      |
+| `type`              | string  | No       | -          | Filter by workspace type                         |
+| `resource_category` | string  | No       | -          | Filter by category: `desk` or `meeting-room`     |
+| `min_capacity`      | integer | No       | -          | Minimum capacity                                 |
+| `max_capacity`      | integer | No       | -          | Maximum capacity                                 |
+| `min_price`         | number  | No       | -          | Minimum hourly price                             |
+| `max_price`         | number  | No       | -          | Maximum hourly price                             |
+| `amenities`         | string  | No       | -          | Comma-separated amenities (e.g., "WiFi,Monitor") |
+| `available`         | boolean | No       | -          | Filter by availability status                    |
 
 #### Workspace Types
 
@@ -121,9 +121,9 @@ Get detailed information about a specific workspace.
 
 #### Path Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `id` | UUID | Yes | Workspace unique identifier |
+| Parameter | Type | Required | Description                 |
+| --------- | ---- | -------- | --------------------------- |
+| `id`      | UUID | Yes      | Workspace unique identifier |
 
 #### Response
 
@@ -154,6 +154,7 @@ Get detailed information about a specific workspace.
 #### Error Responses
 
 **404 Not Found**
+
 ```json
 {
   "success": false,
@@ -162,6 +163,7 @@ Get detailed information about a specific workspace.
 ```
 
 **400 Bad Request**
+
 ```json
 {
   "success": false,
@@ -187,6 +189,7 @@ Get all hot desks (workspaces with `resource_category = 'desk'`).
 #### Query Parameters
 
 Same pagination parameters as [List All Workspaces](#1-list-all-workspaces):
+
 - `page`, `limit`, `sortBy`, `sortOrder`
 
 #### Response
@@ -214,6 +217,7 @@ Get all meeting rooms (workspaces with `resource_category = 'meeting-room'`).
 #### Query Parameters
 
 Same pagination parameters as [List All Workspaces](#1-list-all-workspaces):
+
 - `page`, `limit`, `sortBy`, `sortOrder`
 
 #### Response
@@ -240,14 +244,14 @@ Check workspace availability for a specific date and time. This endpoint impleme
 
 #### Query Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `date` | string | Yes | Date in YYYY-MM-DD format |
-| `workspace_id` | UUID | No | Check specific workspace |
-| `start_time` | string | No | Start time in HH:MM format |
-| `end_time` | string | No | End time in HH:MM format |
-| `duration_hours` | number | No | Minimum duration in hours |
-| `resource_category` | string | No | Filter by `desk` or `meeting-room` |
+| Parameter           | Type   | Required | Description                        |
+| ------------------- | ------ | -------- | ---------------------------------- |
+| `date`              | string | Yes      | Date in YYYY-MM-DD format          |
+| `workspace_id`      | UUID   | No       | Check specific workspace           |
+| `start_time`        | string | No       | Start time in HH:MM format         |
+| `end_time`          | string | No       | End time in HH:MM format           |
+| `duration_hours`    | number | No       | Minimum duration in hours          |
+| `resource_category` | string | No       | Filter by `desk` or `meeting-room` |
 
 #### Business Rules
 
@@ -345,6 +349,7 @@ GET /api/workspaces/availability?date=2025-10-01
 #### Error Responses
 
 **400 Bad Request - Past Date**
+
 ```json
 {
   "success": false,
@@ -353,6 +358,7 @@ GET /api/workspaces/availability?date=2025-10-01
 ```
 
 **400 Bad Request - Invalid Time Range**
+
 ```json
 {
   "success": false,
@@ -361,6 +367,7 @@ GET /api/workspaces/availability?date=2025-10-01
 ```
 
 **400 Bad Request - Outside Business Hours**
+
 ```json
 {
   "success": false,
@@ -376,21 +383,21 @@ GET /api/workspaces/availability?date=2025-10-01
 
 ```typescript
 interface Workspace {
-  id: string;                    // UUID
-  name: string;
-  type: WorkspaceType;
-  resource_category: 'desk' | 'meeting-room';
-  description: string;
-  capacity: number;              // Number of people
-  base_price_hourly: number;     // Hourly rate in dollars
-  requires_credits: boolean;     // Can use membership credits
-  min_duration: number;          // Minimum booking hours
-  max_duration: number;          // Maximum booking hours
-  amenities: string[];
-  images: string[];
-  available: boolean;
-  floor_location: string;
-  created_at: string;            // ISO 8601 timestamp
+  id: string // UUID
+  name: string
+  type: WorkspaceType
+  resource_category: 'desk' | 'meeting-room'
+  description: string
+  capacity: number // Number of people
+  base_price_hourly: number // Hourly rate in dollars
+  requires_credits: boolean // Can use membership credits
+  min_duration: number // Minimum booking hours
+  max_duration: number // Maximum booking hours
+  amenities: string[]
+  images: string[]
+  available: boolean
+  floor_location: string
+  created_at: string // ISO 8601 timestamp
 }
 ```
 
@@ -398,11 +405,11 @@ interface Workspace {
 
 ```typescript
 interface AvailabilitySlot {
-  start_time: string;            // HH:MM format
-  end_time: string;              // HH:MM format
-  available: boolean;
-  workspace_id: string;
-  workspace_name: string;
+  start_time: string // HH:MM format
+  end_time: string // HH:MM format
+  available: boolean
+  workspace_id: string
+  workspace_name: string
 }
 ```
 
@@ -421,13 +428,13 @@ All endpoints follow a consistent error response structure:
 
 ### HTTP Status Codes
 
-| Code | Description |
-|------|-------------|
-| 200 | Success |
-| 400 | Bad Request - Invalid parameters |
-| 404 | Not Found - Resource doesn't exist |
-| 422 | Validation Error - Data validation failed |
-| 500 | Internal Server Error |
+| Code | Description                               |
+| ---- | ----------------------------------------- |
+| 200  | Success                                   |
+| 400  | Bad Request - Invalid parameters          |
+| 404  | Not Found - Resource doesn't exist        |
+| 422  | Validation Error - Data validation failed |
+| 500  | Internal Server Error                     |
 
 ### Common Error Messages
 
@@ -446,6 +453,7 @@ All endpoints follow a consistent error response structure:
 Currently, no rate limiting is implemented. This will be added in future updates.
 
 **Recommended limits for production:**
+
 - 100 requests per minute per IP
 - 1000 requests per hour per IP
 
@@ -524,13 +532,13 @@ The availability checking uses an efficient overlap detection algorithm:
 
 ```typescript
 function hasOverlap(booking1, booking2) {
-  const start1 = timeToMinutes(booking1.start_time);
-  const end1 = timeToMinutes(booking1.end_time);
-  const start2 = timeToMinutes(booking2.start_time);
-  const end2 = timeToMinutes(booking2.end_time);
+  const start1 = timeToMinutes(booking1.start_time)
+  const end1 = timeToMinutes(booking1.end_time)
+  const start2 = timeToMinutes(booking2.start_time)
+  const end2 = timeToMinutes(booking2.end_time)
 
   // Overlap exists if: (StartA < EndB) AND (EndA > StartB)
-  return (start1 < end2) && (end1 > start2);
+  return start1 < end2 && end1 > start2
 }
 ```
 
@@ -568,6 +576,7 @@ function hasOverlap(booking1, booking2) {
 ## Support
 
 For questions or issues:
+
 - Email: hello@citizenspace.com
 - GitHub: [Report an issue](https://github.com/citizenspace/api/issues)
 

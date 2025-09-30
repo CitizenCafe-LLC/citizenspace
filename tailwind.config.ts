@@ -1,4 +1,4 @@
-import type { Config } from 'tailwindcss';
+import type { Config } from 'tailwindcss'
 
 const config: Config = {
   darkMode: ['class'],
@@ -10,8 +10,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        'sans': ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        'display': ['var(--font-manrope)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-manrope)', 'system-ui', 'sans-serif'],
       },
       colors: {
         // Citizen Space Brand Colors
@@ -122,6 +122,6 @@ const config: Config = {
     },
   },
   plugins: [require('tailwindcss-animate')],
-};
+}
 
-export default config;
+export default config

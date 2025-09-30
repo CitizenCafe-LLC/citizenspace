@@ -1,6 +1,7 @@
 # CitizenSpace Implementation Backlog
 
 ## 🎯 Test Coverage Requirements
+
 - **Minimum Coverage:** 80% for all business logic
 - **Required Tests:**
   - Unit tests for all utility functions
@@ -14,11 +15,13 @@
 ## 📋 SPRINT 1: Database & Authentication Foundation
 
 ### Task 1.1: PostgreSQL + ZeroDB Setup & Schema Implementation
+
 **Priority:** P0 (Blocker)
 **Estimated:** 4 hours
 **Assignee:** backend-api-architect
 
 **Deliverables:**
+
 - [ ] Set up PostgreSQL database (local + production)
 - [ ] Set up ZeroDB for vector storage
 - [ ] Implement all 13 database tables from PRD
@@ -28,6 +31,7 @@
 - [ ] Write database schema tests
 
 **Acceptance Criteria:**
+
 - All tables created with correct schema
 - PostgreSQL and ZeroDB connected
 - Migration scripts run successfully
@@ -36,11 +40,13 @@
 ---
 
 ### Task 1.2: Authentication System (NextAuth.js + PostgreSQL)
+
 **Priority:** P0 (Blocker)
 **Estimated:** 6 hours
 **Assignee:** backend-api-architect
 
 **Deliverables:**
+
 - [ ] Set up NextAuth.js with PostgreSQL adapter
 - [ ] Create `/api/auth/[...nextauth]` route
 - [ ] Implement email/password provider
@@ -51,6 +57,7 @@
 - [ ] Tests: 80%+ coverage
 
 **Acceptance Criteria:**
+
 - Users can register/login via email
 - Users can login via wallet
 - JWT tokens issued correctly
@@ -61,11 +68,13 @@
 ---
 
 ### Task 1.3: Web3 Wallet Integration & NFT Verification
+
 **Priority:** P1 (High)
 **Estimated:** 5 hours
 **Assignee:** quantum-algorithm-architect
 
 **Deliverables:**
+
 - [ ] Integrate RainbowKit from NFT site into main app
 - [ ] Create `/api/auth/wallet-connect` endpoint
 - [ ] Create `/api/auth/verify-nft` endpoint
@@ -75,6 +84,7 @@
 - [ ] Write NFT verification tests
 
 **Acceptance Criteria:**
+
 - Users can connect wallet
 - System verifies NFT ownership on-chain
 - Discounts auto-apply for NFT holders
@@ -86,11 +96,13 @@
 ## 📋 SPRINT 2: Booking System Core
 
 ### Task 2.1: Workspace Management APIs
+
 **Priority:** P0 (Blocker)
 **Estimated:** 4 hours
 **Assignee:** backend-api-architect
 
 **Deliverables:**
+
 - [ ] Create `/api/workspaces` GET endpoint
 - [ ] Create `/api/workspaces/:id` GET endpoint
 - [ ] Create `/api/workspaces/hot-desks` GET endpoint
@@ -100,6 +112,7 @@
 - [ ] Write workspace API tests
 
 **Acceptance Criteria:**
+
 - All workspace endpoints return correct data
 - Availability check prevents double-booking
 - Tests: 80%+ coverage
@@ -107,11 +120,13 @@
 ---
 
 ### Task 2.2: Hourly Desk Booking System
+
 **Priority:** P0 (Blocker)
 **Estimated:** 8 hours
 **Assignee:** backend-api-architect
 
 **Deliverables:**
+
 - [ ] Create `/api/bookings/hourly-desk` POST endpoint
 - [ ] Implement pricing calculation logic
 - [ ] Implement NFT discount calculation
@@ -122,6 +137,7 @@
 - [ ] Write booking tests with all scenarios
 
 **Acceptance Criteria:**
+
 - Hourly bookings created with correct pricing
 - NFT holders get 50% discount
 - Check-in/out tracking works
@@ -132,11 +148,13 @@
 ---
 
 ### Task 2.3: Meeting Room Booking with Credits
+
 **Priority:** P0 (Blocker)
 **Estimated:** 8 hours
 **Assignee:** backend-api-architect
 
 **Deliverables:**
+
 - [ ] Create `/api/bookings/meeting-room` POST endpoint
 - [ ] Implement credit balance checking
 - [ ] Implement credit deduction logic
@@ -146,6 +164,7 @@
 - [ ] Write credit system tests
 
 **Acceptance Criteria:**
+
 - Credits deducted automatically
 - Overage charges when credits exhausted
 - Credit transactions logged
@@ -155,11 +174,13 @@
 ---
 
 ### Task 2.4: Membership Credits Management
+
 **Priority:** P1 (High)
 **Estimated:** 4 hours
 **Assignee:** backend-api-architect
 
 **Deliverables:**
+
 - [ ] Create `/api/memberships/credits` GET endpoint
 - [ ] Create `/api/memberships/credits/meeting-rooms` GET endpoint
 - [ ] Create `/api/memberships/credits/transactions` GET endpoint
@@ -168,6 +189,7 @@
 - [ ] Write credit management tests
 
 **Acceptance Criteria:**
+
 - Users can view credit balances
 - Transaction history displayed
 - Credits expire at cycle end
@@ -178,11 +200,13 @@
 ## 📋 SPRINT 3: Payment Processing
 
 ### Task 3.1: Stripe Integration Setup
+
 **Priority:** P0 (Blocker)
 **Estimated:** 5 hours
 **Assignee:** devops-orchestrator
 
 **Deliverables:**
+
 - [ ] Install Stripe SDK
 - [ ] Configure Stripe API keys
 - [ ] Create Stripe webhook endpoint
@@ -191,6 +215,7 @@
 - [ ] Write Stripe integration tests
 
 **Acceptance Criteria:**
+
 - Stripe SDK configured
 - Webhooks receive events
 - Signature verification works
@@ -199,11 +224,13 @@
 ---
 
 ### Task 3.2: Booking Payment Processing
+
 **Priority:** P0 (Blocker)
 **Estimated:** 6 hours
 **Assignee:** backend-api-architect
 
 **Deliverables:**
+
 - [ ] Create `/api/payments/create-intent` endpoint
 - [ ] Implement Stripe Checkout for bookings
 - [ ] Handle payment success webhook
@@ -212,6 +239,7 @@
 - [ ] Write payment processing tests
 
 **Acceptance Criteria:**
+
 - Payments process successfully
 - Booking confirmed on payment success
 - Refunds work for cancellations
@@ -220,11 +248,13 @@
 ---
 
 ### Task 3.3: Membership Subscription Management
+
 **Priority:** P1 (High)
 **Estimated:** 6 hours
 **Assignee:** backend-api-architect
 
 **Deliverables:**
+
 - [ ] Create `/api/memberships/subscribe` endpoint
 - [ ] Implement Stripe subscription creation
 - [ ] Handle subscription webhooks
@@ -233,6 +263,7 @@
 - [ ] Write subscription tests
 
 **Acceptance Criteria:**
+
 - Subscriptions created successfully
 - Renewals trigger credit allocation
 - Cancellations handled properly
@@ -243,11 +274,13 @@
 ## 📋 SPRINT 4: Cafe & Menu System
 
 ### Task 4.1: Menu Management APIs
+
 **Priority:** P1 (High)
 **Estimated:** 4 hours
 **Assignee:** backend-api-architect
 
 **Deliverables:**
+
 - [ ] Create `/api/menu` GET endpoint
 - [ ] Create `/api/menu/:category` GET endpoint
 - [ ] Create `/api/menu/items/:id` GET endpoint
@@ -256,6 +289,7 @@
 - [ ] Write menu API tests
 
 **Acceptance Criteria:**
+
 - Menu data served from database
 - NFT holders see discounted prices
 - Tests: 80%+ coverage
@@ -263,11 +297,13 @@
 ---
 
 ### Task 4.2: Cafe Ordering System
+
 **Priority:** P1 (High)
 **Estimated:** 6 hours
 **Assignee:** backend-api-architect
 
 **Deliverables:**
+
 - [ ] Create `/api/orders` POST endpoint
 - [ ] Create `/api/orders` GET endpoint (user orders)
 - [ ] Create `/api/orders/:id` GET endpoint
@@ -277,6 +313,7 @@
 - [ ] Write ordering tests
 
 **Acceptance Criteria:**
+
 - Orders created with correct pricing
 - NFT holders get 10% discount
 - Payment processed successfully
@@ -287,11 +324,13 @@
 ## 📋 SPRINT 5: Events & Content
 
 ### Task 5.1: Events System
+
 **Priority:** P2 (Medium)
 **Estimated:** 5 hours
 **Assignee:** backend-api-architect
 
 **Deliverables:**
+
 - [ ] Create `/api/events` GET endpoint
 - [ ] Create `/api/events/:slug` GET endpoint
 - [ ] Create `/api/events/:id/rsvp` POST endpoint
@@ -301,6 +340,7 @@
 - [ ] Write events tests
 
 **Acceptance Criteria:**
+
 - Events displayed from database
 - RSVP system works
 - Capacity limits enforced
@@ -309,11 +349,13 @@
 ---
 
 ### Task 5.2: Blog/CMS Integration
+
 **Priority:** P2 (Medium)
 **Estimated:** 4 hours
 **Assignee:** backend-api-architect
 
 **Deliverables:**
+
 - [ ] Create `/api/blog/posts` GET endpoint
 - [ ] Create `/api/blog/posts/:slug` GET endpoint
 - [ ] Create `/api/blog/categories` GET endpoint
@@ -322,6 +364,7 @@
 - [ ] Write blog API tests
 
 **Acceptance Criteria:**
+
 - Blog posts served from database
 - Search works correctly
 - Tests: 80%+ coverage
@@ -329,11 +372,13 @@
 ---
 
 ### Task 5.3: Contact & Newsletter
+
 **Priority:** P2 (Medium)
 **Estimated:** 3 hours
 **Assignee:** backend-api-architect
 
 **Deliverables:**
+
 - [ ] Create `/api/contact` POST endpoint
 - [ ] Create `/api/newsletter/subscribe` POST endpoint
 - [ ] Store submissions in database
@@ -341,6 +386,7 @@
 - [ ] Write contact form tests
 
 **Acceptance Criteria:**
+
 - Submissions stored correctly
 - Emails sent to admin
 - Tests: 80%+ coverage
@@ -350,11 +396,13 @@
 ## 📋 SPRINT 6: Frontend Integration
 
 ### Task 6.1: Authentication UI Updates
+
 **Priority:** P0 (Blocker)
 **Estimated:** 6 hours
 **Assignee:** frontend-ui-builder
 
 **Deliverables:**
+
 - [ ] Create login/register pages
 - [ ] Create user profile page
 - [ ] Add authentication context
@@ -364,6 +412,7 @@
 - [ ] Write UI component tests
 
 **Acceptance Criteria:**
+
 - Users can login/register via UI
 - Wallet connection works
 - Protected pages redirect if not logged in
@@ -372,11 +421,13 @@
 ---
 
 ### Task 6.2: Booking Flow Integration
+
 **Priority:** P0 (Blocker)
 **Estimated:** 8 hours
 **Assignee:** frontend-ui-builder
 
 **Deliverables:**
+
 - [ ] Update booking page to use real APIs
 - [ ] Implement availability checking UI
 - [ ] Add credit balance display for members
@@ -386,6 +437,7 @@
 - [ ] Write booking flow tests
 
 **Acceptance Criteria:**
+
 - Booking flow works end-to-end
 - Real-time availability displayed
 - Stripe checkout completes
@@ -394,11 +446,13 @@
 ---
 
 ### Task 6.3: Member Dashboard
+
 **Priority:** P1 (High)
 **Estimated:** 6 hours
 **Assignee:** frontend-ui-builder
 
 **Deliverables:**
+
 - [ ] Create member dashboard page
 - [ ] Display current bookings
 - [ ] Show credit balances
@@ -407,6 +461,7 @@
 - [ ] Write dashboard tests
 
 **Acceptance Criteria:**
+
 - Dashboard shows all user data
 - Bookings can be managed
 - Tests: 80%+ coverage
@@ -414,11 +469,13 @@
 ---
 
 ### Task 6.4: Menu & Ordering UI
+
 **Priority:** P1 (High)
 **Estimated:** 5 hours
 **Assignee:** frontend-ui-builder
 
 **Deliverables:**
+
 - [ ] Update menu page to use API data
 - [ ] Create ordering flow UI
 - [ ] Add cart functionality
@@ -427,6 +484,7 @@
 - [ ] Write ordering UI tests
 
 **Acceptance Criteria:**
+
 - Menu loaded from API
 - Orders can be placed
 - Payment processed
@@ -437,11 +495,13 @@
 ## 📋 SPRINT 7: Admin & Operations
 
 ### Task 7.1: Admin Dashboard
+
 **Priority:** P2 (Medium)
 **Estimated:** 8 hours
 **Assignee:** frontend-ui-builder
 
 **Deliverables:**
+
 - [ ] Create admin dashboard page
 - [ ] Show booking analytics
 - [ ] Display order queue
@@ -450,6 +510,7 @@
 - [ ] Write admin UI tests
 
 **Acceptance Criteria:**
+
 - Admins can view all data
 - Staff can manage orders
 - Tests: 80%+ coverage
@@ -457,11 +518,13 @@
 ---
 
 ### Task 7.2: Admin APIs
+
 **Priority:** P2 (Medium)
 **Estimated:** 5 hours
 **Assignee:** backend-api-architect
 
 **Deliverables:**
+
 - [ ] Create admin booking management endpoints
 - [ ] Create user management endpoints
 - [ ] Create workspace management endpoints
@@ -470,6 +533,7 @@
 - [ ] Write admin API tests
 
 **Acceptance Criteria:**
+
 - Admins can perform CRUD operations
 - RBAC prevents unauthorized access
 - Tests: 80%+ coverage
@@ -479,11 +543,13 @@
 ## 📋 SPRINT 8: Notifications & Polish
 
 ### Task 8.1: Email Notification System
+
 **Priority:** P1 (High)
 **Estimated:** 5 hours
 **Assignee:** devops-orchestrator
 
 **Deliverables:**
+
 - [ ] Set up email service (Resend/SendGrid)
 - [ ] Create email templates
 - [ ] Implement booking confirmation emails
@@ -492,6 +558,7 @@
 - [ ] Write email sending tests
 
 **Acceptance Criteria:**
+
 - Emails sent for all key events
 - Templates look professional
 - Tests mock email service
@@ -499,11 +566,13 @@
 ---
 
 ### Task 8.2: Real-time Features (WebSockets/Pusher)
+
 **Priority:** P2 (Medium)
 **Estimated:** 4 hours
 **Assignee:** backend-api-architect
 
 **Deliverables:**
+
 - [ ] Set up Socket.io or Pusher for real-time
 - [ ] Implement live booking updates
 - [ ] Add order status notifications
@@ -511,6 +580,7 @@
 - [ ] Write realtime tests
 
 **Acceptance Criteria:**
+
 - UI updates without refresh
 - Notifications appear instantly
 - Tests verify realtime events
@@ -518,11 +588,13 @@
 ---
 
 ### Task 8.3: Testing & QA
+
 **Priority:** P0 (Blocker)
 **Estimated:** 6 hours
 **Assignee:** qa-bug-hunter
 
 **Deliverables:**
+
 - [ ] Run full test suite
 - [ ] Verify 80%+ coverage on all modules
 - [ ] Perform E2E testing of critical flows
@@ -531,6 +603,7 @@
 - [ ] Document all bugs found
 
 **Acceptance Criteria:**
+
 - All tests pass
 - Coverage meets requirements
 - No critical bugs
@@ -539,11 +612,13 @@
 ---
 
 ### Task 8.4: Deployment
+
 **Priority:** P0 (Blocker)
 **Estimated:** 4 hours
 **Assignee:** devops-orchestrator
 
 **Deliverables:**
+
 - [ ] Set up Vercel deployment
 - [ ] Configure environment variables
 - [ ] Set up Stripe webhooks in production
@@ -552,6 +627,7 @@
 - [ ] Create deployment documentation
 
 **Acceptance Criteria:**
+
 - App deployed to production
 - Webhooks working
 - Monitoring active
@@ -566,11 +642,13 @@
 **Sprints:** 8
 
 **Priority Breakdown:**
+
 - P0 (Blocker): 12 tasks
 - P1 (High): 10 tasks
 - P2 (Medium): 9 tasks
 
 **Agent Assignments:**
+
 - backend-api-architect: 17 tasks
 - frontend-ui-builder: 6 tasks
 - devops-orchestrator: 3 tasks

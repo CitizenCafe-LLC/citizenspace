@@ -3,12 +3,13 @@
  * Initiate password reset process
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { initiatePasswordReset } from '@/lib/auth/service';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server'
+import { initiatePasswordReset } from '@/lib/auth/service'
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json()
 
     // Validate email
     if (!body.email) {
@@ -19,11 +20,11 @@ export async function POST(request: NextRequest) {
           code: 'MISSING_EMAIL',
         },
         { status: 400 }
-      );
+      )
     }
 
     // Initiate password reset
-    const result = await initiatePasswordReset(body.email);
+    const result = await initiatePasswordReset(body.email)
 
     return NextResponse.json(
       {
@@ -31,9 +32,9 @@ export async function POST(request: NextRequest) {
         message: result.message,
       },
       { status: 200 }
-    );
+    )
   } catch (error) {
-    console.error('Forgot password error:', error);
+    console.error('Forgot password error:', error)
     // Always return success to prevent email enumeration
     return NextResponse.json(
       {
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
         message: 'If an account exists, a password reset email will be sent',
       },
       { status: 200 }
-    );
+    )
   }
 }
 
@@ -52,5 +53,5 @@ export async function GET() {
       message: 'This endpoint only accepts POST requests',
     },
     { status: 405 }
-  );
+  )
 }

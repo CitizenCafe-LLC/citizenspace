@@ -3,12 +3,13 @@
  * User registration endpoint
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { registerUser, AuthenticationError } from '@/lib/auth/service';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server'
+import { registerUser, AuthenticationError } from '@/lib/auth/service'
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json()
 
     // Validate required fields
     if (!body.email || !body.password) {
@@ -19,7 +20,7 @@ export async function POST(request: NextRequest) {
           code: 'MISSING_FIELDS',
         },
         { status: 400 }
-      );
+      )
     }
 
     // Register user
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
       password: body.password,
       fullName: body.fullName,
       phone: body.phone,
-    });
+    })
 
     return NextResponse.json(
       {
@@ -41,7 +42,7 @@ export async function POST(request: NextRequest) {
         message: 'User registered successfully',
       },
       { status: 201 }
-    );
+    )
   } catch (error) {
     if (error instanceof AuthenticationError) {
       return NextResponse.json(
@@ -51,10 +52,10 @@ export async function POST(request: NextRequest) {
           code: error.code,
         },
         { status: error.statusCode }
-      );
+      )
     }
 
-    console.error('Registration error:', error);
+    console.error('Registration error:', error)
     return NextResponse.json(
       {
         error: 'Internal Server Error',
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
         code: 'INTERNAL_ERROR',
       },
       { status: 500 }
-    );
+    )
   }
 }
 
@@ -73,5 +74,5 @@ export async function GET() {
       message: 'This endpoint only accepts POST requests',
     },
     { status: 405 }
-  );
+  )
 }

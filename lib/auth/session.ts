@@ -3,48 +3,46 @@
  * Handles user sessions, token refresh, and session persistence
  */
 
-import { supabaseAdmin } from '../supabase/client';
-import { createTokenPair, verifyToken, TokenPayload, TokenPair } from './jwt';
-import { AuthenticationError } from './service';
+import { supabaseAdmin } from '../supabase/client'
+import type { TokenPayload, TokenPair } from './jwt';
+import { createTokenPair, verifyToken } from './jwt'
+import { AuthenticationError } from './service'
 
 export interface Session {
   user: {
-    id: string;
-    email: string;
-    fullName: string | null;
-    phone: string | null;
-    walletAddress: string | null;
-    nftHolder: boolean;
-    role: 'user' | 'staff' | 'admin';
-    avatarUrl: string | null;
-    createdAt: string;
-  };
-  accessToken: string;
-  refreshToken: string;
-  expiresAt: number;
+    id: string
+    email: string
+    fullName: string | null
+    phone: string | null
+    walletAddress: string | null
+    nftHolder: boolean
+    role: 'user' | 'staff' | 'admin'
+    avatarUrl: string | null
+    createdAt: string
+  }
+  accessToken: string
+  refreshToken: string
+  expiresAt: number
 }
 
 /**
  * Create a new session from tokens
  */
-export async function createSession(
-  userId: string,
-  tokens: TokenPair
-): Promise<Session> {
+export async function createSession(userId: string, tokens: TokenPair): Promise<Session> {
   // Fetch user data
   const { data: userData, error } = await supabaseAdmin
     .from('users')
     .select('*')
     .eq('id', userId)
-    .single();
+    .single()
 
   if (error || !userData) {
-    throw new AuthenticationError('USER_NOT_FOUND', 'User not found', 404);
+    throw new AuthenticationError('USER_NOT_FOUND', 'User not found', 404)
   }
 
   // Decode access token to get expiry
-  const payload = await verifyToken(tokens.accessToken);
-  const decoded = await verifyToken(tokens.accessToken);
+  const payload = await verifyToken(tokens.accessToken)
+  const decoded = await verifyToken(tokens.accessToken)
 
   return {
     user: {
@@ -61,7 +59,7 @@ export async function createSession(
     accessToken: tokens.accessToken,
     refreshToken: tokens.refreshToken,
     expiresAt: Date.now() + 15 * 60 * 1000, // 15 minutes (matches ACCESS_TOKEN_EXPIRY)
-  };
+  }
 }
 
 /**
@@ -72,20 +70,20 @@ export async function refreshSession(
 ): Promise<{ success: boolean; session?: Session; error?: string }> {
   try {
     // Verify refresh token
-    const payload = await verifyToken(refreshToken);
+    const payload = await verifyToken(refreshToken)
 
     // Fetch latest user data
     const { data: userData, error } = await supabaseAdmin
       .from('users')
       .select('*')
       .eq('id', payload.userId)
-      .single();
+      .single()
 
     if (error || !userData) {
       return {
         success: false,
         error: 'User not found',
-      };
+      }
     }
 
     // Generate new token pair
@@ -95,20 +93,20 @@ export async function refreshSession(
       role: userData.role,
       nftHolder: userData.nft_holder,
       walletAddress: userData.wallet_address,
-    });
+    })
 
     // Create new session
-    const session = await createSession(userData.id, tokens);
+    const session = await createSession(userData.id, tokens)
 
     return {
       success: true,
       session,
-    };
+    }
   } catch (error) {
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Token refresh failed',
-    };
+    }
   }
 }
 
@@ -119,16 +117,16 @@ export async function validateSession(
   accessToken: string
 ): Promise<{ valid: boolean; payload?: TokenPayload; error?: string }> {
   try {
-    const payload = await verifyToken(accessToken);
+    const payload = await verifyToken(accessToken)
     return {
       valid: true,
       payload,
-    };
+    }
   } catch (error) {
     return {
       valid: false,
       error: error instanceof Error ? error.message : 'Invalid session',
-    };
+    }
   }
 }
 
@@ -138,17 +136,17 @@ export async function validateSession(
 export async function revokeSessions(userId: string): Promise<boolean> {
   try {
     // Sign out user from Supabase (invalidates all tokens)
-    const { error } = await supabaseAdmin.auth.admin.signOut(userId);
+    const { error } = await supabaseAdmin.auth.admin.signOut(userId)
 
     if (error) {
-      console.error('Session revocation error:', error);
-      return false;
+      console.error('Session revocation error:', error)
+      return false
     }
 
-    return true;
+    return true
   } catch (error) {
-    console.error('Session revocation error:', error);
-    return false;
+    console.error('Session revocation error:', error)
+    return false
   }
 }
 
@@ -162,17 +160,17 @@ export async function getSessionFromRequest(
     return {
       session: null,
       error: 'No authorization header',
-    };
+    }
   }
 
-  const token = authHeader.substring(7);
-  const validation = await validateSession(token);
+  const token = authHeader.substring(7)
+  const validation = await validateSession(token)
 
   if (!validation.valid || !validation.payload) {
     return {
       session: null,
       error: validation.error || 'Invalid token',
-    };
+    }
   }
 
   // Fetch user data to create session
@@ -180,13 +178,13 @@ export async function getSessionFromRequest(
     .from('users')
     .select('*')
     .eq('id', validation.payload.userId)
-    .single();
+    .single()
 
   if (error || !userData) {
     return {
       session: null,
       error: 'User not found',
-    };
+    }
   }
 
   return {
@@ -206,7 +204,7 @@ export async function getSessionFromRequest(
       refreshToken: '', // Not included in request
       expiresAt: Date.now() + 15 * 60 * 1000,
     },
-  };
+  }
 }
 
 /**
@@ -223,10 +221,10 @@ export async function updateNftHolderStatus(
       .update({ nft_holder: nftHolder, updated_at: new Date().toISOString() })
       .eq('id', userId)
       .select()
-      .single();
+      .single()
 
     if (error || !userData) {
-      return { success: false };
+      return { success: false }
     }
 
     // Generate new tokens with updated nft_holder flag
@@ -236,16 +234,16 @@ export async function updateNftHolderStatus(
       role: userData.role,
       nftHolder: userData.nft_holder,
       walletAddress: userData.wallet_address,
-    });
+    })
 
-    const session = await createSession(userId, tokens);
+    const session = await createSession(userId, tokens)
 
     return {
       success: true,
       session,
-    };
+    }
   } catch (error) {
-    console.error('NFT holder status update error:', error);
-    return { success: false };
+    console.error('NFT holder status update error:', error)
+    return { success: false }
   }
 }

@@ -5,15 +5,16 @@
  * Can be used in API routes or server components to verify NFT ownership.
  */
 
-import { createRouteHandlerClient } from '@supabase/supabase-js';
-import { cookies } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
+import { createRouteHandlerClient } from '@supabase/supabase-js'
+import { cookies } from 'next/headers'
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server'
 
 export interface NftHolderCheckResult {
-  isNftHolder: boolean;
-  userId?: string;
-  walletAddress?: string;
-  error?: string;
+  isNftHolder: boolean
+  userId?: string
+  walletAddress?: string
+  error?: string
 }
 
 /**
@@ -22,24 +23,22 @@ export interface NftHolderCheckResult {
  * @param supabase - Optional Supabase client (will create one if not provided)
  * @returns Promise resolving to NFT holder check result
  */
-export async function checkNftHolderStatus(
-  supabase?: any
-): Promise<NftHolderCheckResult> {
+export async function checkNftHolderStatus(supabase?: any): Promise<NftHolderCheckResult> {
   try {
     // Create Supabase client if not provided
-    const client = supabase || createRouteHandlerClient({ cookies });
+    const client = supabase || createRouteHandlerClient({ cookies })
 
     // Get authenticated user
     const {
       data: { user },
       error: authError,
-    } = await client.auth.getUser();
+    } = await client.auth.getUser()
 
     if (authError || !user) {
       return {
         isNftHolder: false,
         error: 'User not authenticated',
-      };
+      }
     }
 
     // Get user's NFT holder status from database
@@ -47,27 +46,27 @@ export async function checkNftHolderStatus(
       .from('users')
       .select('nft_holder, wallet_address')
       .eq('id', user.id)
-      .single();
+      .single()
 
     if (userError || !userData) {
       return {
         isNftHolder: false,
         userId: user.id,
         error: 'User data not found',
-      };
+      }
     }
 
     return {
       isNftHolder: userData.nft_holder || false,
       userId: user.id,
       walletAddress: userData.wallet_address,
-    };
+    }
   } catch (error) {
-    console.error('Error checking NFT holder status:', error);
+    console.error('Error checking NFT holder status:', error)
     return {
       isNftHolder: false,
       error: 'Failed to check NFT holder status',
-    };
+    }
   }
 }
 
@@ -91,7 +90,7 @@ export async function checkNftHolderStatus(
 export async function requireNftHolder(
   request: NextRequest
 ): Promise<{ result: NftHolderCheckResult } | { error: NextResponse }> {
-  const result = await checkNftHolderStatus();
+  const result = await checkNftHolderStatus()
 
   if (result.error || !result.isNftHolder) {
     return {
@@ -102,10 +101,10 @@ export async function requireNftHolder(
         },
         { status: 403 }
       ),
-    };
+    }
   }
 
-  return { result };
+  return { result }
 }
 
 /**
@@ -115,11 +114,9 @@ export async function requireNftHolder(
  * @param request - Next.js request object
  * @returns NFT holder check result (never throws)
  */
-export async function checkNftHolderOptional(
-  request: NextRequest
-): Promise<NftHolderCheckResult> {
-  const result = await checkNftHolderStatus();
-  return result;
+export async function checkNftHolderOptional(request: NextRequest): Promise<NftHolderCheckResult> {
+  const result = await checkNftHolderStatus()
+  return result
 }
 
 /**
@@ -129,21 +126,18 @@ export async function checkNftHolderOptional(
  * @param userId - User ID to check
  * @returns Promise resolving to whether the cache is valid
  */
-export async function isNftVerificationCacheValid(
-  supabase: any,
-  userId: string
-): Promise<boolean> {
+export async function isNftVerificationCacheValid(supabase: any, userId: string): Promise<boolean> {
   try {
     const { data, error } = await supabase
       .from('nft_verifications')
       .select('expires_at')
       .eq('user_id', userId)
       .gt('expires_at', new Date().toISOString())
-      .single();
+      .single()
 
-    return !error && !!data;
+    return !error && !!data
   } catch (error) {
-    return false;
+    return false
   }
 }
 
@@ -162,14 +156,14 @@ export function withNftHolderCheck(
   handler: (request: NextRequest, nftStatus: NftHolderCheckResult) => Promise<NextResponse>
 ) {
   return async (request: NextRequest) => {
-    const result = await requireNftHolder(request);
+    const result = await requireNftHolder(request)
 
     if ('error' in result) {
-      return result.error;
+      return result.error
     }
 
-    return handler(request, result.result);
-  };
+    return handler(request, result.result)
+  }
 }
 
 /**
@@ -188,7 +182,7 @@ export function withOptionalNftCheck(
   handler: (request: NextRequest, nftStatus: NftHolderCheckResult) => Promise<NextResponse>
 ) {
   return async (request: NextRequest) => {
-    const nftStatus = await checkNftHolderOptional(request);
-    return handler(request, nftStatus);
-  };
+    const nftStatus = await checkNftHolderOptional(request)
+    return handler(request, nftStatus)
+  }
 }

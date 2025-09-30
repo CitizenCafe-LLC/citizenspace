@@ -170,6 +170,7 @@ curl "http://localhost:3000/api/workspaces/availability?date=2025-10-01"
 ### Using Browser
 
 Navigate to:
+
 - http://localhost:3000/api/workspaces
 - http://localhost:3000/api/workspaces/hot-desks
 - http://localhost:3000/api/workspaces/meeting-rooms
@@ -187,6 +188,7 @@ Navigate to:
 ### Tests Failing
 
 **Solution:**
+
 1. Ensure all dependencies are installed: `npm install`
 2. Check that mocks are properly configured
 3. Run `npm run test:coverage` to see which tests are failing
@@ -194,6 +196,7 @@ Navigate to:
 ### API Returns 500 Error
 
 **Solution:**
+
 1. Check Supabase dashboard for database status
 2. Verify API keys are correct
 3. Check server logs for detailed error messages
@@ -234,12 +237,13 @@ const supabaseClient = createClient(url, key, {
       'x-application-name': 'citizenspace-api',
     },
   },
-});
+})
 ```
 
 ### Monitor Query Performance
 
 Use Supabase Dashboard:
+
 1. Navigate to Database → Query Performance
 2. Identify slow queries
 3. Add indexes as needed

@@ -1,40 +1,46 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar } from '@/components/ui/calendar';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
-import Link from 'next/link';
-import { 
-  Calendar as CalendarIcon, 
-  Clock, 
-  Users, 
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Calendar } from '@/components/ui/calendar'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Separator } from '@/components/ui/separator'
+import Link from 'next/link'
+import {
+  Calendar as CalendarIcon,
+  Clock,
+  Users,
   MapPin,
   Calculator,
   CreditCard,
   ArrowRight,
   Smartphone,
-  Wallet
-} from 'lucide-react';
-import type { Metadata } from 'next';
+  Wallet,
+} from 'lucide-react'
+import type { Metadata } from 'next'
 
 const workspaceOptions = [
   {
     id: 'hot-desk',
     name: 'Hot Desk',
     description: 'Any available desk in the coworking zone',
-    basePrice: 2.50,
+    basePrice: 2.5,
     unit: 'hour',
     minDuration: 1,
     maxDuration: 12,
-    capacity: 1
+    capacity: 1,
   },
   {
     id: 'focus-room',
@@ -44,7 +50,7 @@ const workspaceOptions = [
     unit: 'hour',
     minDuration: 0.5,
     maxDuration: 8,
-    capacity: 4
+    capacity: 4,
   },
   {
     id: 'collaborate-room',
@@ -54,7 +60,7 @@ const workspaceOptions = [
     unit: 'hour',
     minDuration: 0.5,
     maxDuration: 8,
-    capacity: 6
+    capacity: 6,
   },
   {
     id: 'boardroom',
@@ -64,7 +70,7 @@ const workspaceOptions = [
     unit: 'hour',
     minDuration: 0.5,
     maxDuration: 8,
-    capacity: 8
+    capacity: 8,
   },
   {
     id: 'communications-pod',
@@ -74,30 +80,54 @@ const workspaceOptions = [
     unit: 'hour',
     minDuration: 0.5,
     maxDuration: 4,
-    capacity: 1
-  }
-];
+    capacity: 1,
+  },
+]
 
 const timeSlots = [
-  '8:00 AM', '8:30 AM', '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM',
-  '12:00 PM', '12:30 PM', '1:00 PM', '1:30 PM', '2:00 PM', '2:30 PM', '3:00 PM', '3:30 PM',
-  '4:00 PM', '4:30 PM', '5:00 PM', '5:30 PM', '6:00 PM', '6:30 PM', '7:00 PM', '7:30 PM',
-  '8:00 PM', '8:30 PM', '9:00 PM', '9:30 PM'
-];
+  '8:00 AM',
+  '8:30 AM',
+  '9:00 AM',
+  '9:30 AM',
+  '10:00 AM',
+  '10:30 AM',
+  '11:00 AM',
+  '11:30 AM',
+  '12:00 PM',
+  '12:30 PM',
+  '1:00 PM',
+  '1:30 PM',
+  '2:00 PM',
+  '2:30 PM',
+  '3:00 PM',
+  '3:30 PM',
+  '4:00 PM',
+  '4:30 PM',
+  '5:00 PM',
+  '5:30 PM',
+  '6:00 PM',
+  '6:30 PM',
+  '7:00 PM',
+  '7:30 PM',
+  '8:00 PM',
+  '8:30 PM',
+  '9:00 PM',
+  '9:30 PM',
+]
 
 export default function BookingPage() {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const [selectedWorkspace, setSelectedWorkspace] = useState('hot-desk');
-  const [startTime, setStartTime] = useState('');
-  const [duration, setDuration] = useState(2);
-  const [attendees, setAttendees] = useState(1);
-  const [customerName, setCustomerName] = useState('');
-  const [customerEmail, setCustomerEmail] = useState('');
-  const [specialRequests, setSpecialRequests] = useState('');
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
+  const [selectedWorkspace, setSelectedWorkspace] = useState('hot-desk')
+  const [startTime, setStartTime] = useState('')
+  const [duration, setDuration] = useState(2)
+  const [attendees, setAttendees] = useState(1)
+  const [customerName, setCustomerName] = useState('')
+  const [customerEmail, setCustomerEmail] = useState('')
+  const [specialRequests, setSpecialRequests] = useState('')
 
-  const workspace = workspaceOptions.find(w => w.id === selectedWorkspace);
-  const totalPrice = workspace ? workspace.basePrice * duration : 0;
-  const hasApp = false; // This would be detected in a real app
+  const workspace = workspaceOptions.find(w => w.id === selectedWorkspace)
+  const totalPrice = workspace ? workspace.basePrice * duration : 0
+  const hasApp = false // This would be detected in a real app
 
   const handleBooking = () => {
     // In a real app, this would process the booking
@@ -110,25 +140,25 @@ export default function BookingPage() {
       customerName,
       customerEmail,
       specialRequests,
-      totalPrice
-    });
-  };
+      totalPrice,
+    })
+  }
 
   return (
     <div className="py-12">
       {/* Hero Section */}
       <section className="pb-12">
         <div className="container">
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="mx-auto max-w-3xl text-center">
             <Badge variant="secondary" className="mb-6">
               Book Your Space
             </Badge>
-            <h1 className="font-display text-4xl lg:text-5xl font-bold mb-6">
-              Reserve Your{' '}
-              <span className="gradient-text">Perfect Workspace</span>
+            <h1 className="mb-6 font-display text-4xl font-bold lg:text-5xl">
+              Reserve Your <span className="gradient-text">Perfect Workspace</span>
             </h1>
             <p className="text-xl text-muted-foreground">
-              Choose your ideal workspace and book instantly. From hot desks to private meeting rooms.
+              Choose your ideal workspace and book instantly. From hot desks to private meeting
+              rooms.
             </p>
           </div>
         </div>
@@ -138,7 +168,7 @@ export default function BookingPage() {
       {!hasApp && (
         <section className="pb-12">
           <div className="container">
-            <Card className="max-w-4xl mx-auto bg-gradient-to-r from-cs-blue/10 to-cs-sun/10 border-cs-blue/20">
+            <Card className="mx-auto max-w-4xl border-cs-blue/20 bg-gradient-to-r from-cs-blue/10 to-cs-sun/10">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
@@ -163,8 +193,8 @@ export default function BookingPage() {
       {/* Booking Form */}
       <section className="pb-20">
         <div className="container">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="mx-auto max-w-6xl">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
               {/* Booking Steps */}
               <div className="lg:col-span-2">
                 <Card>
@@ -177,36 +207,39 @@ export default function BookingPage() {
                   <CardContent className="space-y-8">
                     {/* Step 1: Choose Workspace */}
                     <div>
-                      <h3 className="font-semibold mb-4 flex items-center">
-                        <MapPin className="h-5 w-5 mr-2" />
+                      <h3 className="mb-4 flex items-center font-semibold">
+                        <MapPin className="mr-2 h-5 w-5" />
                         1. Choose Your Workspace
                       </h3>
-                      
+
                       <Tabs value={selectedWorkspace} onValueChange={setSelectedWorkspace}>
                         <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
-                          {workspaceOptions.map((option) => (
+                          {workspaceOptions.map(option => (
                             <TabsTrigger key={option.id} value={option.id} className="text-xs">
                               {option.name}
                             </TabsTrigger>
                           ))}
                         </TabsList>
-                        
-                        {workspaceOptions.map((option) => (
+
+                        {workspaceOptions.map(option => (
                           <TabsContent key={option.id} value={option.id}>
                             <Card>
                               <CardContent className="pt-6">
-                                <div className="flex justify-between items-start mb-2">
+                                <div className="mb-2 flex items-start justify-between">
                                   <div>
                                     <h4 className="font-semibold">{option.name}</h4>
-                                    <p className="text-sm text-muted-foreground">{option.description}</p>
+                                    <p className="text-sm text-muted-foreground">
+                                      {option.description}
+                                    </p>
                                   </div>
                                   <Badge variant="outline" className="text-cs-blue">
                                     ${option.basePrice}/{option.unit}
                                   </Badge>
                                 </div>
                                 <div className="text-xs text-muted-foreground">
-                                  Capacity: {option.capacity} {option.capacity === 1 ? 'person' : 'people'} • 
-                                  Duration: {option.minDuration}-{option.maxDuration} hours
+                                  Capacity: {option.capacity}{' '}
+                                  {option.capacity === 1 ? 'person' : 'people'} • Duration:{' '}
+                                  {option.minDuration}-{option.maxDuration} hours
                                 </div>
                               </CardContent>
                             </Card>
@@ -217,12 +250,12 @@ export default function BookingPage() {
 
                     {/* Step 2: Select Date & Time */}
                     <div>
-                      <h3 className="font-semibold mb-4 flex items-center">
-                        <CalendarIcon className="h-5 w-5 mr-2" />
+                      <h3 className="mb-4 flex items-center font-semibold">
+                        <CalendarIcon className="mr-2 h-5 w-5" />
                         2. Select Date & Time
                       </h3>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <div>
                           <Label htmlFor="date">Date</Label>
                           <div className="mt-2">
@@ -230,12 +263,12 @@ export default function BookingPage() {
                               mode="single"
                               selected={selectedDate}
                               onSelect={setSelectedDate}
-                              disabled={(date) => date < new Date()}
+                              disabled={date => date < new Date()}
                               className="rounded-md border"
                             />
                           </div>
                         </div>
-                        
+
                         <div className="space-y-4">
                           <div>
                             <Label htmlFor="start-time">Start Time</Label>
@@ -244,7 +277,7 @@ export default function BookingPage() {
                                 <SelectValue placeholder="Select start time" />
                               </SelectTrigger>
                               <SelectContent>
-                                {timeSlots.map((time) => (
+                                {timeSlots.map(time => (
                                   <SelectItem key={time} value={time}>
                                     {time}
                                   </SelectItem>
@@ -252,15 +285,18 @@ export default function BookingPage() {
                               </SelectContent>
                             </Select>
                           </div>
-                          
+
                           <div>
                             <Label htmlFor="duration">Duration (hours)</Label>
-                            <Select value={duration.toString()} onValueChange={(value) => setDuration(parseFloat(value))}>
+                            <Select
+                              value={duration.toString()}
+                              onValueChange={value => setDuration(parseFloat(value))}
+                            >
                               <SelectTrigger className="mt-2">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
-                                {Array.from({ length: 16 }, (_, i) => (i + 1) * 0.5).map((hours) => (
+                                {Array.from({ length: 16 }, (_, i) => (i + 1) * 0.5).map(hours => (
                                   <SelectItem key={hours} value={hours.toString()}>
                                     {hours} {hours === 1 ? 'hour' : 'hours'}
                                   </SelectItem>
@@ -268,20 +304,25 @@ export default function BookingPage() {
                               </SelectContent>
                             </Select>
                           </div>
-                          
+
                           {workspace && workspace.capacity > 1 && (
                             <div>
                               <Label htmlFor="attendees">Number of Attendees</Label>
-                              <Select value={attendees.toString()} onValueChange={(value) => setAttendees(parseInt(value))}>
+                              <Select
+                                value={attendees.toString()}
+                                onValueChange={value => setAttendees(parseInt(value))}
+                              >
                                 <SelectTrigger className="mt-2">
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  {Array.from({ length: workspace.capacity }, (_, i) => i + 1).map((num) => (
-                                    <SelectItem key={num} value={num.toString()}>
-                                      {num} {num === 1 ? 'person' : 'people'}
-                                    </SelectItem>
-                                  ))}
+                                  {Array.from({ length: workspace.capacity }, (_, i) => i + 1).map(
+                                    num => (
+                                      <SelectItem key={num} value={num.toString()}>
+                                        {num} {num === 1 ? 'person' : 'people'}
+                                      </SelectItem>
+                                    )
+                                  )}
                                 </SelectContent>
                               </Select>
                             </div>
@@ -292,42 +333,42 @@ export default function BookingPage() {
 
                     {/* Step 3: Contact Information */}
                     <div>
-                      <h3 className="font-semibold mb-4 flex items-center">
-                        <Users className="h-5 w-5 mr-2" />
+                      <h3 className="mb-4 flex items-center font-semibold">
+                        <Users className="mr-2 h-5 w-5" />
                         3. Contact Information
                       </h3>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
                           <Label htmlFor="name">Full Name</Label>
                           <Input
                             id="name"
                             value={customerName}
-                            onChange={(e) => setCustomerName(e.target.value)}
+                            onChange={e => setCustomerName(e.target.value)}
                             placeholder="Your full name"
                             className="mt-2"
                           />
                         </div>
-                        
+
                         <div>
                           <Label htmlFor="email">Email Address</Label>
                           <Input
                             id="email"
                             type="email"
                             value={customerEmail}
-                            onChange={(e) => setCustomerEmail(e.target.value)}
+                            onChange={e => setCustomerEmail(e.target.value)}
                             placeholder="your@email.com"
                             className="mt-2"
                           />
                         </div>
                       </div>
-                      
+
                       <div className="mt-4">
                         <Label htmlFor="requests">Special Requests (Optional)</Label>
                         <Textarea
                           id="requests"
                           value={specialRequests}
-                          onChange={(e) => setSpecialRequests(e.target.value)}
+                          onChange={e => setSpecialRequests(e.target.value)}
                           placeholder="Any special requirements or requests..."
                           className="mt-2"
                           rows={3}
@@ -342,8 +383,8 @@ export default function BookingPage() {
               <div className="lg:col-span-1">
                 <Card className="sticky top-4">
                   <CardHeader>
-                    <CardTitle className="font-display text-xl flex items-center">
-                      <Calculator className="h-5 w-5 mr-2" />
+                    <CardTitle className="flex items-center font-display text-xl">
+                      <Calculator className="mr-2 h-5 w-5" />
                       Booking Summary
                     </CardTitle>
                   </CardHeader>
@@ -354,7 +395,7 @@ export default function BookingPage() {
                         {workspace?.name || 'Select workspace'}
                       </p>
                     </div>
-                    
+
                     <div>
                       <h4 className="font-semibold">Date & Time</h4>
                       <p className="text-sm text-muted-foreground">
@@ -362,14 +403,14 @@ export default function BookingPage() {
                         {startTime && ` at ${startTime}`}
                       </p>
                     </div>
-                    
+
                     <div>
                       <h4 className="font-semibold">Duration</h4>
                       <p className="text-sm text-muted-foreground">
                         {duration} {duration === 1 ? 'hour' : 'hours'}
                       </p>
                     </div>
-                    
+
                     {workspace && workspace.capacity > 1 && (
                       <div>
                         <h4 className="font-semibold">Attendees</h4>
@@ -378,9 +419,9 @@ export default function BookingPage() {
                         </p>
                       </div>
                     )}
-                    
+
                     <Separator />
-                    
+
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span>Subtotal:</span>
@@ -395,19 +436,19 @@ export default function BookingPage() {
                         <span>Connect wallet to apply</span>
                       </div>
                       <Separator />
-                      <div className="flex justify-between font-semibold text-lg">
+                      <div className="flex justify-between text-lg font-semibold">
                         <span>Total:</span>
                         <span className="text-cs-blue">${(totalPrice + 2).toFixed(2)}</span>
                       </div>
                     </div>
-                    
-                    <Button variant="outline" className="w-full mb-2">
+
+                    <Button variant="outline" className="mb-2 w-full">
                       <Wallet className="mr-2 h-4 w-4" />
                       Connect Wallet for 50% Off
                     </Button>
-                    
-                    <Button 
-                      className="w-full btn-primary" 
+
+                    <Button
+                      className="btn-primary w-full"
                       onClick={handleBooking}
                       disabled={!selectedDate || !startTime || !customerEmail || !workspace}
                     >
@@ -415,9 +456,10 @@ export default function BookingPage() {
                       Complete Booking
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
-                    
-                    <p className="text-xs text-muted-foreground text-center">
-                      Secure payment processed by Stripe. You'll receive a confirmation email with access details.
+
+                    <p className="text-center text-xs text-muted-foreground">
+                      Secure payment processed by Stripe. You'll receive a confirmation email with
+                      access details.
                     </p>
                   </CardContent>
                 </Card>
@@ -428,26 +470,24 @@ export default function BookingPage() {
       </section>
 
       {/* Alternative Options */}
-      <section className="py-20 bg-muted/30">
+      <section className="bg-muted/30 py-20">
         <div className="container">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="font-display text-3xl lg:text-4xl font-bold mb-4">
-                Other Options
-              </h2>
+          <div className="mx-auto max-w-4xl">
+            <div className="mb-12 text-center">
+              <h2 className="mb-4 font-display text-3xl font-bold lg:text-4xl">Other Options</h2>
               <p className="text-lg text-muted-foreground">
                 Not sure about committing? Try these flexible alternatives
               </p>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <Card className="card-hover">
                 <CardHeader>
                   <CardTitle>Day Pass</CardTitle>
                   <div className="text-2xl font-bold text-cs-sun">$25/day</div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="mb-4 text-muted-foreground">
                     Full day access with 10% cafe discount and meeting room credits included.
                   </p>
                   <Button asChild variant="outline" className="w-full">
@@ -455,14 +495,14 @@ export default function BookingPage() {
                   </Button>
                 </CardContent>
               </Card>
-              
+
               <Card className="card-hover">
                 <CardHeader>
                   <CardTitle>Schedule a Tour</CardTitle>
                   <div className="text-2xl font-bold text-cs-blue">Free</div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="mb-4 text-muted-foreground">
                     See our space in person before committing. Tours available daily.
                   </p>
                   <Button asChild variant="outline" className="w-full">
@@ -475,5 +515,5 @@ export default function BookingPage() {
         </div>
       </section>
     </div>
-  );
+  )
 }

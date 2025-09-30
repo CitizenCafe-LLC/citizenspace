@@ -1,18 +1,10 @@
-import { NextRequest } from 'next/server';
-import {
-  successResponse,
-  badRequestResponse,
-  serverErrorResponse,
-} from '@/lib/api/response';
-import {
-  safeValidateParams,
-  workspaceFiltersSchema,
-  paginationSchema,
-} from '@/lib/api/validation';
-import { getAllWorkspaces } from '@/lib/db/repositories/workspace.repository';
+import type { NextRequest } from 'next/server'
+import { successResponse, badRequestResponse, serverErrorResponse } from '@/lib/api/response'
+import { safeValidateParams, workspaceFiltersSchema, paginationSchema } from '@/lib/api/validation'
+import { getAllWorkspaces } from '@/lib/db/repositories/workspace.repository'
 
 // Force dynamic rendering for this route
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
 /**
  * GET /api/workspaces
@@ -34,47 +26,43 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const params = Object.fromEntries(searchParams.entries());
+    const searchParams = request.nextUrl.searchParams
+    const params = Object.fromEntries(searchParams.entries())
 
     // Validate filters
-    const filtersValidation = safeValidateParams(workspaceFiltersSchema, params);
+    const filtersValidation = safeValidateParams(workspaceFiltersSchema, params)
     if (!filtersValidation.success) {
-      return badRequestResponse(`Invalid filters: ${filtersValidation.error}`);
+      return badRequestResponse(`Invalid filters: ${filtersValidation.error}`)
     }
 
     // Validate pagination
-    const paginationValidation = safeValidateParams(paginationSchema, params);
+    const paginationValidation = safeValidateParams(paginationSchema, params)
     if (!paginationValidation.success) {
-      return badRequestResponse(`Invalid pagination: ${paginationValidation.error}`);
+      return badRequestResponse(`Invalid pagination: ${paginationValidation.error}`)
     }
 
-    const filters = filtersValidation.data;
-    const pagination = paginationValidation.data;
+    const filters = filtersValidation.data
+    const pagination = paginationValidation.data
 
     // Fetch workspaces from database
-    const { data, error, count } = await getAllWorkspaces(filters, pagination);
+    const { data, error, count } = await getAllWorkspaces(filters, pagination)
 
     if (error) {
-      console.error('Error fetching workspaces:', error);
-      return serverErrorResponse('Failed to fetch workspaces');
+      console.error('Error fetching workspaces:', error)
+      return serverErrorResponse('Failed to fetch workspaces')
     }
 
     // Calculate pagination metadata
-    const totalPages = Math.ceil(count / pagination.limit);
+    const totalPages = Math.ceil(count / pagination.limit)
 
-    return successResponse(
-      data,
-      'Workspaces retrieved successfully',
-      {
-        page: pagination.page,
-        limit: pagination.limit,
-        total: count,
-        totalPages,
-      }
-    );
+    return successResponse(data, 'Workspaces retrieved successfully', {
+      page: pagination.page,
+      limit: pagination.limit,
+      total: count,
+      totalPages,
+    })
   } catch (error) {
-    console.error('Unexpected error in GET /api/workspaces:', error);
-    return serverErrorResponse('An unexpected error occurred');
+    console.error('Unexpected error in GET /api/workspaces:', error)
+    return serverErrorResponse('An unexpected error occurred')
   }
 }

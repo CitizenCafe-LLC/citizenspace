@@ -8,9 +8,9 @@ import {
   refreshSession,
   validateSession,
   updateNftHolderStatus,
-} from '@/lib/auth/session';
-import { createTokenPair, TokenPayload } from '@/lib/auth/jwt';
-import { supabaseAdmin } from '@/lib/supabase/client';
+} from '@/lib/auth/session'
+import { createTokenPair, TokenPayload } from '@/lib/auth/jwt'
+import { supabaseAdmin } from '@/lib/supabase/client'
 
 // Mock Supabase
 jest.mock('@/lib/supabase/client', () => ({
@@ -22,7 +22,7 @@ jest.mock('@/lib/supabase/client', () => ({
       },
     },
   },
-}));
+}))
 
 describe('Session Management', () => {
   const mockUser = {
@@ -35,11 +35,11 @@ describe('Session Management', () => {
     role: 'user' as const,
     avatar_url: null,
     created_at: new Date().toISOString(),
-  };
+  }
 
   beforeEach(() => {
-    jest.clearAllMocks();
-  });
+    jest.clearAllMocks()
+  })
 
   describe('createSession', () => {
     it('should create session from valid tokens', async () => {
@@ -48,11 +48,11 @@ describe('Session Management', () => {
         email: mockUser.email,
         role: mockUser.role,
         nftHolder: mockUser.nft_holder,
-      };
+      }
 
-      const tokens = await createTokenPair(mockPayload);
+      const tokens = await createTokenPair(mockPayload)
 
-      (supabaseAdmin.from as jest.Mock).mockReturnValue({
+      ;(supabaseAdmin.from as jest.Mock).mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             single: jest.fn().mockResolvedValue({
@@ -61,31 +61,31 @@ describe('Session Management', () => {
             }),
           }),
         }),
-      });
+      })
 
-      const session = await createSession(mockUser.id, tokens);
+      const session = await createSession(mockUser.id, tokens)
 
-      expect(session).toBeDefined();
-      expect(session.user.id).toBe(mockUser.id);
-      expect(session.user.email).toBe(mockUser.email);
-      expect(session.user.nftHolder).toBe(mockUser.nft_holder);
-      expect(session.accessToken).toBe(tokens.accessToken);
-      expect(session.refreshToken).toBe(tokens.refreshToken);
-      expect(session.expiresAt).toBeGreaterThan(Date.now());
-    });
+      expect(session).toBeDefined()
+      expect(session.user.id).toBe(mockUser.id)
+      expect(session.user.email).toBe(mockUser.email)
+      expect(session.user.nftHolder).toBe(mockUser.nft_holder)
+      expect(session.accessToken).toBe(tokens.accessToken)
+      expect(session.refreshToken).toBe(tokens.refreshToken)
+      expect(session.expiresAt).toBeGreaterThan(Date.now())
+    })
 
     it('should include NFT holder status in session', async () => {
-      const nftUser = { ...mockUser, nft_holder: true };
+      const nftUser = { ...mockUser, nft_holder: true }
       const mockPayload: TokenPayload = {
         userId: nftUser.id,
         email: nftUser.email,
         role: nftUser.role,
         nftHolder: true,
-      };
+      }
 
-      const tokens = await createTokenPair(mockPayload);
+      const tokens = await createTokenPair(mockPayload)
 
-      (supabaseAdmin.from as jest.Mock).mockReturnValue({
+      ;(supabaseAdmin.from as jest.Mock).mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             single: jest.fn().mockResolvedValue({
@@ -94,23 +94,23 @@ describe('Session Management', () => {
             }),
           }),
         }),
-      });
+      })
 
-      const session = await createSession(nftUser.id, tokens);
+      const session = await createSession(nftUser.id, tokens)
 
-      expect(session.user.nftHolder).toBe(true);
-    });
+      expect(session.user.nftHolder).toBe(true)
+    })
 
     it('should throw error for non-existent user', async () => {
       const mockPayload: TokenPayload = {
         userId: 'non-existent',
         email: 'test@example.com',
         role: 'user',
-      };
+      }
 
-      const tokens = await createTokenPair(mockPayload);
+      const tokens = await createTokenPair(mockPayload)
 
-      (supabaseAdmin.from as jest.Mock).mockReturnValue({
+      ;(supabaseAdmin.from as jest.Mock).mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             single: jest.fn().mockResolvedValue({
@@ -119,11 +119,11 @@ describe('Session Management', () => {
             }),
           }),
         }),
-      });
+      })
 
-      await expect(createSession('non-existent', tokens)).rejects.toThrow();
-    });
-  });
+      await expect(createSession('non-existent', tokens)).rejects.toThrow()
+    })
+  })
 
   describe('validateSession', () => {
     it('should validate valid access token', async () => {
@@ -131,23 +131,23 @@ describe('Session Management', () => {
         userId: mockUser.id,
         email: mockUser.email,
         role: mockUser.role,
-      };
+      }
 
-      const tokens = await createTokenPair(mockPayload);
-      const result = await validateSession(tokens.accessToken);
+      const tokens = await createTokenPair(mockPayload)
+      const result = await validateSession(tokens.accessToken)
 
-      expect(result.valid).toBe(true);
-      expect(result.payload).toBeDefined();
-      expect(result.payload?.userId).toBe(mockUser.id);
-    });
+      expect(result.valid).toBe(true)
+      expect(result.payload).toBeDefined()
+      expect(result.payload?.userId).toBe(mockUser.id)
+    })
 
     it('should reject invalid token', async () => {
-      const result = await validateSession('invalid-token');
+      const result = await validateSession('invalid-token')
 
-      expect(result.valid).toBe(false);
-      expect(result.error).toBeDefined();
-    });
-  });
+      expect(result.valid).toBe(false)
+      expect(result.error).toBeDefined()
+    })
+  })
 
   describe('refreshSession', () => {
     it('should refresh session with valid refresh token', async () => {
@@ -156,11 +156,11 @@ describe('Session Management', () => {
         email: mockUser.email,
         role: mockUser.role,
         nftHolder: mockUser.nft_holder,
-      };
+      }
 
-      const tokens = await createTokenPair(mockPayload);
+      const tokens = await createTokenPair(mockPayload)
 
-      (supabaseAdmin.from as jest.Mock).mockReturnValue({
+      ;(supabaseAdmin.from as jest.Mock).mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             single: jest.fn().mockResolvedValue({
@@ -169,35 +169,35 @@ describe('Session Management', () => {
             }),
           }),
         }),
-      });
+      })
 
-      const result = await refreshSession(tokens.refreshToken);
+      const result = await refreshSession(tokens.refreshToken)
 
-      expect(result.success).toBe(true);
-      expect(result.session).toBeDefined();
-      expect(result.session?.user.id).toBe(mockUser.id);
-      expect(result.session?.accessToken).not.toBe(tokens.accessToken); // New token generated
-    });
+      expect(result.success).toBe(true)
+      expect(result.session).toBeDefined()
+      expect(result.session?.user.id).toBe(mockUser.id)
+      expect(result.session?.accessToken).not.toBe(tokens.accessToken) // New token generated
+    })
 
     it('should fail with invalid refresh token', async () => {
-      const result = await refreshSession('invalid-token');
+      const result = await refreshSession('invalid-token')
 
-      expect(result.success).toBe(false);
-      expect(result.error).toBeDefined();
-    });
+      expect(result.success).toBe(false)
+      expect(result.error).toBeDefined()
+    })
 
     it('should update NFT holder status on refresh', async () => {
-      const updatedUser = { ...mockUser, nft_holder: true };
+      const updatedUser = { ...mockUser, nft_holder: true }
       const mockPayload: TokenPayload = {
         userId: mockUser.id,
         email: mockUser.email,
         role: mockUser.role,
         nftHolder: false,
-      };
+      }
 
-      const tokens = await createTokenPair(mockPayload);
+      const tokens = await createTokenPair(mockPayload)
 
-      (supabaseAdmin.from as jest.Mock).mockReturnValue({
+      ;(supabaseAdmin.from as jest.Mock).mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             single: jest.fn().mockResolvedValue({
@@ -206,18 +206,18 @@ describe('Session Management', () => {
             }),
           }),
         }),
-      });
+      })
 
-      const result = await refreshSession(tokens.refreshToken);
+      const result = await refreshSession(tokens.refreshToken)
 
-      expect(result.success).toBe(true);
-      expect(result.session?.user.nftHolder).toBe(true);
-    });
-  });
+      expect(result.success).toBe(true)
+      expect(result.session?.user.nftHolder).toBe(true)
+    })
+  })
 
   describe('updateNftHolderStatus', () => {
     it('should update NFT holder status and generate new tokens', async () => {
-      (supabaseAdmin.from as jest.Mock).mockReturnValue({
+      ;(supabaseAdmin.from as jest.Mock).mockReturnValue({
         update: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             select: jest.fn().mockReturnValue({
@@ -236,17 +236,17 @@ describe('Session Management', () => {
             }),
           }),
         }),
-      });
+      })
 
-      const result = await updateNftHolderStatus(mockUser.id, true);
+      const result = await updateNftHolderStatus(mockUser.id, true)
 
-      expect(result.success).toBe(true);
-      expect(result.session).toBeDefined();
-      expect(result.session?.user.nftHolder).toBe(true);
-    });
+      expect(result.success).toBe(true)
+      expect(result.session).toBeDefined()
+      expect(result.session?.user.nftHolder).toBe(true)
+    })
 
     it('should handle database errors gracefully', async () => {
-      (supabaseAdmin.from as jest.Mock).mockReturnValue({
+      ;(supabaseAdmin.from as jest.Mock).mockReturnValue({
         update: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             select: jest.fn().mockReturnValue({
@@ -257,11 +257,11 @@ describe('Session Management', () => {
             }),
           }),
         }),
-      });
+      })
 
-      const result = await updateNftHolderStatus(mockUser.id, true);
+      const result = await updateNftHolderStatus(mockUser.id, true)
 
-      expect(result.success).toBe(false);
-    });
-  });
-});
+      expect(result.success).toBe(false)
+    })
+  })
+})

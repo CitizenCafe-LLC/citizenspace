@@ -16,6 +16,7 @@ A modern, full-stack coworking space management platform built with Next.js, Typ
 ## Tech Stack
 
 ### Frontend
+
 - **Framework**: Next.js 13.5 (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS + shadcn/ui components
@@ -23,17 +24,20 @@ A modern, full-stack coworking space management platform built with Next.js, Typ
 - **Forms**: React Hook Form + Zod validation
 
 ### Backend
+
 - **Database**: PostgreSQL (via Supabase)
 - **Authentication**: Supabase Auth
 - **API**: Next.js API Routes
 - **Payment**: Stripe
 
 ### Web3
+
 - **Wallet Connection**: WalletConnect + RainbowKit
 - **Blockchain**: Ethereum/Polygon
 - **Libraries**: wagmi, viem
 
 ### DevOps
+
 - **Testing**: Jest + React Testing Library
 - **CI/CD**: GitHub Actions
 - **Containerization**: Docker + Docker Compose
@@ -50,23 +54,27 @@ A modern, full-stack coworking space management platform built with Next.js, Typ
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd CitizenSpace
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env.local
    # Edit .env.local with your credentials
    ```
 
 4. **Start development server**
+
    ```bash
    npm run dev
    ```
@@ -86,6 +94,7 @@ A modern, full-stack coworking space management platform built with Next.js, Typ
 ## Available Scripts
 
 ### Development
+
 ```bash
 npm run dev              # Start development server
 npm run build           # Build for production
@@ -93,6 +102,7 @@ npm run start           # Start production server
 ```
 
 ### Code Quality
+
 ```bash
 npm run lint            # Lint code
 npm run lint:fix        # Fix linting errors
@@ -103,6 +113,7 @@ npm run validate        # Run all checks (lint + typecheck + test)
 ```
 
 ### Testing
+
 ```bash
 npm test                # Run tests
 npm run test:watch      # Run tests in watch mode
@@ -111,6 +122,7 @@ npm run test:ci         # Run tests in CI mode
 ```
 
 ### Database
+
 ```bash
 npm run db:migrate      # Run database migrations
 npm run db:seed         # Seed database with test data
@@ -119,6 +131,7 @@ npm run db:status       # Check migration status
 ```
 
 ### Supabase
+
 ```bash
 npm run supabase:start  # Start local Supabase
 npm run supabase:stop   # Stop local Supabase
@@ -136,6 +149,7 @@ docker-compose up
 ```
 
 Services:
+
 - **App**: http://localhost:3000
 - **PostgreSQL**: localhost:5432
 - **Redis**: localhost:6379

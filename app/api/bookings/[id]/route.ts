@@ -1,15 +1,12 @@
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server'
 import {
   successResponse,
   unauthorizedResponse,
   serverErrorResponse,
   notFoundResponse,
   badRequestResponse,
-} from '@/lib/api/response';
-import {
-  getBookingById,
-  cancelBooking,
-} from '@/lib/db/repositories/booking.repository';
+} from '@/lib/api/response'
+import { getBookingById, cancelBooking } from '@/lib/db/repositories/booking.repository'
 
 /**
  * GET /api/bookings/:id
@@ -17,38 +14,35 @@ import {
  *
  * Authorization: Required (must be booking owner)
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const userId = request.headers.get('x-user-id');
+    const userId = request.headers.get('x-user-id')
 
     if (!userId) {
-      return unauthorizedResponse('Authentication required');
+      return unauthorizedResponse('Authentication required')
     }
 
-    const bookingId = params.id;
+    const bookingId = params.id
 
     // Get booking details
-    const { data: booking, error: bookingError } = await getBookingById(bookingId);
+    const { data: booking, error: bookingError } = await getBookingById(bookingId)
     if (bookingError || !booking) {
-      return notFoundResponse('Booking not found');
+      return notFoundResponse('Booking not found')
     }
 
     // Verify ownership
     if (booking.user_id !== userId) {
-      return unauthorizedResponse('You do not have permission to view this booking');
+      return unauthorizedResponse('You do not have permission to view this booking')
     }
 
     // Calculate booking status details
-    const now = new Date();
-    const bookingStart = new Date(`${booking.booking_date}T${booking.start_time}`);
-    const bookingEnd = new Date(`${booking.booking_date}T${booking.end_time}`);
+    const now = new Date()
+    const bookingStart = new Date(`${booking.booking_date}T${booking.start_time}`)
+    const bookingEnd = new Date(`${booking.booking_date}T${booking.end_time}`)
 
-    const isUpcoming = bookingStart > now;
-    const isActive = booking.check_in_time && !booking.check_out_time;
-    const isPast = bookingEnd < now || booking.status === 'completed';
+    const isUpcoming = bookingStart > now
+    const isActive = booking.check_in_time && !booking.check_out_time
+    const isPast = bookingEnd < now || booking.status === 'completed'
 
     return successResponse(
       {
@@ -63,10 +57,10 @@ export async function GET(
         },
       },
       'Booking retrieved successfully'
-    );
+    )
   } catch (error) {
-    console.error('Unexpected error in GET /api/bookings/:id:', error);
-    return serverErrorResponse('An unexpected error occurred');
+    console.error('Unexpected error in GET /api/bookings/:id:', error)
+    return serverErrorResponse('An unexpected error occurred')
   }
 }
 
@@ -76,58 +70,55 @@ export async function GET(
  *
  * Authorization: Required (must be booking owner)
  */
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const userId = request.headers.get('x-user-id');
+    const userId = request.headers.get('x-user-id')
 
     if (!userId) {
-      return unauthorizedResponse('Authentication required');
+      return unauthorizedResponse('Authentication required')
     }
 
-    const bookingId = params.id;
+    const bookingId = params.id
 
     // 1. Get booking details
-    const { data: booking, error: bookingError } = await getBookingById(bookingId);
+    const { data: booking, error: bookingError } = await getBookingById(bookingId)
     if (bookingError || !booking) {
-      return notFoundResponse('Booking not found');
+      return notFoundResponse('Booking not found')
     }
 
     // 2. Verify ownership
     if (booking.user_id !== userId) {
-      return unauthorizedResponse('You do not have permission to cancel this booking');
+      return unauthorizedResponse('You do not have permission to cancel this booking')
     }
 
     // 3. Check if booking can be cancelled
     if (booking.status === 'cancelled') {
-      return badRequestResponse('Booking is already cancelled');
+      return badRequestResponse('Booking is already cancelled')
     }
 
     if (booking.status === 'completed') {
-      return badRequestResponse('Cannot cancel a completed booking');
+      return badRequestResponse('Cannot cancel a completed booking')
     }
 
     // 4. Check if booking has been checked in
     if (booking.check_in_time && !booking.check_out_time) {
-      return badRequestResponse('Cannot cancel an active booking. Please check out first.');
+      return badRequestResponse('Cannot cancel an active booking. Please check out first.')
     }
 
     // 5. Calculate cancellation policy (24 hours before = full refund)
-    const now = new Date();
-    const bookingStart = new Date(`${booking.booking_date}T${booking.start_time}`);
-    const hoursUntilBooking = (bookingStart.getTime() - now.getTime()) / (1000 * 60 * 60);
+    const now = new Date()
+    const bookingStart = new Date(`${booking.booking_date}T${booking.start_time}`)
+    const hoursUntilBooking = (bookingStart.getTime() - now.getTime()) / (1000 * 60 * 60)
 
-    const refundEligible = hoursUntilBooking > 24;
-    const refundAmount = refundEligible ? booking.total_price : 0;
+    const refundEligible = hoursUntilBooking > 24
+    const refundAmount = refundEligible ? booking.total_price : 0
 
     // 6. Cancel booking
-    const { data: cancelledBooking, error: cancelError } = await cancelBooking(bookingId);
+    const { data: cancelledBooking, error: cancelError } = await cancelBooking(bookingId)
 
     if (cancelError || !cancelledBooking) {
-      console.error('Error cancelling booking:', cancelError);
-      return serverErrorResponse('Failed to cancel booking');
+      console.error('Error cancelling booking:', cancelError)
+      return serverErrorResponse('Failed to cancel booking')
     }
 
     // TODO: Process refund via Stripe if eligible
@@ -150,9 +141,9 @@ export async function DELETE(
         },
       },
       'Booking cancelled successfully'
-    );
+    )
   } catch (error) {
-    console.error('Unexpected error in DELETE /api/bookings/:id:', error);
-    return serverErrorResponse('An unexpected error occurred');
+    console.error('Unexpected error in DELETE /api/bookings/:id:', error)
+    return serverErrorResponse('An unexpected error occurred')
   }
 }

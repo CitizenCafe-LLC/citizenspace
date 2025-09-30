@@ -1,25 +1,24 @@
-import { Pool, QueryResult } from 'pg';
+import type { QueryResult } from 'pg';
+import { Pool } from 'pg'
 
 /**
  * PostgreSQL connection pool singleton
  * Replaces Supabase client for direct database access
  */
-let pool: Pool | null = null;
+let pool: Pool | null = null
 
 /**
  * Get or create PostgreSQL connection pool
  */
 export function getPostgresPool(): Pool {
   if (pool) {
-    return pool;
+    return pool
   }
 
-  const databaseUrl = process.env.DATABASE_URL;
+  const databaseUrl = process.env.DATABASE_URL
 
   if (!databaseUrl) {
-    throw new Error(
-      'Missing DATABASE_URL environment variable. Please set it in .env.local'
-    );
+    throw new Error('Missing DATABASE_URL environment variable. Please set it in .env.local')
   }
 
   pool = new Pool({
@@ -27,14 +26,14 @@ export function getPostgresPool(): Pool {
     max: 20, // Maximum number of clients in the pool
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
-  });
+  })
 
   // Handle pool errors
-  pool.on('error', (err) => {
-    console.error('Unexpected error on idle client', err);
-  });
+  pool.on('error', err => {
+    console.error('Unexpected error on idle client', err)
+  })
 
-  return pool;
+  return pool
 }
 
 /**
@@ -45,15 +44,15 @@ export async function executeQuery<T = any>(
   params?: any[]
 ): Promise<{ data: T[] | null; error: string | null }> {
   try {
-    const pool = getPostgresPool();
-    const result: QueryResult<T> = await pool.query(query, params);
-    return { data: result.rows, error: null };
+    const pool = getPostgresPool()
+    const result: QueryResult<T> = await pool.query(query, params)
+    return { data: result.rows, error: null }
   } catch (err) {
-    console.error('Database query error:', err);
+    console.error('Database query error:', err)
     return {
       data: null,
       error: err instanceof Error ? err.message : 'Database query failed',
-    };
+    }
   }
 }
 
@@ -64,11 +63,11 @@ export async function executeQuerySingle<T = any>(
   query: string,
   params?: any[]
 ): Promise<{ data: T | null; error: string | null }> {
-  const { data, error } = await executeQuery<T>(query, params);
+  const { data, error } = await executeQuery<T>(query, params)
   if (error) {
-    return { data: null, error };
+    return { data: null, error }
   }
-  return { data: data && data.length > 0 ? data[0] : null, error: null };
+  return { data: data && data.length > 0 ? data[0] : null, error: null }
 }
 
 /**
@@ -76,7 +75,7 @@ export async function executeQuerySingle<T = any>(
  */
 export async function closePool(): Promise<void> {
   if (pool) {
-    await pool.end();
-    pool = null;
+    await pool.end()
+    pool = null
   }
 }

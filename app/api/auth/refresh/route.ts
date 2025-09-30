@@ -3,13 +3,14 @@
  * Refresh access token using refresh token
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken, createAccessToken } from '@/lib/auth/jwt';
-import { getUserById, AuthenticationError } from '@/lib/auth/service';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server'
+import { verifyToken, createAccessToken } from '@/lib/auth/jwt'
+import { getUserById, AuthenticationError } from '@/lib/auth/service'
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json()
 
     // Validate refresh token
     if (!body.refreshToken) {
@@ -20,13 +21,13 @@ export async function POST(request: NextRequest) {
           code: 'MISSING_TOKEN',
         },
         { status: 400 }
-      );
+      )
     }
 
     // Verify refresh token
-    let payload;
+    let payload
     try {
-      payload = await verifyToken(body.refreshToken);
+      payload = await verifyToken(body.refreshToken)
     } catch (error) {
       return NextResponse.json(
         {
@@ -35,18 +36,18 @@ export async function POST(request: NextRequest) {
           code: 'INVALID_TOKEN',
         },
         { status: 401 }
-      );
+      )
     }
 
     // Fetch current user data (in case role or other info changed)
-    const user = await getUserById(payload.userId);
+    const user = await getUserById(payload.userId)
 
     // Generate new access token
     const accessToken = await createAccessToken({
       userId: user.id,
       email: user.email,
       role: user.role,
-    });
+    })
 
     return NextResponse.json(
       {
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
         message: 'Token refreshed successfully',
       },
       { status: 200 }
-    );
+    )
   } catch (error) {
     if (error instanceof AuthenticationError) {
       return NextResponse.json(
@@ -72,10 +73,10 @@ export async function POST(request: NextRequest) {
           code: error.code,
         },
         { status: error.statusCode }
-      );
+      )
     }
 
-    console.error('Token refresh error:', error);
+    console.error('Token refresh error:', error)
     return NextResponse.json(
       {
         error: 'Internal Server Error',
@@ -83,7 +84,7 @@ export async function POST(request: NextRequest) {
         code: 'INTERNAL_ERROR',
       },
       { status: 500 }
-    );
+    )
   }
 }
 
@@ -94,5 +95,5 @@ export async function GET() {
       message: 'This endpoint only accepts POST requests',
     },
     { status: 405 }
-  );
+  )
 }

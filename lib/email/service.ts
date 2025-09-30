@@ -3,18 +3,19 @@
  * Handles sending transactional emails using Nodemailer
  */
 
-import nodemailer, { Transporter } from 'nodemailer';
+import type { Transporter } from 'nodemailer';
+import nodemailer from 'nodemailer'
 
 // Email configuration from environment variables
-const EMAIL_HOST = process.env.EMAIL_HOST || 'smtp.gmail.com';
-const EMAIL_PORT = parseInt(process.env.EMAIL_PORT || '587');
-const EMAIL_USER = process.env.EMAIL_USER;
-const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
-const EMAIL_FROM = process.env.EMAIL_FROM || 'noreply@citizenspace.com';
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+const EMAIL_HOST = process.env.EMAIL_HOST || 'smtp.gmail.com'
+const EMAIL_PORT = parseInt(process.env.EMAIL_PORT || '587')
+const EMAIL_USER = process.env.EMAIL_USER
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD
+const EMAIL_FROM = process.env.EMAIL_FROM || 'noreply@citizenspace.com'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 
 // Create reusable transporter
-let transporter: Transporter | null = null;
+let transporter: Transporter | null = null
 
 /**
  * Initialize email transporter
@@ -25,13 +26,13 @@ function getTransporter(): Transporter {
     if (!EMAIL_USER || !EMAIL_PASSWORD) {
       console.warn(
         'Email service not configured. Set EMAIL_USER and EMAIL_PASSWORD environment variables.'
-      );
+      )
       // Return mock transporter for development
       transporter = nodemailer.createTransport({
         streamTransport: true,
         newline: 'unix',
         buffer: true,
-      });
+      })
     } else {
       transporter = nodemailer.createTransport({
         host: EMAIL_HOST,
@@ -41,17 +42,17 @@ function getTransporter(): Transporter {
           user: EMAIL_USER,
           pass: EMAIL_PASSWORD,
         },
-      });
+      })
     }
   }
-  return transporter;
+  return transporter
 }
 
 export interface EmailOptions {
-  to: string;
-  subject: string;
-  html: string;
-  text?: string;
+  to: string
+  subject: string
+  html: string
+  text?: string
 }
 
 /**
@@ -59,7 +60,7 @@ export interface EmailOptions {
  */
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
   try {
-    const transporter = getTransporter();
+    const transporter = getTransporter()
 
     await transporter.sendMail({
       from: EMAIL_FROM,
@@ -67,23 +68,20 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       subject: options.subject,
       html: options.html,
       text: options.text || '',
-    });
+    })
 
-    return true;
+    return true
   } catch (error) {
-    console.error('Email sending failed:', error);
-    return false;
+    console.error('Email sending failed:', error)
+    return false
   }
 }
 
 /**
  * Send password reset email
  */
-export async function sendPasswordResetEmail(
-  email: string,
-  resetToken: string
-): Promise<boolean> {
-  const resetUrl = `${APP_URL}/auth/reset-password?token=${resetToken}`;
+export async function sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
+  const resetUrl = `${APP_URL}/auth/reset-password?token=${resetToken}`
 
   const html = `
     <!DOCTYPE html>
@@ -143,7 +141,7 @@ export async function sendPasswordResetEmail(
         </div>
       </body>
     </html>
-  `;
+  `
 
   const text = `
 Reset Your Password - CitizenSpace
@@ -157,14 +155,14 @@ ${resetUrl}
 If you didn't request a password reset, you can safely ignore this email.
 
 © ${new Date().getFullYear()} CitizenSpace. All rights reserved.
-  `;
+  `
 
   return sendEmail({
     to: email,
     subject: 'Reset Your Password - CitizenSpace',
     html,
     text,
-  });
+  })
 }
 
 /**
@@ -222,7 +220,7 @@ export async function sendWelcomeEmail(email: string, name: string): Promise<boo
         </div>
       </body>
     </html>
-  `;
+  `
 
   const text = `
 Welcome to CitizenSpace!
@@ -240,19 +238,19 @@ Your account has been successfully created. You can now:
 Visit ${APP_URL}/dashboard to get started!
 
 © ${new Date().getFullYear()} CitizenSpace. All rights reserved.
-  `;
+  `
 
   return sendEmail({
     to: email,
     subject: 'Welcome to CitizenSpace!',
     html,
     text,
-  });
+  })
 }
 
 /**
  * Verify email service is configured
  */
 export function isEmailConfigured(): boolean {
-  return !!(EMAIL_USER && EMAIL_PASSWORD);
+  return !!(EMAIL_USER && EMAIL_PASSWORD)
 }

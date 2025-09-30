@@ -45,6 +45,7 @@ app/api/auth/
 ### 1. Wallet Connection
 
 Users can connect their Ethereum wallets using popular wallet providers:
+
 - MetaMask
 - WalletConnect
 - Coinbase Wallet
@@ -52,6 +53,7 @@ Users can connect their Ethereum wallets using popular wallet providers:
 - And more via RainbowKit
 
 **Flow:**
+
 1. User clicks "Connect Wallet" button
 2. RainbowKit modal displays wallet options
 3. User selects and authorizes wallet connection
@@ -64,6 +66,7 @@ Users can connect their Ethereum wallets using popular wallet providers:
 The system verifies NFT ownership by querying the blockchain:
 
 **Verification Process:**
+
 1. Check cache for existing verification (24hr TTL)
 2. If cache miss or force refresh, query blockchain
 3. Call `balanceOf(address)` on NFT contract
@@ -72,6 +75,7 @@ The system verifies NFT ownership by querying the blockchain:
 6. Return verification status to client
 
 **Caching Strategy:**
+
 - Verification results cached for 24 hours
 - Reduces blockchain RPC calls
 - Improves performance
@@ -82,12 +86,13 @@ The system verifies NFT ownership by querying the blockchain:
 
 NFT holders receive automatic discounts:
 
-| Category | Discount Rate | Example |
-|----------|--------------|---------|
-| Workspace Bookings | 50% | $100 → $50 |
-| Cafe Orders | 10% | $50 → $45 |
+| Category           | Discount Rate | Example    |
+| ------------------ | ------------- | ---------- |
+| Workspace Bookings | 50%           | $100 → $50 |
+| Cafe Orders        | 10%           | $50 → $45  |
 
 **Discount Application:**
+
 - Automatically applied on checkout
 - Server-side validation prevents tampering
 - Real-time price calculation
@@ -100,6 +105,7 @@ NFT holders receive automatic discounts:
 Links a Web3 wallet to a user account and triggers NFT verification.
 
 **Request:**
+
 ```json
 {
   "wallet_address": "0x1234567890123456789012345678901234567890"
@@ -107,6 +113,7 @@ Links a Web3 wallet to a user account and triggers NFT verification.
 ```
 
 **Response (Success):**
+
 ```json
 {
   "success": true,
@@ -117,6 +124,7 @@ Links a Web3 wallet to a user account and triggers NFT verification.
 ```
 
 **Response (No NFT):**
+
 ```json
 {
   "success": true,
@@ -127,6 +135,7 @@ Links a Web3 wallet to a user account and triggers NFT verification.
 ```
 
 **Error Responses:**
+
 - `400`: Invalid wallet address format
 - `401`: User not authenticated
 - `409`: Wallet already connected to another account
@@ -137,9 +146,11 @@ Links a Web3 wallet to a user account and triggers NFT verification.
 Verifies NFT ownership for the authenticated user's connected wallet.
 
 **Query Parameters:**
+
 - `force_refresh` (optional, boolean): Bypass cache and check on-chain
 
 **Response (NFT Holder):**
+
 ```json
 {
   "verified": true,
@@ -152,6 +163,7 @@ Verifies NFT ownership for the authenticated user's connected wallet.
 ```
 
 **Response (Non-Holder):**
+
 ```json
 {
   "verified": true,
@@ -164,6 +176,7 @@ Verifies NFT ownership for the authenticated user's connected wallet.
 ```
 
 **Error Responses:**
+
 - `400`: No wallet connected
 - `401`: User not authenticated
 - `404`: User not found
@@ -174,6 +187,7 @@ Verifies NFT ownership for the authenticated user's connected wallet.
 Disconnects wallet from user account and clears NFT holder status.
 
 **Request:**
+
 ```json
 {
   "action": "disconnect"
@@ -181,6 +195,7 @@ Disconnects wallet from user account and clears NFT holder status.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -189,6 +204,7 @@ Disconnects wallet from user account and clears NFT holder status.
 ```
 
 **Error Responses:**
+
 - `400`: Invalid action
 - `401`: User not authenticated
 - `500`: Disconnect failed
@@ -233,94 +249,92 @@ CREATE INDEX idx_users_nft_holder ON users(nft_holder) WHERE nft_holder = true;
 ### Frontend: Connect Wallet
 
 ```tsx
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount } from 'wagmi';
+import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { useAccount } from 'wagmi'
 
 export function WalletConnectButton() {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected } = useAccount()
 
   const handleConnect = async () => {
-    if (!isConnected || !address) return;
+    if (!isConnected || !address) return
 
     try {
       const response = await fetch('/api/auth/wallet-connect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ wallet_address: address }),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (data.success && data.nft_holder) {
         // Show success message with NFT benefits
-        console.log('NFT holder benefits activated!');
+        console.log('NFT holder benefits activated!')
       }
     } catch (error) {
-      console.error('Failed to connect wallet:', error);
+      console.error('Failed to connect wallet:', error)
     }
-  };
+  }
 
   return (
     <ConnectButton.Custom>
       {({ openConnectModal, connectModalOpen }) => (
-        <button onClick={openConnectModal}>
-          Connect Wallet
-        </button>
+        <button onClick={openConnectModal}>Connect Wallet</button>
       )}
     </ConnectButton.Custom>
-  );
+  )
 }
 ```
 
 ### Backend: Check NFT Status in API Route
 
 ```typescript
-import { checkNftHolderOptional } from '@/lib/middleware/nft-holder';
-import { calculateWorkspacePrice } from '@/lib/pricing/nft-discounts';
-import { NextRequest, NextResponse } from 'next/server';
+import { checkNftHolderOptional } from '@/lib/middleware/nft-holder'
+import { calculateWorkspacePrice } from '@/lib/pricing/nft-discounts'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   // Check NFT holder status (non-blocking)
-  const nftStatus = await checkNftHolderOptional(request);
+  const nftStatus = await checkNftHolderOptional(request)
 
-  const basePrice = 100;
-  const pricing = calculateWorkspacePrice(basePrice, nftStatus.isNftHolder);
+  const basePrice = 100
+  const pricing = calculateWorkspacePrice(basePrice, nftStatus.isNftHolder)
 
   return NextResponse.json({
     original_price: pricing.originalPrice,
     final_price: pricing.finalPrice,
     discount: pricing.discount,
     nft_holder: pricing.isNftHolder,
-  });
+  })
 }
 ```
 
 ### Backend: Protect NFT-Only Route
 
 ```typescript
-import { withNftHolderCheck } from '@/lib/middleware/nft-holder';
-import { NextRequest, NextResponse } from 'next/server';
+import { withNftHolderCheck } from '@/lib/middleware/nft-holder'
+import { NextRequest, NextResponse } from 'next/server'
 
 export const GET = withNftHolderCheck(async (request, nftStatus) => {
   // This handler only executes for NFT holders
   return NextResponse.json({
     message: 'Welcome, NFT holder!',
     wallet: nftStatus.walletAddress,
-  });
-});
+  })
+})
 ```
 
 ### Utility: Calculate Discounted Price
 
 ```typescript
-import { applyNftDiscount, createPricingBreakdown } from '@/lib/pricing/nft-discounts';
+import { applyNftDiscount, createPricingBreakdown } from '@/lib/pricing/nft-discounts'
 
 // Simple discount application
-const finalPrice = applyNftDiscount(100, 'workspace', true);
+const finalPrice = applyNftDiscount(100, 'workspace', true)
 // Returns: 50
 
 // Detailed pricing breakdown
-const breakdown = createPricingBreakdown(100, 'cafe', true);
+const breakdown = createPricingBreakdown(100, 'cafe', true)
 // Returns: {
 //   base_price: 100,
 //   discount_rate: 0.1,
@@ -366,7 +380,7 @@ export const config = getDefaultConfig({
     // Add more chains as needed
   ],
   ssr: true,
-});
+})
 ```
 
 ### Contract Configuration
@@ -379,7 +393,7 @@ export const CITIZEN_SPACE_NFT_CONTRACT = {
   abi: [
     // Contract ABI
   ],
-} as const;
+} as const
 ```
 
 ## Security Considerations
@@ -387,6 +401,7 @@ export const CITIZEN_SPACE_NFT_CONTRACT = {
 ### Wallet Address Validation
 
 All wallet addresses are validated before processing:
+
 - Must match regex: `^0x[a-fA-F0-9]{40}$`
 - Normalized to lowercase for consistency
 - Protected against SQL injection and XSS
@@ -400,6 +415,7 @@ All wallet addresses are validated before processing:
 ### Server-Side Verification
 
 All NFT verification happens server-side:
+
 - Clients cannot forge NFT ownership
 - Blockchain queries done via secure RPC
 - Discount calculations validated on backend
@@ -467,6 +483,7 @@ npm run test:coverage
 ### RPC Rate Limiting
 
 To avoid hitting RPC rate limits:
+
 - Cache all verification results
 - Use `force_refresh=false` by default
 - Only force refresh when explicitly needed
@@ -476,10 +493,10 @@ To avoid hitting RPC rate limits:
 
 ```typescript
 // Good: Use cached result
-const verification = await verifyNftOwnership(supabase, userId, wallet, false);
+const verification = await verifyNftOwnership(supabase, userId, wallet, false)
 
 // Avoid: Frequent force refreshes
-const verification = await verifyNftOwnership(supabase, userId, wallet, true);
+const verification = await verifyNftOwnership(supabase, userId, wallet, true)
 ```
 
 ## Troubleshooting
@@ -487,11 +504,13 @@ const verification = await verifyNftOwnership(supabase, userId, wallet, true);
 ### Wallet Connection Issues
 
 **Problem**: Wallet doesn't connect
+
 - Check WalletConnect Project ID is set
 - Verify network configuration
 - Check browser wallet extension is installed
 
 **Problem**: Wallet connected but verification fails
+
 - Check RPC URL is accessible
 - Verify contract address is correct
 - Check user has metamask/wallet installed
@@ -499,12 +518,14 @@ const verification = await verifyNftOwnership(supabase, userId, wallet, true);
 ### NFT Verification Issues
 
 **Problem**: NFT holder not detected
+
 - Check contract address matches deployment
 - Verify `balanceOf` function exists in ABI
 - Force refresh verification
 - Check blockchain network (mainnet vs testnet)
 
 **Problem**: Verification takes too long
+
 - RPC rate limits may be hit
 - Consider caching strategy
 - Upgrade RPC provider plan
@@ -512,6 +533,7 @@ const verification = await verifyNftOwnership(supabase, userId, wallet, true);
 ### Discount Not Applied
 
 **Problem**: Discount not showing in checkout
+
 - Verify `user.nft_holder` flag is true
 - Check verification cache is valid
 - Force refresh verification
@@ -522,12 +544,13 @@ const verification = await verifyNftOwnership(supabase, userId, wallet, true);
 ### Regular Tasks
 
 1. **Cache Cleanup**: Run cleanup job daily
+
 ```typescript
-import { cleanupExpiredVerifications } from '@/lib/web3/nft-verification';
+import { cleanupExpiredVerifications } from '@/lib/web3/nft-verification'
 
 // In a cron job or scheduled task
-const deletedCount = await cleanupExpiredVerifications(supabase);
-console.log(`Cleaned up ${deletedCount} expired verifications`);
+const deletedCount = await cleanupExpiredVerifications(supabase)
+console.log(`Cleaned up ${deletedCount} expired verifications`)
 ```
 
 2. **Monitor RPC Usage**: Track blockchain query volume
@@ -539,6 +562,7 @@ console.log(`Cleaned up ${deletedCount} expired verifications`);
 ### Monitoring
 
 Key metrics to track:
+
 - Wallet connection success rate
 - NFT verification success rate
 - Cache hit ratio
@@ -553,6 +577,7 @@ Key metrics to track:
 The Web3 integration from `/nftsale` has been successfully integrated into the main CitizenSpace app:
 
 **Migrated Components:**
+
 - ✅ RainbowKit configuration
 - ✅ Wagmi provider setup
 - ✅ Contract ABI and configuration
@@ -560,6 +585,7 @@ The Web3 integration from `/nftsale` has been successfully integrated into the m
 - ✅ Wallet connection UI
 
 **New Features Added:**
+
 - ✅ NFT verification service
 - ✅ Verification caching layer
 - ✅ API endpoints (wallet-connect, verify-nft)
@@ -582,6 +608,7 @@ Potential improvements for future iterations:
 ## Support
 
 For issues or questions:
+
 - Check troubleshooting section above
 - Review test files for usage examples
 - Consult RainbowKit docs: https://rainbowkit.com
@@ -591,6 +618,7 @@ For issues or questions:
 ## Changelog
 
 ### v1.0.0 (2025-09-29)
+
 - Initial Web3 integration implementation
 - Wallet connection with RainbowKit
 - NFT verification with caching

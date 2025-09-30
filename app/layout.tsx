@@ -1,30 +1,31 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { Inter, Manrope } from 'next/font/google';
-import { cn } from '@/lib/utils';
-import { Navigation } from '@/components/navigation';
-import { Footer } from '@/components/footer';
-import { Web3Provider } from '@/components/providers/web3-provider';
-import { ThemeProvider } from 'next-themes';
+import './globals.css'
+import type { Metadata } from 'next'
+import { Inter, Manrope } from 'next/font/google'
+import { cn } from '@/lib/utils'
+import { Navigation } from '@/components/navigation'
+import { Footer } from '@/components/footer'
+import { Web3Provider } from '@/components/providers/web3-provider'
+import { ThemeProvider } from 'next-themes'
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
   display: 'swap',
-});
+})
 
-const manrope = Manrope({ 
+const manrope = Manrope({
   subsets: ['latin'],
   variable: '--font-manrope',
   display: 'swap',
-});
+})
 
 export const metadata: Metadata = {
   title: {
     default: 'Citizen Space — Where Coffee Meets Power in Santa Cruz',
-    template: '%s | Citizen Space'
+    template: '%s | Citizen Space',
   },
-  description: 'Where coffee meets power in Santa Cruz. A caffeinated coworking hub with hourly seats, day passes, memberships, and great coffee.',
+  description:
+    'Where coffee meets power in Santa Cruz. A caffeinated coworking hub with hourly seats, day passes, memberships, and great coffee.',
   keywords: ['coworking', 'coffee', 'santa cruz', 'workspace', 'cafe', 'meetings', 'remote work'],
   authors: [{ name: 'Citizen Space' }],
   creator: 'Citizen Space',
@@ -35,7 +36,8 @@ export const metadata: Metadata = {
     url: 'https://citizenspace.com',
     siteName: 'Citizen Space',
     title: 'Citizen Space — Where Coffee Meets Power in Santa Cruz',
-    description: 'Where coffee meets power in Santa Cruz. A caffeinated coworking hub with hourly seats, day passes, memberships, and great coffee.',
+    description:
+      'Where coffee meets power in Santa Cruz. A caffeinated coworking hub with hourly seats, day passes, memberships, and great coffee.',
     images: [
       {
         url: '/og-image.png',
@@ -48,7 +50,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Citizen Space — Where Coffee Meets Power in Santa Cruz',
-    description: 'Where coffee meets power in Santa Cruz. A caffeinated coworking hub with hourly seats, day passes, memberships, and great coffee.',
+    description:
+      'Where coffee meets power in Santa Cruz. A caffeinated coworking hub with hourly seats, day passes, memberships, and great coffee.',
     images: ['/og-image.png'],
   },
   robots: {
@@ -62,20 +65,18 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-};
+}
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn(
-        inter.variable,
-        manrope.variable,
-        'min-h-screen bg-background font-sans antialiased'
-      )}>
+      <body
+        className={cn(
+          inter.variable,
+          manrope.variable,
+          'min-h-screen bg-background font-sans antialiased'
+        )}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -84,13 +85,11 @@ export default function RootLayout({
         >
           <Web3Provider>
             <Navigation />
-            <main className="flex-1">
-              {children}
-            </main>
+            <main className="flex-1">{children}</main>
             <Footer />
           </Web3Provider>
         </ThemeProvider>
       </body>
     </html>
-  );
+  )
 }

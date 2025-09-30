@@ -1,5 +1,5 @@
-import Link from 'next/link';
-import { Coffee, MapPin, Clock, Phone, Mail } from 'lucide-react';
+import Link from 'next/link'
+import { Coffee, MapPin, Clock, Phone, Mail } from 'lucide-react'
 
 const footerSections = [
   {
@@ -38,25 +38,25 @@ const footerSections = [
       { name: 'Privacy', href: '/legal/privacy' },
     ],
   },
-];
+]
 
 export function Footer() {
   return (
-    <footer className="bg-muted/30 border-t">
+    <footer className="border-t bg-muted/30">
       <div className="container py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-6">
           {/* Brand Section */}
           <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center space-x-2 mb-4">
+            <Link href="/" className="mb-4 flex items-center space-x-2">
               <Coffee className="h-8 w-8 text-cs-blue" />
               <span className="font-display text-xl font-bold">Citizen Space</span>
             </Link>
-            <p className="text-sm text-muted-foreground mb-4 max-w-sm">
-              Where coffee meets power in the heart of Santa Cruz. Part of the global 
-              Open Coworking movement, committed to collaboration, openness, community, 
-              accessibility, and sustainability.
+            <p className="mb-4 max-w-sm text-sm text-muted-foreground">
+              Where coffee meets power in the heart of Santa Cruz. Part of the global Open Coworking
+              movement, committed to collaboration, openness, community, accessibility, and
+              sustainability.
             </p>
-            
+
             <div className="space-y-2 text-sm text-muted-foreground">
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4" />
@@ -78,15 +78,15 @@ export function Footer() {
           </div>
 
           {/* Navigation Sections */}
-          {footerSections.map((section) => (
+          {footerSections.map(section => (
             <div key={section.title}>
-              <h3 className="font-semibold mb-3">{section.title}</h3>
+              <h3 className="mb-3 font-semibold">{section.title}</h3>
               <ul className="space-y-2">
-                {section.links.map((link) => (
+                {section.links.map(link => (
                   <li key={link.name}>
-                    <Link 
+                    <Link
                       href={link.href}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                     >
                       {link.name}
                     </Link>
@@ -97,20 +97,20 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-8 pt-8 border-t flex flex-col sm:flex-row justify-between items-center">
+        <div className="mt-8 flex flex-col items-center justify-between border-t pt-8 sm:flex-row">
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Citizen Space. All rights reserved.
           </p>
-          <div className="flex space-x-4 mt-4 sm:mt-0">
-            <Link 
-              href="/legal/terms" 
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          <div className="mt-4 flex space-x-4 sm:mt-0">
+            <Link
+              href="/legal/terms"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               Terms
             </Link>
-            <Link 
-              href="/legal/privacy" 
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            <Link
+              href="/legal/privacy"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               Privacy
             </Link>
@@ -118,5 +118,5 @@ export function Footer() {
         </div>
       </div>
     </footer>
-  );
+  )
 }

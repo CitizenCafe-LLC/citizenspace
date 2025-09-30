@@ -1,23 +1,24 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import Link from 'next/link';
-import { 
-  Users, 
-  Monitor, 
-  Volume2, 
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import Link from 'next/link'
+import {
+  Users,
+  Monitor,
+  Volume2,
   Presentation,
   ArrowRight,
   Calendar,
   Clock,
-  Wifi
-} from 'lucide-react';
-import type { Metadata } from 'next';
+  Wifi,
+} from 'lucide-react'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Meeting Rooms',
-  description: 'Private meeting rooms for teams with whiteboards, displays, and professional AV equipment. Book by the hour.',
-};
+  description:
+    'Private meeting rooms for teams with whiteboards, displays, and professional AV equipment. Book by the hour.',
+}
 
 const rooms = [
   {
@@ -29,10 +30,10 @@ const rooms = [
       'Wireless presentation',
       'Whiteboard walls',
       'Sound isolation',
-      'Natural lighting'
+      'Natural lighting',
     ],
     image: '/workspaces/focus-room.jpg',
-    available: true
+    available: true,
   },
   {
     name: 'Collaborate',
@@ -43,10 +44,10 @@ const rooms = [
       'Conference camera',
       'Premium audio system',
       'Glass walls with blinds',
-      'Standing desk option'
+      'Standing desk option',
     ],
     image: '/workspaces/collaborate-room.jpg',
-    available: false
+    available: false,
   },
   {
     name: 'Boardroom',
@@ -57,64 +58,64 @@ const rooms = [
       'Dual 55" displays',
       'Professional lighting',
       'Full sound isolation',
-      'Executive seating'
+      'Executive seating',
     ],
     image: '/workspaces/boardroom.jpg',
-    available: true
-  }
-];
+    available: true,
+  },
+]
 
 const amenities = [
   {
     icon: Monitor,
     title: 'Professional Displays',
-    description: 'High-resolution screens in every room with wireless casting'
+    description: 'High-resolution screens in every room with wireless casting',
   },
   {
     icon: Volume2,
     title: 'Sound Isolation',
-    description: 'Acoustic treatment ensures privacy for sensitive discussions'
+    description: 'Acoustic treatment ensures privacy for sensitive discussions',
   },
   {
     icon: Presentation,
     title: 'Presentation Tools',
-    description: 'Whiteboards, markers, and digital annotation capabilities'
+    description: 'Whiteboards, markers, and digital annotation capabilities',
   },
   {
     icon: Wifi,
     title: 'Premium Connectivity',
-    description: 'Dedicated network access with enterprise-grade security'
+    description: 'Dedicated network access with enterprise-grade security',
   },
   {
     icon: Calendar,
     title: 'Easy Booking',
-    description: 'Reserve online or via app with instant confirmation'
+    description: 'Reserve online or via app with instant confirmation',
   },
   {
     icon: Clock,
     title: 'Flexible Duration',
-    description: 'Book from 30 minutes to full-day sessions'
-  }
-];
+    description: 'Book from 30 minutes to full-day sessions',
+  },
+]
 
 const useCases = [
   {
     title: 'Client Presentations',
-    description: 'Impress clients with professional meeting spaces and high-quality AV equipment'
+    description: 'Impress clients with professional meeting spaces and high-quality AV equipment',
   },
   {
     title: 'Team Workshops',
-    description: 'Collaborative spaces with whiteboards and tools for productive brainstorming'
+    description: 'Collaborative spaces with whiteboards and tools for productive brainstorming',
   },
   {
     title: 'Remote Interviews',
-    description: 'Professional backdrop and excellent audio/video quality for virtual meetings'
+    description: 'Professional backdrop and excellent audio/video quality for virtual meetings',
   },
   {
     title: 'Training Sessions',
-    description: 'Spacious rooms with displays and presentation capabilities for team training'
-  }
-];
+    description: 'Spacious rooms with displays and presentation capabilities for team training',
+  },
+]
 
 export default function MeetingRoomsPage() {
   return (
@@ -122,19 +123,18 @@ export default function MeetingRoomsPage() {
       {/* Hero Section */}
       <section className="pb-20">
         <div className="container">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="mx-auto max-w-4xl text-center">
             <Badge variant="secondary" className="mb-6">
               Meeting Rooms
             </Badge>
-            <h1 className="font-display text-4xl lg:text-6xl font-bold mb-6">
-              Private Spaces for{' '}
-              <span className="gradient-text">Professional Meetings</span>
+            <h1 className="mb-6 font-display text-4xl font-bold lg:text-6xl">
+              Private Spaces for <span className="gradient-text">Professional Meetings</span>
             </h1>
-            <p className="text-xl text-muted-foreground mb-8">
-              Book professional meeting rooms with premium AV equipment, whiteboards, 
-              and sound isolation. Perfect for client presentations, team workshops, and important calls.
+            <p className="mb-8 text-xl text-muted-foreground">
+              Book professional meeting rooms with premium AV equipment, whiteboards, and sound
+              isolation. Perfect for client presentations, team workshops, and important calls.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col justify-center gap-4 sm:flex-row">
               <Button asChild size="lg" className="btn-primary">
                 <Link href="/booking">
                   Book a Room
@@ -150,49 +150,47 @@ export default function MeetingRoomsPage() {
       </section>
 
       {/* Room Options */}
-      <section className="py-20 bg-muted/30">
+      <section className="bg-muted/30 py-20">
         <div className="container">
-          <div className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold mb-4">
-              Choose Your Room
-            </h2>
+          <div className="mb-16 text-center">
+            <h2 className="mb-4 font-display text-3xl font-bold lg:text-4xl">Choose Your Room</h2>
             <p className="text-lg text-muted-foreground">
               Three professional spaces designed for different meeting needs
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {rooms.map((room, index) => (
               <Card key={index} className="card-hover">
-                <div className="aspect-video bg-muted rounded-t-lg flex items-center justify-center">
+                <div className="flex aspect-video items-center justify-center rounded-t-lg bg-muted">
                   <Users className="h-12 w-12 text-muted-foreground" />
                 </div>
                 <CardHeader>
-                  <div className="flex justify-between items-start">
+                  <div className="flex items-start justify-between">
                     <div>
                       <CardTitle className="font-display text-xl">{room.name}</CardTitle>
-                      <p className="text-muted-foreground text-sm">{room.capacity}</p>
+                      <p className="text-sm text-muted-foreground">{room.capacity}</p>
                     </div>
                     <div className="text-right">
                       <div className="text-lg font-bold text-cs-blue">{room.price}</div>
-                      <Badge variant={room.available ? "secondary" : "outline"}>
-                        {room.available ? "Available" : "In Use"}
+                      <Badge variant={room.available ? 'secondary' : 'outline'}>
+                        {room.available ? 'Available' : 'In Use'}
                       </Badge>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-2 mb-4">
+                  <ul className="mb-4 space-y-2">
                     {room.features.map((feature, featureIndex) => (
                       <li key={featureIndex} className="flex items-center text-sm">
-                        <ArrowRight className="h-3 w-3 mr-2 text-cs-blue" />
+                        <ArrowRight className="mr-2 h-3 w-3 text-cs-blue" />
                         {feature}
                       </li>
                     ))}
                   </ul>
-                  <Button asChild className="w-full btn-primary" disabled={!room.available}>
+                  <Button asChild className="btn-primary w-full" disabled={!room.available}>
                     <Link href="/booking">
-                      {room.available ? "Book This Room" : "Join Waitlist"}
+                      {room.available ? 'Book This Room' : 'Join Waitlist'}
                     </Link>
                   </Button>
                 </CardContent>
@@ -205,16 +203,16 @@ export default function MeetingRoomsPage() {
       {/* Room Amenities */}
       <section className="py-20">
         <div className="container">
-          <div className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold mb-4">
+          <div className="mb-16 text-center">
+            <h2 className="mb-4 font-display text-3xl font-bold lg:text-4xl">
               Professional Amenities
             </h2>
             <p className="text-lg text-muted-foreground">
               Every meeting room comes equipped with tools for productive sessions
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {amenities.map((amenity, index) => (
               <Card key={index}>
                 <CardHeader>
@@ -233,18 +231,16 @@ export default function MeetingRoomsPage() {
       </section>
 
       {/* Use Cases */}
-      <section className="py-20 bg-muted/30">
+      <section className="bg-muted/30 py-20">
         <div className="container">
-          <div className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold mb-4">
-              Perfect For
-            </h2>
+          <div className="mb-16 text-center">
+            <h2 className="mb-4 font-display text-3xl font-bold lg:text-4xl">Perfect For</h2>
             <p className="text-lg text-muted-foreground">
               Professional spaces that adapt to your meeting needs
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+
+          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
             {useCases.map((useCase, index) => (
               <Card key={index}>
                 <CardHeader>
@@ -262,17 +258,17 @@ export default function MeetingRoomsPage() {
       {/* Booking Info */}
       <section className="py-20">
         <div className="container">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="font-display text-3xl lg:text-4xl font-bold mb-4">
+          <div className="mx-auto max-w-4xl">
+            <div className="mb-12 text-center">
+              <h2 className="mb-4 font-display text-3xl font-bold lg:text-4xl">
                 Booking Information
               </h2>
               <p className="text-lg text-muted-foreground">
                 Everything you need to know about reserving meeting rooms
               </p>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
               <Card>
                 <CardHeader>
                   <CardTitle>Booking Options</CardTitle>
@@ -296,7 +292,7 @@ export default function MeetingRoomsPage() {
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardHeader>
                   <CardTitle>Member Benefits</CardTitle>
@@ -326,16 +322,17 @@ export default function MeetingRoomsPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-cs-blue/10 to-cs-sun/10">
+      <section className="bg-gradient-to-r from-cs-blue/10 to-cs-sun/10 py-20">
         <div className="container">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold mb-6">
+          <div className="mx-auto max-w-4xl text-center">
+            <h2 className="mb-6 font-display text-3xl font-bold lg:text-4xl">
               Book Your Meeting Room
             </h2>
-            <p className="text-xl text-muted-foreground mb-8">
-              Professional spaces available now. Reserve online or visit us to see the rooms in person.
+            <p className="mb-8 text-xl text-muted-foreground">
+              Professional spaces available now. Reserve online or visit us to see the rooms in
+              person.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col justify-center gap-4 sm:flex-row">
               <Button asChild size="lg" className="btn-primary">
                 <Link href="/booking">Reserve Now</Link>
               </Button>
@@ -347,5 +344,5 @@ export default function MeetingRoomsPage() {
         </div>
       </section>
     </div>
-  );
+  )
 }

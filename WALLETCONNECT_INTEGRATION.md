@@ -7,12 +7,14 @@ CitizenSpace uses WalletConnect (via RainbowKit) to allow users to connect their
 ## Architecture
 
 ### Frontend (Client-Side)
+
 - **RainbowKit**: Wallet connection UI
 - **Wagmi**: React hooks for Ethereum
 - **Viem**: Ethereum client library
 - **TanStack Query**: Data fetching and caching
 
 ### Backend (Server-Side)
+
 - **PostgreSQL**: User and NFT verification storage
 - **Viem**: Blockchain queries (balanceOf calls)
 - **NFT Contract**: ERC-721/1155 token verification
@@ -32,11 +34,13 @@ NEXT_PUBLIC_RPC_URL=https://...  # Optional: Custom RPC endpoint
 ```
 
 **Get your WalletConnect Project ID:**
+
 1. Visit https://cloud.walletconnect.com (now Reown)
 2. Create a free project
 3. Copy your Project ID
 
 ### Supported Networks
+
 - **Production**: Ethereum Mainnet, Base
 - **Testing**: Sepolia, Base Sepolia
 
@@ -116,12 +120,14 @@ Process payment
 ## Database Schema
 
 ### users table
+
 ```sql
 ALTER TABLE users ADD COLUMN wallet_address VARCHAR(42);
 ALTER TABLE users ADD COLUMN nft_holder BOOLEAN DEFAULT false;
 ```
 
 ### nft_verifications table
+
 ```sql
 CREATE TABLE nft_verifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -142,12 +148,15 @@ CREATE INDEX idx_nft_verifications_expires ON nft_verifications(expires_at);
 ## API Endpoints
 
 ### GET /api/auth/verify-nft
+
 **Purpose**: Verify NFT ownership for authenticated user
 
 **Query Parameters**:
+
 - `force_refresh` (boolean): Bypass cache and check blockchain
 
 **Response**:
+
 ```json
 {
   "verified": true,
@@ -160,6 +169,7 @@ CREATE INDEX idx_nft_verifications_expires ON nft_verifications(expires_at);
 ```
 
 **Status Codes**:
+
 - 200: Success
 - 401: Unauthorized (not logged in)
 - 400: No wallet connected
@@ -167,9 +177,11 @@ CREATE INDEX idx_nft_verifications_expires ON nft_verifications(expires_at);
 - 500: Server error
 
 ### POST /api/auth/verify-nft
+
 **Purpose**: Disconnect wallet from user account
 
 **Body**:
+
 ```json
 {
   "action": "disconnect"
@@ -177,6 +189,7 @@ CREATE INDEX idx_nft_verifications_expires ON nft_verifications(expires_at);
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -185,9 +198,11 @@ CREATE INDEX idx_nft_verifications_expires ON nft_verifications(expires_at);
 ```
 
 ### POST /api/auth/wallet-connect
+
 **Purpose**: Connect wallet to user account
 
 **Body**:
+
 ```json
 {
   "wallet_address": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
@@ -195,6 +210,7 @@ CREATE INDEX idx_nft_verifications_expires ON nft_verifications(expires_at);
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -208,25 +224,23 @@ CREATE INDEX idx_nft_verifications_expires ON nft_verifications(expires_at);
 
 ```tsx
 // app/layout.tsx
-import { Web3Provider } from '@/components/providers/web3-provider';
+import { Web3Provider } from '@/components/providers/web3-provider'
 
 export default function RootLayout({ children }) {
   return (
     <html>
       <body>
-        <Web3Provider>
-          {children}
-        </Web3Provider>
+        <Web3Provider>{children}</Web3Provider>
       </body>
     </html>
-  );
+  )
 }
 ```
 
 ### 2. Add Connect Button
 
 ```tsx
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { ConnectButton } from '@rainbow-me/rainbowkit'
 
 export function Header() {
   return (
@@ -236,28 +250,20 @@ export function Header() {
         <ConnectButton />
       </nav>
     </header>
-  );
+  )
 }
 ```
 
 ### 3. Use Wallet in Components
 
 ```tsx
-import { useAccount, useBalance } from 'wagmi';
+import { useAccount, useBalance } from 'wagmi'
 
 export function NFTStatus() {
-  const { address, isConnected } = useAccount();
-  const { data: balance } = useBalance({ address });
+  const { address, isConnected } = useAccount()
+  const { data: balance } = useBalance({ address })
 
-  return (
-    <div>
-      {isConnected ? (
-        <p>Connected: {address}</p>
-      ) : (
-        <ConnectButton />
-      )}
-    </div>
-  );
+  return <div>{isConnected ? <p>Connected: {address}</p> : <ConnectButton />}</div>
 }
 ```
 
@@ -265,11 +271,11 @@ export function NFTStatus() {
 
 ```tsx
 async function verifyNFT() {
-  const response = await fetch('/api/auth/verify-nft');
-  const data = await response.json();
+  const response = await fetch('/api/auth/verify-nft')
+  const data = await response.json()
 
   if (data.nft_holder) {
-    console.log('User holds NFT! Applying discounts...');
+    console.log('User holds NFT! Applying discounts...')
   }
 }
 ```
@@ -290,7 +296,7 @@ export const CITIZEN_SPACE_NFT_CONTRACT = {
       type: 'function',
     },
   ],
-};
+}
 ```
 
 ## Caching Strategy
@@ -311,28 +317,32 @@ export const CITIZEN_SPACE_NFT_CONTRACT = {
 ## Discount Logic
 
 ### Workspace Services (50% off)
+
 ```typescript
-const basePrice = workspace.hourly_rate * duration;
-const discount = user.nft_holder ? basePrice * 0.50 : 0;
-const finalPrice = basePrice - discount;
+const basePrice = workspace.hourly_rate * duration
+const discount = user.nft_holder ? basePrice * 0.5 : 0
+const finalPrice = basePrice - discount
 ```
 
 ### Cafe Items (10% off)
+
 ```typescript
-const subtotal = items.reduce((sum, item) => sum + item.price, 0);
-const discount = user.nft_holder ? subtotal * 0.10 : 0;
-const total = subtotal - discount;
+const subtotal = items.reduce((sum, item) => sum + item.price, 0)
+const discount = user.nft_holder ? subtotal * 0.1 : 0
+const total = subtotal - discount
 ```
 
 ## Testing
 
 ### Test on Sepolia Testnet
+
 1. Deploy test NFT contract to Sepolia
 2. Mint test NFTs to your wallet
 3. Connect wallet on dev environment
 4. Verify NFT detection works
 
 ### Manual Testing Checklist
+
 - [ ] Connect wallet (MetaMask)
 - [ ] Verify NFT ownership endpoint returns correct balance
 - [ ] Disconnect wallet
@@ -343,10 +353,13 @@ const total = subtotal - discount;
 ## Troubleshooting
 
 ### "No projectId found" Error
+
 **Fix**: Ensure `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` is set in `.env.local`
 
 ### NFT Balance Shows 0 (but you own NFTs)
+
 **Possible causes**:
+
 1. Wrong network selected (check NEXT_PUBLIC_CHAIN)
 2. Wrong contract address
 3. RPC endpoint issues
@@ -355,11 +368,13 @@ const total = subtotal - discount;
 **Fix**: Check logs for blockchain query errors
 
 ### Cache Not Updating
+
 **Fix**: Call `/api/auth/verify-nft?force_refresh=true`
 
 ## Production Deployment
 
 ### Pre-Launch Checklist
+
 - [ ] Deploy NFT contract to mainnet
 - [ ] Update `NEXT_PUBLIC_CONTRACT_ADDRESS`
 - [ ] Set `NEXT_PUBLIC_CHAIN=mainnet` or `base`

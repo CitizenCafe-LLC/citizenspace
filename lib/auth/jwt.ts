@@ -3,50 +3,50 @@
  * Handles creation and verification of access and refresh tokens using jose
  */
 
-import { SignJWT, jwtVerify } from 'jose';
+import { SignJWT, jwtVerify } from 'jose'
 
-const JWT_SECRET = process.env.JWT_SECRET!;
-const ACCESS_TOKEN_EXPIRY = process.env.JWT_ACCESS_TOKEN_EXPIRY || '15m';
-const REFRESH_TOKEN_EXPIRY = process.env.JWT_REFRESH_TOKEN_EXPIRY || '7d';
+const JWT_SECRET = process.env.JWT_SECRET!
+const ACCESS_TOKEN_EXPIRY = process.env.JWT_ACCESS_TOKEN_EXPIRY || '15m'
+const REFRESH_TOKEN_EXPIRY = process.env.JWT_REFRESH_TOKEN_EXPIRY || '7d'
 
 if (!JWT_SECRET || JWT_SECRET.length < 32) {
-  throw new Error('JWT_SECRET must be at least 32 characters long');
+  throw new Error('JWT_SECRET must be at least 32 characters long')
 }
 
 // Convert secret to Uint8Array for jose
-const secret = new TextEncoder().encode(JWT_SECRET);
+const secret = new TextEncoder().encode(JWT_SECRET)
 
 export interface TokenPayload {
-  userId: string;
-  email: string;
-  role: 'user' | 'staff' | 'admin';
-  nftHolder?: boolean;
-  walletAddress?: string | null;
+  userId: string
+  email: string
+  role: 'user' | 'staff' | 'admin'
+  nftHolder?: boolean
+  walletAddress?: string | null
 }
 
 export interface TokenPair {
-  accessToken: string;
-  refreshToken: string;
+  accessToken: string
+  refreshToken: string
 }
 
 /**
  * Parses time duration string to seconds
  */
 function parseExpiry(expiry: string): number {
-  const unit = expiry.slice(-1);
-  const value = parseInt(expiry.slice(0, -1));
+  const unit = expiry.slice(-1)
+  const value = parseInt(expiry.slice(0, -1))
 
   switch (unit) {
     case 's':
-      return value;
+      return value
     case 'm':
-      return value * 60;
+      return value * 60
     case 'h':
-      return value * 3600;
+      return value * 3600
     case 'd':
-      return value * 86400;
+      return value * 86400
     default:
-      throw new Error(`Invalid expiry format: ${expiry}`);
+      throw new Error(`Invalid expiry format: ${expiry}`)
   }
 }
 
@@ -67,7 +67,7 @@ export async function createAccessToken(payload: TokenPayload): Promise<string> 
     .setExpirationTime(`${parseExpiry(ACCESS_TOKEN_EXPIRY)}s`)
     .setIssuer('citizenspace')
     .setAudience('citizenspace-api')
-    .sign(secret);
+    .sign(secret)
 }
 
 /**
@@ -87,7 +87,7 @@ export async function createRefreshToken(payload: TokenPayload): Promise<string>
     .setExpirationTime(`${parseExpiry(REFRESH_TOKEN_EXPIRY)}s`)
     .setIssuer('citizenspace')
     .setAudience('citizenspace-api')
-    .sign(secret);
+    .sign(secret)
 }
 
 /**
@@ -97,9 +97,9 @@ export async function createTokenPair(payload: TokenPayload): Promise<TokenPair>
   const [accessToken, refreshToken] = await Promise.all([
     createAccessToken(payload),
     createRefreshToken(payload),
-  ]);
+  ])
 
-  return { accessToken, refreshToken };
+  return { accessToken, refreshToken }
 }
 
 /**
@@ -110,7 +110,7 @@ export async function verifyToken(token: string): Promise<TokenPayload> {
     const { payload } = await jwtVerify(token, secret, {
       issuer: 'citizenspace',
       audience: 'citizenspace-api',
-    });
+    })
 
     return {
       userId: payload.userId as string,
@@ -118,12 +118,12 @@ export async function verifyToken(token: string): Promise<TokenPayload> {
       role: payload.role as 'user' | 'staff' | 'admin',
       nftHolder: payload.nftHolder as boolean | undefined,
       walletAddress: payload.walletAddress as string | null | undefined,
-    };
+    }
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(`Token verification failed: ${error.message}`);
+      throw new Error(`Token verification failed: ${error.message}`)
     }
-    throw new Error('Token verification failed');
+    throw new Error('Token verification failed')
   }
 }
 
@@ -132,14 +132,14 @@ export async function verifyToken(token: string): Promise<TokenPayload> {
  */
 export async function isTokenExpired(token: string): Promise<boolean> {
   try {
-    await jwtVerify(token, secret);
-    return false;
+    await jwtVerify(token, secret)
+    return false
   } catch (error: any) {
     if (error.code === 'ERR_JWT_EXPIRED') {
-      return true;
+      return true
     }
     // For other errors, consider token invalid/expired
-    return true;
+    return true
   }
 }
 
@@ -148,13 +148,13 @@ export async function isTokenExpired(token: string): Promise<boolean> {
  */
 export function extractTokenFromHeader(authHeader: string | null): string | null {
   if (!authHeader) {
-    return null;
+    return null
   }
 
-  const parts = authHeader.split(' ');
+  const parts = authHeader.split(' ')
   if (parts.length !== 2 || parts[0] !== 'Bearer') {
-    return null;
+    return null
   }
 
-  return parts[1];
+  return parts[1]
 }

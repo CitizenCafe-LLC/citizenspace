@@ -1,27 +1,20 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { 
-  ArrowLeft, 
-  Clock, 
-  Share2, 
-  Twitter, 
-  Linkedin, 
-  Facebook,
-  ArrowRight
-} from 'lucide-react';
-import type { Metadata } from 'next';
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { ArrowLeft, Clock, Share2, Twitter, Linkedin, Facebook, ArrowRight } from 'lucide-react'
+import type { Metadata } from 'next'
 
 // This would normally come from your CMS
 const blogPosts = [
   {
     slug: 'evolution-of-coworking',
     title: 'The Evolution of Coworking: From Necessity to Community',
-    excerpt: 'How coworking spaces have transformed from simple desk rentals to thriving communities that foster innovation and connection.',
+    excerpt:
+      'How coworking spaces have transformed from simple desk rentals to thriving communities that foster innovation and connection.',
     content: `The coworking movement has come a long way since its humble beginnings in 2005. What started as a simple solution to the isolation of remote work has evolved into a global phenomenon that's reshaping how we think about work, community, and collaboration.
 
 ## The Early Days
@@ -50,27 +43,28 @@ By blending the accessibility of a neighborhood cafe with the amenities of a pre
 As remote work becomes permanently embedded in our professional culture, coworking spaces will continue to evolve. We're not just providing desks anymore—we're creating the infrastructure for a new way of working that prioritizes flexibility, community, and human connection over traditional corporate hierarchies.
 
 The future of work is flexible, community-driven, and filled with possibility. And it's happening right here in spaces like ours, one coffee conversation at a time.`,
-    image: 'https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1200',
+    image:
+      'https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1200',
     author: {
       name: 'Karsten Wade',
       avatar: '/team/karsten.jpg',
-      bio: 'Founder & CEO of Citizen Space. Karsten started Citizen Space in 2006 as one of San Francisco\'s first coworking spaces and has been at the forefront of the community-driven workspace movement ever since.'
+      bio: "Founder & CEO of Citizen Space. Karsten started Citizen Space in 2006 as one of San Francisco's first coworking spaces and has been at the forefront of the community-driven workspace movement ever since.",
     },
     tags: ['Coworking', 'Community', 'Business', 'Future of Work'],
     publishedAt: new Date('2025-01-10'),
-    readingTime: 8
-  }
-];
+    readingTime: 8,
+  },
+]
 
 interface Props {
-  params: { slug: string };
+  params: { slug: string }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = blogPosts.find(p => p.slug === params.slug);
-  
+  const post = blogPosts.find(p => p.slug === params.slug)
+
   if (!post) {
-    return { title: 'Post Not Found' };
+    return { title: 'Post Not Found' }
   }
 
   return {
@@ -91,14 +85,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: post.excerpt,
       images: [post.image],
     },
-  };
+  }
 }
 
 export default function BlogPostPage({ params }: Props) {
-  const post = blogPosts.find(p => p.slug === params.slug);
-  
+  const post = blogPosts.find(p => p.slug === params.slug)
+
   if (!post) {
-    notFound();
+    notFound()
   }
 
   return (
@@ -106,7 +100,7 @@ export default function BlogPostPage({ params }: Props) {
       {/* Navigation */}
       <section className="pb-8">
         <div className="container">
-          <div className="max-w-4xl mx-auto">
+          <div className="mx-auto max-w-4xl">
             <Button asChild variant="ghost" className="mb-6">
               <Link href="/blog">
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -120,55 +114,54 @@ export default function BlogPostPage({ params }: Props) {
       {/* Article Header */}
       <section className="pb-12">
         <div className="container">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex flex-wrap gap-2 mb-6">
-              {post.tags.map((tag) => (
-                <Badge key={tag} variant="secondary">{tag}</Badge>
+          <div className="mx-auto max-w-4xl">
+            <div className="mb-6 flex flex-wrap gap-2">
+              {post.tags.map(tag => (
+                <Badge key={tag} variant="secondary">
+                  {tag}
+                </Badge>
               ))}
             </div>
-            
-            <h1 className="font-display text-4xl lg:text-5xl font-bold mb-6">
-              {post.title}
-            </h1>
-            
-            <div className="flex items-center justify-between mb-8">
+
+            <h1 className="mb-6 font-display text-4xl font-bold lg:text-5xl">{post.title}</h1>
+
+            <div className="mb-8 flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <Avatar className="h-12 w-12">
                   <AvatarImage src={post.author.avatar} />
                   <AvatarFallback>
-                    {post.author.name.split(' ').map(n => n[0]).join('')}
+                    {post.author.name
+                      .split(' ')
+                      .map(n => n[0])
+                      .join('')}
                   </AvatarFallback>
                 </Avatar>
                 <div>
                   <div className="font-semibold">{post.author.name}</div>
                   <div className="text-sm text-muted-foreground">
-                    {post.publishedAt.toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
+                    {post.publishedAt.toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
                     })}
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                 <div className="flex items-center">
-                  <Clock className="h-4 w-4 mr-1" />
+                  <Clock className="mr-1 h-4 w-4" />
                   {post.readingTime} min read
                 </div>
                 <Button variant="outline" size="sm">
-                  <Share2 className="h-4 w-4 mr-2" />
+                  <Share2 className="mr-2 h-4 w-4" />
                   Share
                 </Button>
               </div>
             </div>
-            
-            <div className="aspect-video rounded-lg overflow-hidden mb-8">
-              <img
-                src={post.image}
-                alt={post.title}
-                className="w-full h-full object-cover"
-              />
+
+            <div className="mb-8 aspect-video overflow-hidden rounded-lg">
+              <img src={post.image} alt={post.title} className="h-full w-full object-cover" />
             </div>
           </div>
         </div>
@@ -177,11 +170,9 @@ export default function BlogPostPage({ params }: Props) {
       {/* Article Content */}
       <section className="pb-12">
         <div className="container">
-          <div className="max-w-4xl mx-auto">
+          <div className="mx-auto max-w-4xl">
             <div className="prose prose-lg max-w-none">
-              <div className="whitespace-pre-wrap leading-relaxed">
-                {post.content}
-              </div>
+              <div className="whitespace-pre-wrap leading-relaxed">{post.content}</div>
             </div>
           </div>
         </div>
@@ -190,7 +181,7 @@ export default function BlogPostPage({ params }: Props) {
       {/* Author Bio */}
       <section className="pb-12">
         <div className="container">
-          <div className="max-w-4xl mx-auto">
+          <div className="mx-auto max-w-4xl">
             <Separator className="mb-8" />
             <Card>
               <CardContent className="p-6">
@@ -198,16 +189,17 @@ export default function BlogPostPage({ params }: Props) {
                   <Avatar className="h-16 w-16">
                     <AvatarImage src={post.author.avatar} />
                     <AvatarFallback className="text-lg">
-                      {post.author.name.split(' ').map(n => n[0]).join('')}
+                      {post.author.name
+                        .split(' ')
+                        .map(n => n[0])
+                        .join('')}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <h3 className="font-display text-xl font-bold mb-2">
+                    <h3 className="mb-2 font-display text-xl font-bold">
                       About {post.author.name}
                     </h3>
-                    <p className="text-muted-foreground">
-                      {post.author.bio}
-                    </p>
+                    <p className="text-muted-foreground">{post.author.bio}</p>
                   </div>
                 </div>
               </CardContent>
@@ -219,20 +211,20 @@ export default function BlogPostPage({ params }: Props) {
       {/* Share Options */}
       <section className="pb-12">
         <div className="container">
-          <div className="max-w-4xl mx-auto">
+          <div className="mx-auto max-w-4xl">
             <div className="text-center">
-              <h3 className="font-display text-xl font-bold mb-4">Share This Article</h3>
+              <h3 className="mb-4 font-display text-xl font-bold">Share This Article</h3>
               <div className="flex justify-center gap-4">
                 <Button variant="outline" size="sm">
-                  <Twitter className="h-4 w-4 mr-2" />
+                  <Twitter className="mr-2 h-4 w-4" />
                   Twitter
                 </Button>
                 <Button variant="outline" size="sm">
-                  <Linkedin className="h-4 w-4 mr-2" />
+                  <Linkedin className="mr-2 h-4 w-4" />
                   LinkedIn
                 </Button>
                 <Button variant="outline" size="sm">
-                  <Facebook className="h-4 w-4 mr-2" />
+                  <Facebook className="mr-2 h-4 w-4" />
                   Facebook
                 </Button>
               </div>
@@ -242,12 +234,10 @@ export default function BlogPostPage({ params }: Props) {
       </section>
 
       {/* Related Posts */}
-      <section className="py-20 bg-muted/30">
+      <section className="bg-muted/30 py-20">
         <div className="container">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="font-display text-3xl font-bold text-center mb-12">
-              Continue Reading
-            </h2>
+          <div className="mx-auto max-w-6xl">
+            <h2 className="mb-12 text-center font-display text-3xl font-bold">Continue Reading</h2>
             <div className="text-center">
               <Button asChild variant="outline">
                 <Link href="/blog">
@@ -260,5 +250,5 @@ export default function BlogPostPage({ params }: Props) {
         </div>
       </section>
     </div>
-  );
+  )
 }

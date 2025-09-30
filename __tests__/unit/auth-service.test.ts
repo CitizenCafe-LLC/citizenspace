@@ -2,7 +2,7 @@
  * Unit Tests for Authentication Service
  */
 
-import { registerUser, loginUser, AuthenticationError } from '@/lib/auth/service';
+import { registerUser, loginUser, AuthenticationError } from '@/lib/auth/service'
 
 // Mock Supabase client
 jest.mock('@/lib/supabase/client', () => ({
@@ -36,7 +36,7 @@ jest.mock('@/lib/supabase/client', () => ({
       updateUser: jest.fn(),
     },
   },
-}));
+}))
 
 describe('Authentication Service', () => {
   describe('registerUser', () => {
@@ -46,8 +46,8 @@ describe('Authentication Service', () => {
           email: 'invalid-email',
           password: 'StrongPass123!',
         })
-      ).rejects.toThrow(AuthenticationError);
-    });
+      ).rejects.toThrow(AuthenticationError)
+    })
 
     it('should reject weak password', async () => {
       await expect(
@@ -55,29 +55,25 @@ describe('Authentication Service', () => {
           email: 'test@example.com',
           password: 'weak',
         })
-      ).rejects.toThrow(AuthenticationError);
-    });
+      ).rejects.toThrow(AuthenticationError)
+    })
 
     it('should validate email format', async () => {
-      const validEmails = [
-        'test@example.com',
-        'user.name@example.co.uk',
-        'user+tag@example.com',
-      ];
+      const validEmails = ['test@example.com', 'user.name@example.co.uk', 'user+tag@example.com']
 
       for (const email of validEmails) {
         try {
           await registerUser({
             email,
             password: 'StrongPass123!',
-          });
+          })
         } catch (error) {
           if (error instanceof AuthenticationError && error.code === 'INVALID_EMAIL') {
-            fail(`Email ${email} should be valid`);
+            fail(`Email ${email} should be valid`)
           }
         }
       }
-    });
+    })
 
     it('should validate password requirements', async () => {
       const weakPasswords = [
@@ -86,7 +82,7 @@ describe('Authentication Service', () => {
         'NOLOWERCASE123!',
         'NoNumbers!',
         'NoSpecialChars123',
-      ];
+      ]
 
       for (const password of weakPasswords) {
         await expect(
@@ -94,10 +90,10 @@ describe('Authentication Service', () => {
             email: 'test@example.com',
             password,
           })
-        ).rejects.toThrow(AuthenticationError);
+        ).rejects.toThrow(AuthenticationError)
       }
-    });
-  });
+    })
+  })
 
   describe('loginUser', () => {
     it('should reject invalid email format', async () => {
@@ -106,25 +102,25 @@ describe('Authentication Service', () => {
           email: 'invalid-email',
           password: 'anypassword',
         })
-      ).rejects.toThrow(AuthenticationError);
-    });
-  });
+      ).rejects.toThrow(AuthenticationError)
+    })
+  })
 
   describe('AuthenticationError', () => {
     it('should create error with correct properties', () => {
-      const error = new AuthenticationError('TEST_CODE', 'Test message', 400);
+      const error = new AuthenticationError('TEST_CODE', 'Test message', 400)
 
-      expect(error).toBeInstanceOf(Error);
-      expect(error).toBeInstanceOf(AuthenticationError);
-      expect(error.code).toBe('TEST_CODE');
-      expect(error.message).toBe('Test message');
-      expect(error.statusCode).toBe(400);
-      expect(error.name).toBe('AuthenticationError');
-    });
+      expect(error).toBeInstanceOf(Error)
+      expect(error).toBeInstanceOf(AuthenticationError)
+      expect(error.code).toBe('TEST_CODE')
+      expect(error.message).toBe('Test message')
+      expect(error.statusCode).toBe(400)
+      expect(error.name).toBe('AuthenticationError')
+    })
 
     it('should use default status code 400', () => {
-      const error = new AuthenticationError('TEST_CODE', 'Test message');
-      expect(error.statusCode).toBe(400);
-    });
-  });
-});
+      const error = new AuthenticationError('TEST_CODE', 'Test message')
+      expect(error.statusCode).toBe(400)
+    })
+  })
+})

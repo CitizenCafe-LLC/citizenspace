@@ -5,31 +5,34 @@
  * Uses Viem to query the blockchain and Supabase for caching results.
  */
 
-import { createPublicClient, http, Address } from 'viem';
-import { mainnet, base, sepolia, baseSepolia } from 'viem/chains';
-import { CITIZEN_SPACE_NFT_CONTRACT } from './contract';
-import { NftVerification, NftVerificationResponse, NftVerificationCache } from './types';
+import type { Address } from 'viem';
+import { createPublicClient, http } from 'viem'
+import { mainnet, base, sepolia, baseSepolia } from 'viem/chains'
+import { CITIZEN_SPACE_NFT_CONTRACT } from './contract'
+import type { NftVerificationResponse, NftVerificationCache } from './types';
+import { NftVerification } from './types'
 
 // Cache TTL in milliseconds (24 hours)
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000
 
 /**
  * Creates a public client for reading from the blockchain
  */
 function getPublicClient() {
   // Determine chain based on environment
-  const chain = process.env.NEXT_PUBLIC_CHAIN === 'mainnet'
-    ? mainnet
-    : process.env.NEXT_PUBLIC_CHAIN === 'base'
-    ? base
-    : process.env.NEXT_PUBLIC_CHAIN === 'base-sepolia'
-    ? baseSepolia
-    : sepolia;
+  const chain =
+    process.env.NEXT_PUBLIC_CHAIN === 'mainnet'
+      ? mainnet
+      : process.env.NEXT_PUBLIC_CHAIN === 'base'
+        ? base
+        : process.env.NEXT_PUBLIC_CHAIN === 'base-sepolia'
+          ? baseSepolia
+          : sepolia
 
   return createPublicClient({
     chain,
     transport: http(process.env.NEXT_PUBLIC_RPC_URL),
-  });
+  })
 }
 
 /**
@@ -40,7 +43,7 @@ function getPublicClient() {
  */
 export async function checkNftBalanceOnChain(walletAddress: string): Promise<number> {
   try {
-    const client = getPublicClient();
+    const client = getPublicClient()
 
     // Call the balanceOf function on the NFT contract
     const balance = await client.readContract({
@@ -48,12 +51,12 @@ export async function checkNftBalanceOnChain(walletAddress: string): Promise<num
       abi: CITIZEN_SPACE_NFT_CONTRACT.abi,
       functionName: 'balanceOf',
       args: [walletAddress as Address],
-    });
+    })
 
-    return Number(balance);
+    return Number(balance)
   } catch (error) {
-    console.error('Error checking NFT balance on-chain:', error);
-    throw new Error('Failed to verify NFT ownership on blockchain');
+    console.error('Error checking NFT balance on-chain:', error)
+    throw new Error('Failed to verify NFT ownership on blockchain')
   }
 }
 
@@ -69,7 +72,7 @@ export async function getCachedVerification(
   walletAddress: string
 ): Promise<NftVerificationCache | null> {
   try {
-    const { executeQuerySingle } = await import('../db/postgres');
+    const { executeQuerySingle } = await import('../db/postgres')
 
     const query = `
       SELECT wallet_address, nft_balance, verified_at, expires_at
@@ -77,17 +80,17 @@ export async function getCachedVerification(
       WHERE user_id = $1
         AND wallet_address = $2
         AND expires_at > NOW()
-    `;
+    `
 
     const { data, error } = await executeQuerySingle<{
-      wallet_address: string;
-      nft_balance: number;
-      verified_at: string;
-      expires_at: string;
-    }>(query, [userId, walletAddress.toLowerCase()]);
+      wallet_address: string
+      nft_balance: number
+      verified_at: string
+      expires_at: string
+    }>(query, [userId, walletAddress.toLowerCase()])
 
     if (error || !data) {
-      return null;
+      return null
     }
 
     return {
@@ -95,10 +98,10 @@ export async function getCachedVerification(
       balance: data.nft_balance,
       verified_at: new Date(data.verified_at),
       expires_at: new Date(data.expires_at),
-    };
+    }
   } catch (error) {
-    console.error('Error retrieving cached verification:', error);
-    return null;
+    console.error('Error retrieving cached verification:', error)
+    return null
   }
 }
 
@@ -115,9 +118,9 @@ export async function cacheVerification(
   balance: number
 ): Promise<void> {
   try {
-    const { executeQuery } = await import('../db/postgres');
-    const now = new Date();
-    const expiresAt = new Date(now.getTime() + CACHE_TTL_MS);
+    const { executeQuery } = await import('../db/postgres')
+    const now = new Date()
+    const expiresAt = new Date(now.getTime() + CACHE_TTL_MS)
 
     const query = `
       INSERT INTO nft_verifications (user_id, wallet_address, nft_balance, verified_at, expires_at, updated_at)
@@ -128,7 +131,7 @@ export async function cacheVerification(
         verified_at = $4,
         expires_at = $5,
         updated_at = $6
-    `;
+    `
 
     const { error } = await executeQuery(query, [
       userId,
@@ -137,15 +140,15 @@ export async function cacheVerification(
       now.toISOString(),
       expiresAt.toISOString(),
       now.toISOString(),
-    ]);
+    ])
 
     if (error) {
-      console.error('Error caching verification:', error);
-      throw new Error('Failed to cache verification result');
+      console.error('Error caching verification:', error)
+      throw new Error('Failed to cache verification result')
     }
   } catch (error) {
-    console.error('Error in cacheVerification:', error);
-    throw error;
+    console.error('Error in cacheVerification:', error)
+    throw error
   }
 }
 
@@ -155,28 +158,25 @@ export async function cacheVerification(
  * @param userId - User ID to update
  * @param isNftHolder - Whether user holds NFTs
  */
-export async function updateUserNftStatus(
-  userId: string,
-  isNftHolder: boolean
-): Promise<void> {
+export async function updateUserNftStatus(userId: string, isNftHolder: boolean): Promise<void> {
   try {
-    const { executeQuery } = await import('../db/postgres');
+    const { executeQuery } = await import('../db/postgres')
 
     const query = `
       UPDATE users
       SET nft_holder = $1, updated_at = NOW()
       WHERE id = $2
-    `;
+    `
 
-    const { error } = await executeQuery(query, [isNftHolder, userId]);
+    const { error } = await executeQuery(query, [isNftHolder, userId])
 
     if (error) {
-      console.error('Error updating user NFT status:', error);
-      throw new Error('Failed to update user NFT holder status');
+      console.error('Error updating user NFT status:', error)
+      throw new Error('Failed to update user NFT holder status')
     }
   } catch (error) {
-    console.error('Error in updateUserNftStatus:', error);
-    throw error;
+    console.error('Error in updateUserNftStatus:', error)
+    throw error
   }
 }
 
@@ -196,7 +196,7 @@ export async function verifyNftOwnership(
   try {
     // Check cache first unless force refresh is requested
     if (!forceRefresh) {
-      const cached = await getCachedVerification(userId, walletAddress);
+      const cached = await getCachedVerification(userId, walletAddress)
       if (cached) {
         return {
           verified: true,
@@ -205,22 +205,22 @@ export async function verifyNftOwnership(
           cached: true,
           verified_at: cached.verified_at.toISOString(),
           expires_at: cached.expires_at.toISOString(),
-        };
+        }
       }
     }
 
     // Query blockchain for current balance
-    const balance = await checkNftBalanceOnChain(walletAddress);
-    const isNftHolder = balance > 0;
+    const balance = await checkNftBalanceOnChain(walletAddress)
+    const isNftHolder = balance > 0
 
     // Cache the result
-    await cacheVerification(userId, walletAddress, balance);
+    await cacheVerification(userId, walletAddress, balance)
 
     // Update user's NFT holder status
-    await updateUserNftStatus(userId, isNftHolder);
+    await updateUserNftStatus(userId, isNftHolder)
 
-    const now = new Date();
-    const expiresAt = new Date(now.getTime() + CACHE_TTL_MS);
+    const now = new Date()
+    const expiresAt = new Date(now.getTime() + CACHE_TTL_MS)
 
     return {
       verified: true,
@@ -229,10 +229,10 @@ export async function verifyNftOwnership(
       cached: false,
       verified_at: now.toISOString(),
       expires_at: expiresAt.toISOString(),
-    };
+    }
   } catch (error) {
-    console.error('Error verifying NFT ownership:', error);
-    throw error;
+    console.error('Error verifying NFT ownership:', error)
+    throw error
   }
 }
 
@@ -242,24 +242,24 @@ export async function verifyNftOwnership(
  */
 export async function cleanupExpiredVerifications(): Promise<number> {
   try {
-    const { executeQuery } = await import('../db/postgres');
+    const { executeQuery } = await import('../db/postgres')
 
     const query = `
       DELETE FROM nft_verifications
       WHERE expires_at < NOW()
       RETURNING id
-    `;
+    `
 
-    const { data, error } = await executeQuery<{ id: string }>(query, []);
+    const { data, error } = await executeQuery<{ id: string }>(query, [])
 
     if (error) {
-      console.error('Error cleaning up expired verifications:', error);
-      return 0;
+      console.error('Error cleaning up expired verifications:', error)
+      return 0
     }
 
-    return data?.length || 0;
+    return data?.length || 0
   } catch (error) {
-    console.error('Error in cleanupExpiredVerifications:', error);
-    return 0;
+    console.error('Error in cleanupExpiredVerifications:', error)
+    return 0
   }
 }

@@ -3,11 +3,13 @@
  * Protects routes and validates JWT tokens
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken, extractTokenFromHeader, TokenPayload } from './jwt';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server'
+import type { TokenPayload } from './jwt';
+import { verifyToken, extractTokenFromHeader } from './jwt'
 
 export interface AuthenticatedRequest extends NextRequest {
-  user?: TokenPayload;
+  user?: TokenPayload
 }
 
 /**
@@ -17,27 +19,27 @@ export async function authenticateRequest(
   request: NextRequest
 ): Promise<{ authenticated: boolean; user?: TokenPayload; error?: string }> {
   try {
-    const authHeader = request.headers.get('Authorization');
-    const token = extractTokenFromHeader(authHeader);
+    const authHeader = request.headers.get('Authorization')
+    const token = extractTokenFromHeader(authHeader)
 
     if (!token) {
       return {
         authenticated: false,
         error: 'No authentication token provided',
-      };
+      }
     }
 
-    const user = await verifyToken(token);
+    const user = await verifyToken(token)
 
     return {
       authenticated: true,
       user,
-    };
+    }
   } catch (error) {
     return {
       authenticated: false,
       error: error instanceof Error ? error.message : 'Invalid authentication token',
-    };
+    }
   }
 }
 
@@ -49,12 +51,12 @@ export async function authenticateRequest(
 export function withAuth(
   handler: (request: NextRequest, context: { user: TokenPayload }) => Promise<NextResponse>,
   options: {
-    roles?: Array<'user' | 'staff' | 'admin'>;
-    requireNftHolder?: boolean;
+    roles?: Array<'user' | 'staff' | 'admin'>
+    requireNftHolder?: boolean
   } = {}
 ) {
   return async (request: NextRequest, ...args: any[]) => {
-    const authResult = await authenticateRequest(request);
+    const authResult = await authenticateRequest(request)
 
     if (!authResult.authenticated || !authResult.user) {
       return NextResponse.json(
@@ -64,7 +66,7 @@ export function withAuth(
           code: 'UNAUTHORIZED',
         },
         { status: 401 }
-      );
+      )
     }
 
     // Check role-based access
@@ -76,7 +78,7 @@ export function withAuth(
           code: 'FORBIDDEN',
         },
         { status: 403 }
-      );
+      )
     }
 
     // Check NFT holder requirement
@@ -88,12 +90,12 @@ export function withAuth(
           code: 'NFT_REQUIRED',
         },
         { status: 403 }
-      );
+      )
     }
 
     // Call the actual handler with authenticated user
-    return handler(request, { user: authResult.user });
-  };
+    return handler(request, { user: authResult.user })
+  }
 }
 
 /**
@@ -102,7 +104,7 @@ export function withAuth(
 export function withStaffAuth(
   handler: (request: NextRequest, context: { user: TokenPayload }) => Promise<NextResponse>
 ) {
-  return withAuth(handler, { roles: ['staff', 'admin'] });
+  return withAuth(handler, { roles: ['staff', 'admin'] })
 }
 
 /**
@@ -111,7 +113,7 @@ export function withStaffAuth(
 export function withAdminAuth(
   handler: (request: NextRequest, context: { user: TokenPayload }) => Promise<NextResponse>
 ) {
-  return withAuth(handler, { roles: ['admin'] });
+  return withAuth(handler, { roles: ['admin'] })
 }
 
 /**
@@ -120,30 +122,27 @@ export function withAdminAuth(
 export function withNftHolderAuth(
   handler: (request: NextRequest, context: { user: TokenPayload }) => Promise<NextResponse>
 ) {
-  return withAuth(handler, { requireNftHolder: true });
+  return withAuth(handler, { requireNftHolder: true })
 }
 
 /**
  * Extract user from authenticated request (for use in route handlers)
  */
 export async function getCurrentUser(request: NextRequest): Promise<TokenPayload | null> {
-  const authResult = await authenticateRequest(request);
-  return authResult.user || null;
+  const authResult = await authenticateRequest(request)
+  return authResult.user || null
 }
 
 /**
  * Check if user has specific role
  */
-export function hasRole(
-  user: TokenPayload,
-  roles: Array<'user' | 'staff' | 'admin'>
-): boolean {
-  return roles.includes(user.role);
+export function hasRole(user: TokenPayload, roles: Array<'user' | 'staff' | 'admin'>): boolean {
+  return roles.includes(user.role)
 }
 
 /**
  * Check if user is NFT holder
  */
 export function isNftHolder(user: TokenPayload): boolean {
-  return user.nftHolder === true;
+  return user.nftHolder === true
 }

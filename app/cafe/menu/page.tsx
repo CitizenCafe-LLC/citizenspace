@@ -1,22 +1,23 @@
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Leaf, Milk, Wheat, Wallet } from 'lucide-react';
-import Link from 'next/link';
-import type { Metadata } from 'next';
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Button } from '@/components/ui/button'
+import { Leaf, Milk, Wheat, Wallet } from 'lucide-react'
+import Link from 'next/link'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Menu',
-  description: 'Explore our full menu of artisan coffee, fresh pastries, and light meals. Order in our app from your seat.',
-};
+  description:
+    'Explore our full menu of artisan coffee, fresh pastries, and light meals. Order in our app from your seat.',
+}
 
 interface MenuItem {
-  name: string;
-  description: string;
-  price: string;
-  dietaryTags?: string[];
-  featured?: boolean;
+  name: string
+  description: string
+  price: string
+  dietaryTags?: string[]
+  featured?: boolean
 }
 
 const menuData = {
@@ -127,42 +128,48 @@ const menuData = {
       dietaryTags: ['vegetarian', 'vegan option'],
     },
   ] as MenuItem[],
-};
+}
 
 const getDietaryIcon = (tag: string) => {
   switch (tag) {
     case 'vegetarian':
-      return <Leaf className="h-3 w-3" />;
+      return <Leaf className="h-3 w-3" />
     case 'vegan':
     case 'vegan option':
-      return <Leaf className="h-3 w-3" />;
+      return <Leaf className="h-3 w-3" />
     case 'gluten-free':
-      return <Wheat className="h-3 w-3" />;
+      return <Wheat className="h-3 w-3" />
     case 'dairy-free':
-      return <Milk className="h-3 w-3" />;
+      return <Milk className="h-3 w-3" />
     default:
-      return null;
+      return null
   }
-};
+}
 
 function MenuSection({ items }: { items: MenuItem[] }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
       {items.map((item, index) => (
         <Card key={index} className={item.featured ? 'border-cs-blue shadow-md' : ''}>
           <CardHeader className="pb-3">
-            <div className="flex justify-between items-start">
+            <div className="flex items-start justify-between">
               <div className="flex-1">
-                <CardTitle className="font-display text-lg flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 font-display text-lg">
                   {item.name}
                   {item.featured && (
-                    <Badge variant="secondary" className="text-xs">Featured</Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      Featured
+                    </Badge>
                   )}
                 </CardTitle>
                 {item.dietaryTags && (
-                  <div className="flex gap-1 mt-2">
+                  <div className="mt-2 flex gap-1">
                     {item.dietaryTags.map((tag, tagIndex) => (
-                      <Badge key={tagIndex} variant="outline" className="text-xs flex items-center gap-1">
+                      <Badge
+                        key={tagIndex}
+                        variant="outline"
+                        className="flex items-center gap-1 text-xs"
+                      >
                         {getDietaryIcon(tag)}
                         {tag}
                       </Badge>
@@ -170,7 +177,7 @@ function MenuSection({ items }: { items: MenuItem[] }) {
                   </div>
                 )}
               </div>
-              <span className="text-lg font-bold text-cs-blue ml-4">{item.price}</span>
+              <span className="ml-4 text-lg font-bold text-cs-blue">{item.price}</span>
             </div>
           </CardHeader>
           <CardContent>
@@ -179,7 +186,7 @@ function MenuSection({ items }: { items: MenuItem[] }) {
         </Card>
       ))}
     </div>
-  );
+  )
 }
 
 export default function MenuPage() {
@@ -188,18 +195,18 @@ export default function MenuPage() {
       {/* Hero Section */}
       <section className="pb-12">
         <div className="container">
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="mx-auto max-w-3xl text-center">
             <Badge variant="secondary" className="mb-6">
               Full Menu
             </Badge>
-            <h1 className="font-display text-4xl lg:text-6xl font-bold mb-6">
+            <h1 className="mb-6 font-display text-4xl font-bold lg:text-6xl">
               Fresh. Local. <span className="gradient-text">Delicious.</span>
             </h1>
-            <p className="text-xl text-muted-foreground mb-8">
-              Every item is carefully sourced from local partners and crafted fresh daily. 
-              Order from your seat with our mobile app.
+            <p className="mb-8 text-xl text-muted-foreground">
+              Every item is carefully sourced from local partners and crafted fresh daily. Order
+              from your seat with our mobile app.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col justify-center gap-4 sm:flex-row">
               <Button asChild size="lg" className="btn-primary">
                 <Link href="/app">Order in App</Link>
               </Button>
@@ -218,58 +225,57 @@ export default function MenuPage() {
       <section className="py-12">
         <div className="container max-w-6xl">
           {/* NFT Benefits Notice */}
-          <div className="max-w-2xl mx-auto mb-8">
-            <Card className="bg-gradient-to-r from-cs-sun/10 to-cs-apricot/10 border-cs-sun/20">
+          <div className="mx-auto mb-8 max-w-2xl">
+            <Card className="border-cs-sun/20 bg-gradient-to-r from-cs-sun/10 to-cs-apricot/10">
               <CardContent className="p-4 text-center">
                 <p className="text-sm text-muted-foreground">
-                  <Wallet className="h-4 w-4 inline mr-1" />
-                  <strong>NFT Holders:</strong> Get 10% off all cafe items when you connect your wallet
+                  <Wallet className="mr-1 inline h-4 w-4" />
+                  <strong>NFT Holders:</strong> Get 10% off all cafe items when you connect your
+                  wallet
                 </p>
               </CardContent>
             </Card>
           </div>
-          
+
           <Tabs defaultValue="coffee" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-12">
+            <TabsList className="mb-12 grid w-full grid-cols-4">
               <TabsTrigger value="coffee">Coffee</TabsTrigger>
               <TabsTrigger value="tea">Tea</TabsTrigger>
               <TabsTrigger value="pastries">Pastries</TabsTrigger>
               <TabsTrigger value="meals">Light Meals</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="coffee" className="space-y-8">
-              <div className="text-center mb-8">
-                <h2 className="font-display text-2xl font-bold mb-2">Coffee</h2>
+              <div className="mb-8 text-center">
+                <h2 className="mb-2 font-display text-2xl font-bold">Coffee</h2>
                 <p className="text-muted-foreground">
                   Expertly crafted using beans from local Santa Cruz roasters
                 </p>
               </div>
               <MenuSection items={menuData.coffee} />
             </TabsContent>
-            
+
             <TabsContent value="tea" className="space-y-8">
-              <div className="text-center mb-8">
-                <h2 className="font-display text-2xl font-bold mb-2">Tea & Other Beverages</h2>
+              <div className="mb-8 text-center">
+                <h2 className="mb-2 font-display text-2xl font-bold">Tea & Other Beverages</h2>
                 <p className="text-muted-foreground">
                   Premium loose-leaf teas and specialty beverages
                 </p>
               </div>
               <MenuSection items={menuData.tea} />
             </TabsContent>
-            
+
             <TabsContent value="pastries" className="space-y-8">
-              <div className="text-center mb-8">
-                <h2 className="font-display text-2xl font-bold mb-2">Pastries & Baked Goods</h2>
-                <p className="text-muted-foreground">
-                  Fresh daily from our local bakery partners
-                </p>
+              <div className="mb-8 text-center">
+                <h2 className="mb-2 font-display text-2xl font-bold">Pastries & Baked Goods</h2>
+                <p className="text-muted-foreground">Fresh daily from our local bakery partners</p>
               </div>
               <MenuSection items={menuData.pastries} />
             </TabsContent>
-            
+
             <TabsContent value="meals" className="space-y-8">
-              <div className="text-center mb-8">
-                <h2 className="font-display text-2xl font-bold mb-2">Light Meals</h2>
+              <div className="mb-8 text-center">
+                <h2 className="mb-2 font-display text-2xl font-bold">Light Meals</h2>
                 <p className="text-muted-foreground">
                   Healthy, satisfying options perfect for working
                 </p>
@@ -281,29 +287,30 @@ export default function MenuPage() {
       </section>
 
       {/* Dietary Information */}
-      <section className="py-12 bg-muted/30">
+      <section className="bg-muted/30 py-12">
         <div className="container max-w-4xl">
-          <div className="text-center mb-8">
-            <h2 className="font-display text-2xl font-bold mb-4">Dietary Options</h2>
-            <p className="text-muted-foreground mb-8">
-              We cater to various dietary needs and preferences. Let us know about any allergies or special requirements.
+          <div className="mb-8 text-center">
+            <h2 className="mb-4 font-display text-2xl font-bold">Dietary Options</h2>
+            <p className="mb-8 text-muted-foreground">
+              We cater to various dietary needs and preferences. Let us know about any allergies or
+              special requirements.
             </p>
-            
+
             <div className="flex flex-wrap justify-center gap-4">
-              <Badge variant="outline" className="text-sm px-4 py-2">
-                <Leaf className="h-4 w-4 mr-2" />
+              <Badge variant="outline" className="px-4 py-2 text-sm">
+                <Leaf className="mr-2 h-4 w-4" />
                 Vegetarian Options
               </Badge>
-              <Badge variant="outline" className="text-sm px-4 py-2">
-                <Leaf className="h-4 w-4 mr-2" />
+              <Badge variant="outline" className="px-4 py-2 text-sm">
+                <Leaf className="mr-2 h-4 w-4" />
                 Vegan Options
               </Badge>
-              <Badge variant="outline" className="text-sm px-4 py-2">
-                <Wheat className="h-4 w-4 mr-2" />
+              <Badge variant="outline" className="px-4 py-2 text-sm">
+                <Wheat className="mr-2 h-4 w-4" />
                 Gluten-Free Options
               </Badge>
-              <Badge variant="outline" className="text-sm px-4 py-2">
-                <Milk className="h-4 w-4 mr-2" />
+              <Badge variant="outline" className="px-4 py-2 text-sm">
+                <Milk className="mr-2 h-4 w-4" />
                 Dairy-Free Options
               </Badge>
             </div>
@@ -311,5 +318,5 @@ export default function MenuPage() {
         </div>
       </section>
     </div>
-  );
+  )
 }

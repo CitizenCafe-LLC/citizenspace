@@ -3,43 +3,43 @@
  * Protects API routes by verifying JWT tokens
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken, extractTokenFromHeader, TokenPayload } from '../lib/auth/jwt';
+import { NextRequest, NextResponse } from 'next/server'
+import { verifyToken, extractTokenFromHeader, TokenPayload } from '../lib/auth/jwt'
 
 export interface AuthenticatedRequest extends NextRequest {
-  user?: TokenPayload;
+  user?: TokenPayload
 }
 
 /**
  * Middleware to verify JWT token and attach user to request
  */
 export async function authMiddleware(request: NextRequest): Promise<{
-  authenticated: boolean;
-  user?: TokenPayload;
-  error?: string;
+  authenticated: boolean
+  user?: TokenPayload
+  error?: string
 }> {
   try {
-    const authHeader = request.headers.get('authorization');
-    const token = extractTokenFromHeader(authHeader);
+    const authHeader = request.headers.get('authorization')
+    const token = extractTokenFromHeader(authHeader)
 
     if (!token) {
       return {
         authenticated: false,
         error: 'No authentication token provided',
-      };
+      }
     }
 
-    const user = await verifyToken(token);
+    const user = await verifyToken(token)
 
     return {
       authenticated: true,
       user,
-    };
+    }
   } catch (error) {
     return {
       authenticated: false,
       error: error instanceof Error ? error.message : 'Invalid or expired token',
-    };
+    }
   }
 }
 
@@ -47,11 +47,11 @@ export async function authMiddleware(request: NextRequest): Promise<{
  * Requires authentication - returns error response if not authenticated
  */
 export async function requireAuth(request: NextRequest): Promise<{
-  authorized: boolean;
-  user?: TokenPayload;
-  response?: NextResponse;
+  authorized: boolean
+  user?: TokenPayload
+  response?: NextResponse
 }> {
-  const auth = await authMiddleware(request);
+  const auth = await authMiddleware(request)
 
   if (!auth.authenticated) {
     return {
@@ -64,13 +64,13 @@ export async function requireAuth(request: NextRequest): Promise<{
         },
         { status: 401 }
       ),
-    };
+    }
   }
 
   return {
     authorized: true,
     user: auth.user,
-  };
+  }
 }
 
 /**
@@ -80,14 +80,14 @@ export async function requireRole(
   request: NextRequest,
   allowedRoles: Array<'user' | 'staff' | 'admin'>
 ): Promise<{
-  authorized: boolean;
-  user?: TokenPayload;
-  response?: NextResponse;
+  authorized: boolean
+  user?: TokenPayload
+  response?: NextResponse
 }> {
-  const auth = await requireAuth(request);
+  const auth = await requireAuth(request)
 
   if (!auth.authorized) {
-    return auth;
+    return auth
   }
 
   if (!auth.user || !allowedRoles.includes(auth.user.role)) {
@@ -101,19 +101,19 @@ export async function requireRole(
         },
         { status: 403 }
       ),
-    };
+    }
   }
 
   return {
     authorized: true,
     user: auth.user,
-  };
+  }
 }
 
 /**
  * Optional authentication - doesn't fail if not authenticated
  */
 export async function optionalAuth(request: NextRequest): Promise<TokenPayload | null> {
-  const auth = await authMiddleware(request);
-  return auth.authenticated ? auth.user! : null;
+  const auth = await authMiddleware(request)
+  return auth.authenticated ? auth.user! : null
 }

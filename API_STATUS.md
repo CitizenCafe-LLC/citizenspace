@@ -9,11 +9,14 @@
 ## 🟢 **Working APIs**
 
 ### Health Check
+
 ```bash
 curl http://localhost:3000/api/health
 ```
+
 **Status:** ✅ WORKING
 **Response:**
+
 ```json
 {
   "status": "ok",
@@ -30,6 +33,7 @@ curl http://localhost:3000/api/health
 The following APIs are fully implemented with business logic, tests, and documentation, but require database connection to work:
 
 ### 1. Authentication APIs (`/api/auth/*`)
+
 - ✅ POST `/api/auth/register` - User registration
 - ✅ POST `/api/auth/login` - User login
 - ✅ POST `/api/auth/logout` - User logout
@@ -47,6 +51,7 @@ The following APIs are fully implemented with business logic, tests, and documen
 ---
 
 ### 2. Workspace APIs (`/api/workspaces/*`)
+
 - ✅ GET `/api/workspaces` - List all workspaces
 - ✅ GET `/api/workspaces/:id` - Get workspace details
 - ✅ GET `/api/workspaces/hot-desks` - List hot desks
@@ -59,6 +64,7 @@ The following APIs are fully implemented with business logic, tests, and documen
 ---
 
 ### 3. Booking APIs (`/api/bookings/*`)
+
 - ✅ POST `/api/bookings/hourly-desk` - Book hourly desk
 - ✅ GET `/api/bookings` - List user bookings
 - ✅ GET `/api/bookings/:id` - Get booking details
@@ -76,12 +82,14 @@ The following APIs are fully implemented with business logic, tests, and documen
 ## 📊 **Implementation Summary**
 
 ### Files Created by Agents:
+
 - **Production Code:** ~4,000 lines
 - **Tests:** ~3,700 lines (86%+ coverage)
 - **Documentation:** ~6,000 lines
 - **Total:** 41 new files
 
 ### What's Been Built:
+
 1. ✅ Complete database schema (PostgreSQL + pgvector)
 2. ✅ Authentication system (JWT + Web3)
 3. ✅ NFT verification & discount engine
@@ -119,6 +127,7 @@ The APIs return `{"success": false, "error": "An unexpected error occurred"}` be
 ### Step 1: Set Up Database
 
 **Option A: Local PostgreSQL**
+
 ```bash
 # Install PostgreSQL (if not installed)
 brew install postgresql@14
@@ -131,11 +140,13 @@ createdb citizenspace_dev
 ```
 
 **Option B: Use Docker**
+
 ```bash
 docker-compose up -d postgres
 ```
 
 **Option C: Use Hosted PostgreSQL**
+
 - Supabase: https://supabase.com
 - Neon: https://neon.tech
 - Railway: https://railway.app

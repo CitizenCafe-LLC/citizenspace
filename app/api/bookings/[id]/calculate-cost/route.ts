@@ -1,17 +1,17 @@
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server'
 import {
   successResponse,
   unauthorizedResponse,
   serverErrorResponse,
   notFoundResponse,
   badRequestResponse,
-} from '@/lib/api/response';
-import { getBookingById } from '@/lib/db/repositories/booking.repository';
+} from '@/lib/api/response'
+import { getBookingById } from '@/lib/db/repositories/booking.repository'
 import {
   calculateActualDuration,
   calculateFinalCharge,
   formatPrice,
-} from '@/lib/services/pricing.service';
+} from '@/lib/services/pricing.service'
 
 /**
  * GET /api/bookings/:id/calculate-cost
@@ -21,33 +21,30 @@ import {
  * Authorization: Required (must be booking owner)
  */
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const userId = request.headers.get('x-user-id');
+    const userId = request.headers.get('x-user-id')
 
     if (!userId) {
-      return unauthorizedResponse('Authentication required');
+      return unauthorizedResponse('Authentication required')
     }
 
-    const bookingId = params.id;
+    const bookingId = params.id
 
     // 1. Get booking details
-    const { data: booking, error: bookingError } = await getBookingById(bookingId);
+    const { data: booking, error: bookingError } = await getBookingById(bookingId)
     if (bookingError || !booking) {
-      return notFoundResponse('Booking not found');
+      return notFoundResponse('Booking not found')
     }
 
     // 2. Verify ownership
     if (booking.user_id !== userId) {
-      return unauthorizedResponse('You do not have permission to view this booking');
+      return unauthorizedResponse('You do not have permission to view this booking')
     }
 
     // 3. Check if booking is active
     if (!booking.check_in_time) {
-      return badRequestResponse('Booking has not been checked in yet');
+      return badRequestResponse('Booking has not been checked in yet')
     }
 
     if (booking.check_out_time) {
@@ -72,12 +69,12 @@ export async function GET(
           },
         },
         'Booking is already checked out'
-      );
+      )
     }
 
     // 4. Calculate current duration and estimated final charge
-    const currentTime = new Date().toISOString();
-    const actualDurationHours = calculateActualDuration(booking.check_in_time, currentTime);
+    const currentTime = new Date().toISOString()
+    const actualDurationHours = calculateActualDuration(booking.check_in_time, currentTime)
 
     const finalChargeResult = calculateFinalCharge(
       booking.duration_hours,
@@ -85,17 +82,17 @@ export async function GET(
       booking.subtotal,
       booking.processing_fee,
       booking.nft_discount_applied
-    );
+    )
 
     // 5. Calculate time remaining in booking
-    const bookingEnd = new Date(`${booking.booking_date}T${booking.end_time}`);
-    const now = new Date();
-    const minutesRemaining = Math.max(0, (bookingEnd.getTime() - now.getTime()) / (60 * 1000));
-    const hoursRemaining = minutesRemaining / 60;
+    const bookingEnd = new Date(`${booking.booking_date}T${booking.end_time}`)
+    const now = new Date()
+    const minutesRemaining = Math.max(0, (bookingEnd.getTime() - now.getTime()) / (60 * 1000))
+    const hoursRemaining = minutesRemaining / 60
 
     // 6. Determine status
-    const isOvertime = actualDurationHours > booking.duration_hours;
-    const isUndertime = now < bookingEnd;
+    const isOvertime = actualDurationHours > booking.duration_hours
+    const isUndertime = now < bookingEnd
 
     return successResponse(
       {
@@ -133,9 +130,9 @@ export async function GET(
             : 'Your booking time is up. Please check out.',
       },
       'Cost calculation completed'
-    );
+    )
   } catch (error) {
-    console.error('Unexpected error in GET /api/bookings/:id/calculate-cost:', error);
-    return serverErrorResponse('An unexpected error occurred');
+    console.error('Unexpected error in GET /api/bookings/:id/calculate-cost:', error)
+    return serverErrorResponse('An unexpected error occurred')
   }
 }

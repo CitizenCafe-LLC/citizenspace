@@ -1,59 +1,62 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import Link from 'next/link';
-import { 
-  Coffee, 
-  Users, 
-  Wifi, 
-  Calendar, 
-  MapPin, 
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import Link from 'next/link'
+import {
+  Coffee,
+  Users,
+  Wifi,
+  Calendar,
+  MapPin,
   Clock,
   ArrowRight,
   Zap,
   Shield,
   Heart,
-  Wallet
-} from 'lucide-react';
+  Wallet,
+} from 'lucide-react'
 
 const features = [
   {
     icon: Coffee,
     title: 'Cafe Zone',
-    description: 'Premium coffee, pastries, and light meals in a welcoming atmosphere perfect for casual work or meetings.'
+    description:
+      'Premium coffee, pastries, and light meals in a welcoming atmosphere perfect for casual work or meetings.',
   },
   {
     icon: Users,
     title: 'Work Zone',
-    description: 'Dedicated workspace beyond the gate with desks, meeting rooms, and all the amenities you need.'
+    description:
+      'Dedicated workspace beyond the gate with desks, meeting rooms, and all the amenities you need.',
   },
   {
     icon: Shield,
     title: 'Meeting Pods',
-    description: 'Private spaces for teams with whiteboards, displays, and soundproofing for focused collaboration.'
-  }
-];
+    description:
+      'Private spaces for teams with whiteboards, displays, and soundproofing for focused collaboration.',
+  },
+]
 
 const highlights = [
   {
     icon: Zap,
     title: '12 Seats Available',
     description: 'Ready to book now',
-    href: '/booking'
+    href: '/booking',
   },
   {
     icon: Calendar,
     title: 'Creative Workshop Tonight',
     description: '7pm - Digital Art Basics',
-    href: '/events'
+    href: '/events',
   },
   {
     icon: Heart,
-    title: 'Today\'s Special',
+    title: "Today's Special",
     description: 'Ethiopian Single Origin + Almond Croissant',
-    href: '/cafe/menu'
-  }
-];
+    href: '/cafe/menu',
+  },
+]
 
 export default function HomePage() {
   return (
@@ -61,30 +64,29 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-background via-muted/20 to-background py-24 lg:py-32">
         <div className="container">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="mx-auto max-w-4xl text-center">
             <Badge variant="secondary" className="mb-6">
               Now Open in San Francisco
             </Badge>
-            <h1 className="font-display text-5xl lg:text-7xl font-bold mb-6">
-              Where{' '}
-              <span className="gradient-text">Coffee</span>{' '}
-              Meets{' '}
+            <h1 className="mb-6 font-display text-5xl font-bold lg:text-7xl">
+              Where <span className="gradient-text">Coffee</span> Meets{' '}
               <span className="gradient-text">Power</span>
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              A hybrid space blending the energy of a neighborhood cafe with the focus of a professional coworking environment.
+            <p className="mx-auto mb-8 max-w-2xl text-xl text-muted-foreground">
+              A hybrid space blending the energy of a neighborhood cafe with the focus of a
+              professional coworking environment.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="btn-primary text-lg px-8">
+            <div className="flex flex-col justify-center gap-4 sm:flex-row">
+              <Button asChild size="lg" className="btn-primary px-8 text-lg">
                 <Link href="/booking">
                   Reserve a Desk
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="text-lg px-8">
+              <Button asChild variant="outline" size="lg" className="px-8 text-lg">
                 <Link href="/membership">See Memberships</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="text-lg px-8">
+              <Button asChild variant="outline" size="lg" className="px-8 text-lg">
                 <Link href="/cafe/menu">View Menu</Link>
               </Button>
             </div>
@@ -93,21 +95,23 @@ export default function HomePage() {
       </section>
 
       {/* NFT Funding Banner */}
-      <section className="py-12 bg-gradient-to-r from-cs-blue/10 to-cs-sun/10 border-b">
+      <section className="border-b bg-gradient-to-r from-cs-blue/10 to-cs-sun/10 py-12">
         <div className="container">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="mx-auto max-w-4xl text-center">
             <Badge variant="secondary" className="mb-4">
-              <Wallet className="h-4 w-4 mr-2" />
+              <Wallet className="mr-2 h-4 w-4" />
               Founding Member NFT
             </Badge>
-            <h2 className="font-display text-2xl lg:text-3xl font-bold mb-4">
+            <h2 className="mb-4 font-display text-2xl font-bold lg:text-3xl">
               Help Us Build the Future of Coworking
             </h2>
-            <p className="text-lg text-muted-foreground mb-6">
-              Purchase our Founding Member NFT to support our Santa Cruz build and unlock exclusive benefits: 
-              <strong> 50% off all workspace services</strong> and <strong>10% off cafe items</strong>.
+            <p className="mb-6 text-lg text-muted-foreground">
+              Purchase our Founding Member NFT to support our Santa Cruz build and unlock exclusive
+              benefits:
+              <strong> 50% off all workspace services</strong> and{' '}
+              <strong>10% off cafe items</strong>.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col justify-center gap-4 sm:flex-row">
               <Button asChild size="lg" className="btn-primary">
                 <Link href="#" target="_blank" rel="noopener noreferrer">
                   <Wallet className="mr-2 h-5 w-5" />
@@ -122,31 +126,30 @@ export default function HomePage() {
         </div>
       </section>
       {/* Concept Explainer */}
-      <section className="py-20 bg-muted/30">
+      <section className="bg-muted/30 py-20">
         <div className="container">
-          <div className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold mb-4">
+          <div className="mb-16 text-center">
+            <h2 className="mb-4 font-display text-3xl font-bold lg:text-4xl">
               Three Zones, One Community
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Built on the principles of <strong>Open Coworking</strong>—collaboration, openness, community, 
-              accessibility, and sustainability—we create spaces where everyone can thrive.
+            <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+              Built on the principles of <strong>Open Coworking</strong>—collaboration, openness,
+              community, accessibility, and sustainability—we create spaces where everyone can
+              thrive.
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {features.map((feature, index) => (
               <Card key={index} className="card-hover text-center">
                 <CardHeader>
-                  <div className="mx-auto mb-4 p-3 rounded-full bg-primary/10">
+                  <div className="mx-auto mb-4 rounded-full bg-primary/10 p-3">
                     <feature.icon className="h-8 w-8 text-primary" />
                   </div>
                   <CardTitle className="font-display text-xl">{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-base">
-                    {feature.description}
-                  </CardDescription>
+                  <CardDescription className="text-base">{feature.description}</CardDescription>
                 </CardContent>
               </Card>
             ))}
@@ -157,22 +160,20 @@ export default function HomePage() {
       {/* Today's Highlights */}
       <section className="py-20">
         <div className="container">
-          <div className="text-center mb-16">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold mb-4">
-              Happening Today
-            </h2>
+          <div className="mb-16 text-center">
+            <h2 className="mb-4 font-display text-3xl font-bold lg:text-4xl">Happening Today</h2>
             <p className="text-lg text-muted-foreground">
               Live updates on availability, events, and specials
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {highlights.map((highlight, index) => (
               <Card key={index} className="card-hover cursor-pointer">
                 <Link href={highlight.href}>
                   <CardHeader className="pb-3">
                     <div className="flex items-center space-x-3">
-                      <div className="p-2 rounded-lg bg-secondary/20">
+                      <div className="rounded-lg bg-secondary/20 p-2">
                         <highlight.icon className="h-5 w-5 text-secondary-foreground" />
                       </div>
                       <CardTitle className="text-lg">{highlight.title}</CardTitle>
@@ -189,64 +190,66 @@ export default function HomePage() {
       </section>
 
       {/* Membership Teaser */}
-      <section className="py-20 bg-muted/30">
+      <section className="bg-muted/30 py-20">
         <div className="container">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold mb-4">
+          <div className="mx-auto max-w-4xl text-center">
+            <h2 className="mb-4 font-display text-3xl font-bold lg:text-4xl">
               Find Your Perfect Plan
             </h2>
-            <p className="text-lg text-muted-foreground mb-12">
+            <p className="mb-12 text-lg text-muted-foreground">
               From casual drop-ins to dedicated desks, choose what works for your workflow
             </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+
+            <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-4">
               <Card className="text-center">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg">Hourly</CardTitle>
                   <div className="text-2xl font-bold text-cs-blue">$2.50/hr</div>
-                  <div className="text-sm text-cs-blue font-semibold">$1.25/hr NFT holders</div>
+                  <div className="text-sm font-semibold text-cs-blue">$1.25/hr NFT holders</div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">Perfect for quick sessions</p>
                 </CardContent>
               </Card>
-              
+
               <Card className="text-center">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg">Day Pass</CardTitle>
                   <div className="text-2xl font-bold text-cs-sun">$25/day</div>
-                  <div className="text-sm text-cs-sun font-semibold">$12.50/day NFT holders</div>
+                  <div className="text-sm font-semibold text-cs-sun">$12.50/day NFT holders</div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">Full day access</p>
                 </CardContent>
               </Card>
-              
+
               <Card className="text-center">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg">Cafe Member</CardTitle>
                   <div className="text-2xl font-bold text-cs-caramel">$150/mo</div>
-                  <div className="text-sm text-cs-caramel font-semibold">$75/mo NFT holders</div>
+                  <div className="text-sm font-semibold text-cs-caramel">$75/mo NFT holders</div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">Any desk, 9-5 access</p>
                 </CardContent>
               </Card>
-              
-              <Card className="text-center border-2 border-primary">
+
+              <Card className="border-2 border-primary text-center">
                 <CardHeader className="pb-3">
                   <Badge className="mb-2">Most Popular</Badge>
                   <CardTitle className="text-lg">Resident</CardTitle>
                   <div className="text-2xl font-bold text-cs-apricot">$425/mo</div>
-                  <div className="text-sm text-cs-apricot font-semibold">$212.50/mo NFT holders</div>
+                  <div className="text-sm font-semibold text-cs-apricot">
+                    $212.50/mo NFT holders
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">Dedicated desk 24/7</p>
                 </CardContent>
               </Card>
             </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+
+            <div className="flex flex-col justify-center gap-4 sm:flex-row">
               <Button asChild size="lg" className="btn-primary">
                 <Link href="/membership">
                   See Full Plans
@@ -267,17 +270,18 @@ export default function HomePage() {
       {/* Location & Contact */}
       <section className="py-20">
         <div className="container">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
             <div>
-              <h2 className="font-display text-3xl lg:text-4xl font-bold mb-6">
+              <h2 className="mb-6 font-display text-3xl font-bold lg:text-4xl">
                 Right in the Heart of SF
               </h2>
-              <p className="text-lg text-muted-foreground mb-8">
-                Located on Market Street with easy access to BART, Muni, and major bike routes. 
-                We're part of the community that's been shaping Santa Cruz's creative and tech landscape since 2006.
+              <p className="mb-8 text-lg text-muted-foreground">
+                Located on Market Street with easy access to BART, Muni, and major bike routes.
+                We're part of the community that's been shaping Santa Cruz's creative and tech
+                landscape since 2006.
               </p>
-              
-              <div className="space-y-4 mb-8">
+
+              <div className="mb-8 space-y-4">
                 <div className="flex items-center space-x-3">
                   <MapPin className="h-5 w-5 text-muted-foreground" />
                   <span>420 Pacific Ave, Santa Cruz, CA 95060</span>
@@ -291,8 +295,8 @@ export default function HomePage() {
                   <span>High-speed WiFi, Power at every seat</span>
                 </div>
               </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
+
+              <div className="flex flex-col gap-4 sm:flex-row">
                 <Button asChild className="btn-primary">
                   <Link href="/location">Get Directions</Link>
                 </Button>
@@ -301,10 +305,10 @@ export default function HomePage() {
                 </Button>
               </div>
             </div>
-            
-            <div className="bg-muted rounded-2xl h-96 flex items-center justify-center">
+
+            <div className="flex h-96 items-center justify-center rounded-2xl bg-muted">
               <div className="text-center">
-                <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <MapPin className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
                 <p className="text-muted-foreground">Interactive map coming soon</p>
               </div>
             </div>
@@ -312,5 +316,5 @@ export default function HomePage() {
         </div>
       </section>
     </>
-  );
+  )
 }

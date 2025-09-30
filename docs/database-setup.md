@@ -109,21 +109,21 @@ SUPABASE_DB_PASSWORD=your-database-password
 
 ### Table Summary
 
-| Table Name | Description | Row Count (Seed) |
-|------------|-------------|------------------|
-| `users` | User accounts and authentication | 0 (empty) |
-| `membership_plans` | Subscription plans | 4 plans |
-| `workspaces` | Physical workspace resources | 8 spaces |
-| `bookings` | Workspace reservations | 0 (empty) |
-| `membership_credits` | Credit allocation ledger | 0 (empty) |
-| `credit_transactions` | Credit usage history | 0 (empty) |
-| `menu_items` | Cafe menu items | 21 items |
-| `cafe_orders` | Customer orders | 0 (empty) |
-| `events` | Community events | 3 events |
-| `event_rsvps` | Event registrations | 0 (empty) |
-| `blog_posts` | Blog content | 0 (empty) |
-| `contact_submissions` | Contact form data | 0 (empty) |
-| `newsletter_subscribers` | Email subscriptions | 0 (empty) |
+| Table Name               | Description                      | Row Count (Seed) |
+| ------------------------ | -------------------------------- | ---------------- |
+| `users`                  | User accounts and authentication | 0 (empty)        |
+| `membership_plans`       | Subscription plans               | 4 plans          |
+| `workspaces`             | Physical workspace resources     | 8 spaces         |
+| `bookings`               | Workspace reservations           | 0 (empty)        |
+| `membership_credits`     | Credit allocation ledger         | 0 (empty)        |
+| `credit_transactions`    | Credit usage history             | 0 (empty)        |
+| `menu_items`             | Cafe menu items                  | 21 items         |
+| `cafe_orders`            | Customer orders                  | 0 (empty)        |
+| `events`                 | Community events                 | 3 events         |
+| `event_rsvps`            | Event registrations              | 0 (empty)        |
+| `blog_posts`             | Blog content                     | 0 (empty)        |
+| `contact_submissions`    | Contact form data                | 0 (empty)        |
+| `newsletter_subscribers` | Email subscriptions              | 0 (empty)        |
 
 ### Entity Relationship Diagram (ERD)
 
@@ -254,6 +254,7 @@ SELECT title, event_date, capacity FROM events;
 ```
 
 Expected output:
+
 - 4 membership plans
 - 8 workspaces (2 hot desks, 2 focus rooms, 1 collab room, 1 boardroom, 2 comm pods)
 - 21 menu items (6 coffee, 3 tea, 5 pastries, 6 meals)
@@ -268,6 +269,7 @@ All tables have RLS enabled with the following policy patterns:
 ### Public Read Policies
 
 Tables with **public read access**:
+
 - `membership_plans` (active plans only)
 - `workspaces` (available workspaces only)
 - `menu_items` (available & orderable items)
@@ -277,6 +279,7 @@ Tables with **public read access**:
 ### User-Scoped Policies
 
 Users can only access **their own data** in:
+
 - `bookings` - Read/create/update own bookings
 - `membership_credits` - Read own credits
 - `credit_transactions` - Read own transactions
@@ -286,6 +289,7 @@ Users can only access **their own data** in:
 ### Service Role Access
 
 The `service_role` key has **full access** to all tables for:
+
 - Admin operations
 - Backend API endpoints
 - Scheduled jobs
@@ -335,6 +339,7 @@ pg_prove -d "your-connection-string" supabase/tests/schema.test.sql
 ```
 
 Tests verify:
+
 - Table existence (13 tables)
 - Primary keys (13 checks)
 - Foreign keys (8 relationships)
@@ -353,6 +358,7 @@ pg_prove -d "your-connection-string" supabase/tests/business-logic.test.sql
 ```
 
 Tests verify:
+
 - User creation and validation
 - Membership plan constraints
 - Workspace availability
@@ -371,13 +377,13 @@ Tests verify:
 
 **Current Coverage:** 85%+
 
-| Category | Coverage |
-|----------|----------|
-| Schema Validation | 95% |
-| Business Logic | 80% |
-| Constraint Checks | 90% |
-| Function Testing | 85% |
-| Trigger Testing | 80% |
+| Category          | Coverage |
+| ----------------- | -------- |
+| Schema Validation | 95%      |
+| Business Logic    | 80%      |
+| Constraint Checks | 90%      |
+| Function Testing  | 85%      |
+| Trigger Testing   | 80%      |
 
 ### Continuous Integration
 
@@ -465,6 +471,7 @@ CREATE SCHEMA public;
 **Symptoms:** 403 errors or empty results when calling from client
 
 **Solution:** Verify you're using correct API key:
+
 - Use `anon` key for public queries
 - Use `service_role` key for admin operations
 - Check RLS policies match your use case
@@ -474,13 +481,13 @@ CREATE SCHEMA public;
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY // For client-side
-);
+)
 
 // For server-side admin operations
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY // Service role
-);
+)
 ```
 
 #### 3. Seed Data Not Appearing
@@ -494,6 +501,7 @@ SELECT COUNT(*) FROM menu_items;
 ```
 
 If counts are 0, re-run seed script. If error occurs, check:
+
 - Foreign key constraints
 - Data format (JSONB arrays)
 - Enum values in CHECK constraints
@@ -501,6 +509,7 @@ If counts are 0, re-run seed script. If error occurs, check:
 #### 4. Tests Failing
 
 **Common causes:**
+
 - pgTAP extension not installed
 - Test data conflicts with seed data
 - RLS policies blocking test queries
@@ -520,6 +529,7 @@ ROLLBACK;
 #### 5. Connection Timeout
 
 **Solution:**
+
 - Check firewall settings
 - Verify database password
 - Confirm project is not paused (Supabase free tier)
@@ -651,41 +661,33 @@ npm install openai
 Generate embeddings:
 
 ```typescript
-import { Configuration, OpenAIApi } from 'openai';
-import { supabaseAdmin } from '@/lib/db/supabase';
-import crypto from 'crypto';
+import { Configuration, OpenAIApi } from 'openai'
+import { supabaseAdmin } from '@/lib/db/supabase'
+import crypto from 'crypto'
 
-const openai = new OpenAIApi(
-  new Configuration({ apiKey: process.env.OPENAI_API_KEY })
-);
+const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_API_KEY }))
 
 async function generateEmbedding(text: string): Promise<number[]> {
   const response = await openai.createEmbedding({
     model: 'text-embedding-ada-002',
     input: text,
-  });
-  return response.data.data[0].embedding;
+  })
+  return response.data.data[0].embedding
 }
 
-async function updateBlogPostEmbedding(
-  blogPostId: string,
-  content: string
-) {
+async function updateBlogPostEmbedding(blogPostId: string, content: string) {
   // Generate embedding
-  const embedding = await generateEmbedding(content);
+  const embedding = await generateEmbedding(content)
 
   // Create content hash to detect changes
-  const contentHash = crypto
-    .createHash('md5')
-    .update(content)
-    .digest('hex');
+  const contentHash = crypto.createHash('md5').update(content).digest('hex')
 
   // Upsert embedding
   await supabaseAdmin.rpc('update_blog_post_embedding', {
     p_blog_post_id: blogPostId,
     p_embedding: embedding,
     p_content_hash: contentHash,
-  });
+  })
 }
 ```
 
@@ -701,7 +703,7 @@ await supabaseAdmin.from('search_analytics').insert({
   results_count: results.length,
   clicked_result_id: clickedId,
   session_id: sessionId,
-});
+})
 ```
 
 ### Vector Index Optimization
@@ -717,6 +719,7 @@ WITH (lists = 100);
 ```
 
 **Index Parameters:**
+
 - `lists`: Number of clusters (default: 100)
 - Rule of thumb: `lists = rows / 1000`
 - More lists = faster search, more memory
@@ -761,7 +764,7 @@ const poolConfig = {
   connectionTimeoutMillis: 5000,
   idleTimeoutMillis: 30000,
   statement_timeout: 30000,
-};
+}
 ```
 
 ### Usage Examples
@@ -769,45 +772,42 @@ const poolConfig = {
 #### Simple Query
 
 ```typescript
-import { query } from '@/lib/db/connection';
+import { query } from '@/lib/db/connection'
 
-const result = await query(
-  'SELECT * FROM users WHERE email = $1',
-  ['user@example.com']
-);
+const result = await query('SELECT * FROM users WHERE email = $1', ['user@example.com'])
 ```
 
 #### Transaction
 
 ```typescript
-import { transaction } from '@/lib/db/connection';
+import { transaction } from '@/lib/db/connection'
 
-await transaction(async (client) => {
+await transaction(async client => {
   // All queries use same connection
-  await client.query('UPDATE membership_credits SET ...');
-  await client.query('INSERT INTO bookings ...');
-  await client.query('INSERT INTO credit_transactions ...');
+  await client.query('UPDATE membership_credits SET ...')
+  await client.query('INSERT INTO bookings ...')
+  await client.query('INSERT INTO credit_transactions ...')
 
   // Auto-commit if no errors
   // Auto-rollback on error
-});
+})
 ```
 
 #### Health Check
 
 ```typescript
-import { healthCheck, getPoolStats } from '@/lib/db/connection';
+import { healthCheck, getPoolStats } from '@/lib/db/connection'
 
 // Check database connectivity
-const isHealthy = await healthCheck();
+const isHealthy = await healthCheck()
 
 // Monitor pool utilization
-const stats = getPoolStats();
+const stats = getPoolStats()
 console.log({
   total: stats.totalCount,
   idle: stats.idleCount,
   waiting: stats.waitingCount,
-});
+})
 ```
 
 ### Best Practices

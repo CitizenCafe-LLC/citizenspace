@@ -7,16 +7,17 @@
  * logging and potential token blacklisting in the future.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/middleware/auth';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server'
+import { requireAuth } from '@/middleware/auth'
 
 export async function POST(request: NextRequest) {
   try {
     // Verify authentication
-    const auth = await requireAuth(request);
+    const auth = await requireAuth(request)
 
     if (!auth.authorized) {
-      return auth.response!;
+      return auth.response!
     }
 
     // In a production system, you might want to:
@@ -30,9 +31,9 @@ export async function POST(request: NextRequest) {
         message: 'Logout successful',
       },
       { status: 200 }
-    );
+    )
   } catch (error) {
-    console.error('Logout error:', error);
+    console.error('Logout error:', error)
     return NextResponse.json(
       {
         error: 'Internal Server Error',
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
         code: 'INTERNAL_ERROR',
       },
       { status: 500 }
-    );
+    )
   }
 }
 
@@ -51,5 +52,5 @@ export async function GET() {
       message: 'This endpoint only accepts POST requests',
     },
     { status: 405 }
-  );
+  )
 }

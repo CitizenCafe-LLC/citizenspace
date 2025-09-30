@@ -9,6 +9,7 @@
 ## Executive Summary
 
 The CitizenSpace development environment has been successfully configured with:
+
 - Complete CI/CD pipeline using GitHub Actions
 - Automated code quality enforcement with Husky pre-commit hooks
 - Comprehensive testing infrastructure with 80% coverage threshold
@@ -25,34 +26,40 @@ The CitizenSpace development environment has been successfully configured with:
 All required environment variables are documented in `.env.example`:
 
 #### Core Application
+
 - `NODE_ENV` - Application environment (development/staging/production)
 - `NEXT_PUBLIC_APP_URL` - Public-facing application URL
 - `NEXT_PUBLIC_APP_NAME` - Application name
 
 #### Database Configuration
+
 - `DATABASE_URL` - PostgreSQL connection string
 - `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
 - `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key (server-side)
 
 #### ZeroDB Configuration (NEW)
+
 - `ZERODB_URL` - ZeroDB instance URL for decentralized storage
 - `ZERODB_API_KEY` - ZeroDB API authentication key
 - `ZERODB_DATABASE_ID` - Database identifier in ZeroDB
 
 #### Authentication
+
 - `NEXTAUTH_URL` - NextAuth.js base URL
 - `NEXTAUTH_SECRET` - NextAuth.js secret (generate with: `openssl rand -base64 32`)
 - `JWT_SECRET` - JWT signing secret
 - `JWT_EXPIRES_IN` - JWT token expiration period
 
 #### Payment Processing (Stripe)
+
 - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` - Stripe publishable key (client-side)
 - `STRIPE_SECRET_KEY` - Stripe secret key (server-side)
 - `STRIPE_WEBHOOK_SECRET` - Stripe webhook signing secret
 - Stripe Price IDs for various membership tiers
 
 #### Web3 & Blockchain
+
 - `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` - WalletConnect Cloud project ID
 - `NEXT_PUBLIC_ETHEREUM_RPC_URL` - Ethereum RPC endpoint
 - `NEXT_PUBLIC_POLYGON_RPC_URL` - Polygon RPC endpoint
@@ -60,6 +67,7 @@ All required environment variables are documented in `.env.example`:
 - `NEXT_PUBLIC_CHAIN_ID` - Blockchain network ID
 
 #### Email Service (SMTP) (NEW)
+
 - `EMAIL_SERVER` - SMTP connection string (smtp://user:pass@host:port)
 - `EMAIL_FROM` - Default sender email address
 - `SMTP_HOST` - SMTP server hostname
@@ -71,27 +79,33 @@ All required environment variables are documented in `.env.example`:
 - `EMAIL_REPLY_TO` - Reply-to email address
 
 Alternative email providers:
+
 - SendGrid: `SENDGRID_API_KEY`
 - Resend: `RESEND_API_KEY`
 
 ### 1.2 Optional Environment Variables
 
 #### SMS Notifications
+
 - Twilio configuration for SMS alerts
 
 #### Analytics & Monitoring
+
 - Google Analytics measurement ID
 - Sentry DSN for error tracking
 - LogRocket app ID for session replay
 
 #### File Storage
+
 - AWS S3 configuration
 - Supabase Storage URL
 
 #### Caching
+
 - Redis URL and password for session storage
 
 #### Feature Flags
+
 - Toggle features: NFT verification, membership credits, cafe ordering, guest passes
 
 ---
@@ -103,10 +117,12 @@ Alternative email providers:
 **Jest + React Testing Library** configured for Next.js 13+ App Router
 
 #### Configuration Files
+
 - `/Users/aideveloper/Desktop/CitizenSpace/jest.config.js` - Jest configuration with Next.js integration
 - `/Users/aideveloper/Desktop/CitizenSpace/jest.setup.js` - Global test setup and mocks
 
 #### Test Coverage Thresholds (80%)
+
 ```javascript
 coverageThreshold: {
   global: {
@@ -119,12 +135,14 @@ coverageThreshold: {
 ```
 
 #### Test Scripts
+
 - `npm test` - Run all tests once
 - `npm run test:watch` - Run tests in watch mode (development)
 - `npm run test:coverage` - Generate detailed coverage report
 - `npm run test:ci` - Run tests in CI mode with coverage (limited workers)
 
 #### Test Structure
+
 ```
 __tests__/
 ├── unit/          # Unit tests for components and functions
@@ -136,6 +154,7 @@ __tests__/
 ### 2.2 Coverage Reports
 
 Coverage reports are generated in `/coverage/` directory:
+
 - HTML report: `coverage/lcov-report/index.html`
 - LCOV format: `coverage/lcov.info` (for CI integration)
 - Text summary in console output
@@ -149,17 +168,20 @@ Coverage reports are generated in `/coverage/` directory:
 **File**: `/Users/aideveloper/Desktop/CitizenSpace/.eslintrc.json`
 
 #### Extends
+
 - `next/core-web-vitals` - Next.js recommended rules
 - `plugin:@typescript-eslint/recommended` - TypeScript best practices
 - `plugin:react/recommended` - React best practices
 - `plugin:react-hooks/recommended` - React Hooks rules
 
 #### Key Rules
+
 - TypeScript: unused vars, explicit any, consistent imports
 - React: JSX scope, prop types, hooks dependencies
 - General: no console (warn), prefer const, strict equality
 
 #### Scripts
+
 - `npm run lint` - Check for linting errors
 - `npm run lint:fix` - Auto-fix linting issues
 
@@ -168,6 +190,7 @@ Coverage reports are generated in `/coverage/` directory:
 **File**: `/Users/aideveloper/Desktop/CitizenSpace/.prettierrc`
 
 #### Settings
+
 - No semicolons
 - Single quotes
 - 100 character line width
@@ -176,6 +199,7 @@ Coverage reports are generated in `/coverage/` directory:
 - Tailwind CSS plugin integration
 
 #### Scripts
+
 - `npm run format` - Format all files
 - `npm run format:check` - Check formatting without changes
 
@@ -184,12 +208,14 @@ Coverage reports are generated in `/coverage/` directory:
 **File**: `/Users/aideveloper/Desktop/CitizenSpace/tsconfig.json`
 
 #### Features
+
 - Strict mode enabled
 - Next.js path aliases configured
 - JSX support for React
 - ES2021 target
 
 #### Scripts
+
 - `npm run typecheck` - Run TypeScript type checking
 
 ### 3.4 Pre-commit Hooks (Husky)
@@ -197,11 +223,13 @@ Coverage reports are generated in `/coverage/` directory:
 **Directory**: `/Users/aideveloper/Desktop/CitizenSpace/.husky/`
 
 #### Automated Checks (on git commit)
+
 1. Code formatting with Prettier
 2. Linting with ESLint (auto-fix)
 3. TypeScript type checking
 
 #### Hook Configuration
+
 ```bash
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
@@ -210,6 +238,7 @@ npm run pre-commit
 ```
 
 **Script**: `npm run pre-commit`
+
 - Runs: format → lint:fix → typecheck
 
 **Installation**: `npm run prepare`
@@ -223,42 +252,50 @@ npm run pre-commit
 **File**: `/Users/aideveloper/Desktop/CitizenSpace/.github/workflows/ci.yml`
 
 #### Trigger Events
+
 - Pull requests to `main` or `develop` branches
 - Pushes to `main` or `develop` branches
 
 #### Node Version
+
 - Node.js 18.x
 
 ### 4.2 Pipeline Stages
 
 #### Stage 1: Install Dependencies
+
 - Checkout code
 - Setup Node.js
 - Cache node_modules
 - Run `npm ci` (clean install)
 
 #### Stage 2: Lint & Format Check (Parallel)
+
 - Restore cached dependencies
 - Run ESLint (`npm run lint`)
 - Check Prettier formatting (`npm run format:check`)
 
 #### Stage 3: TypeScript Type Check (Parallel)
+
 - Restore cached dependencies
 - Run TypeScript compiler (`npm run typecheck`)
 
 #### Stage 4: Run Tests (Parallel)
+
 - Restore cached dependencies
 - Run tests with coverage (`npm run test:ci`)
 - Upload coverage to Codecov (optional)
 - Archive coverage artifacts
 
 #### Stage 5: Build Application
+
 - Depends on: lint, typecheck, test
 - Create `.env.local` with GitHub secrets
 - Build Next.js application (`npm run build`)
 - Archive build artifacts
 
 #### Stage 6: CI Success Summary
+
 - Runs only if all previous stages succeed
 - Provides success confirmation
 
@@ -291,29 +328,34 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 #### Services
 
 **PostgreSQL Database**
+
 - Image: `postgres:15-alpine`
 - Port: 5432
 - Volume: Persistent data storage
 - Health check: `pg_isready`
 
 **Redis Cache**
+
 - Image: `redis:7-alpine`
 - Port: 6379
 - Volume: Persistent data storage
 - Password-protected
 
 **Next.js Application**
+
 - Build: Custom Dockerfile.dev
 - Port: 3000
 - Hot module reloading
 - Volume mounting for live updates
 
 **Adminer (Database UI)**
+
 - Image: `adminer:latest`
 - Port: 8080
 - Database management interface
 
 #### Commands
+
 ```bash
 docker-compose up -d       # Start all services
 docker-compose logs -f     # View logs
@@ -328,15 +370,18 @@ docker-compose down -v     # Stop and remove volumes
 #### Multi-stage Build
 
 **Stage 1: Dependencies**
+
 - Base: `node:18-alpine`
 - Install all dependencies
 
 **Stage 2: Builder**
+
 - Copy dependencies and source
 - Build Next.js application
 - Environment: Production
 
 **Stage 3: Runner**
+
 - Minimal production image
 - Non-root user (security)
 - Only production dependencies
@@ -344,6 +389,7 @@ docker-compose down -v     # Stop and remove volumes
 - Optimized for size (~150MB)
 
 #### Build Commands
+
 ```bash
 docker build -t citizenspace:latest .
 docker run -p 3000:3000 citizenspace:latest
@@ -356,6 +402,7 @@ docker run -p 3000:3000 citizenspace:latest
 ### 6.1 Supabase Integration
 
 #### Local Development
+
 - Supabase CLI for local instance
 - PostgreSQL database
 - Auth server
@@ -364,6 +411,7 @@ docker run -p 3000:3000 citizenspace:latest
 - Studio UI (port 54323)
 
 #### Commands
+
 ```bash
 npm run supabase:start     # Start local Supabase
 npm run supabase:stop      # Stop Supabase
@@ -456,6 +504,7 @@ npm run prepare            # Initialize Husky git hooks
 ### 8.1 Technology Stack
 
 **Frontend**
+
 - Next.js 13.5.1 (App Router)
 - React 18.2.0
 - TypeScript 5.2.2
@@ -464,40 +513,47 @@ npm run prepare            # Initialize Husky git hooks
 - Radix UI primitives
 
 **Backend**
+
 - Next.js API Routes
 - Supabase (PostgreSQL + Auth + Storage)
 - ZeroDB (Decentralized database)
 - Server-side rendering (SSR)
 
 **Authentication**
+
 - Supabase Auth
 - JWT tokens
 - Social login support
 - Email/password authentication
 
 **Payment Processing**
+
 - Stripe integration
 - Webhook handling
 - Subscription management
 
 **Web3 Integration**
+
 - WalletConnect
 - RainbowKit
 - wagmi/viem
 - NFT verification
 
 **Testing**
+
 - Jest 29.7.0
 - React Testing Library 14.3.1
 - jsdom test environment
 
 **Code Quality**
+
 - ESLint 8.49.0
 - Prettier 3.1.1
 - TypeScript strict mode
 - Husky pre-commit hooks
 
 **DevOps**
+
 - Docker & Docker Compose
 - GitHub Actions CI/CD
 - Multi-stage builds
@@ -671,6 +727,7 @@ chore: update dependencies
 - **Production**: Secrets management service
 
 **Never commit**:
+
 - `.env.local`
 - `.env.production`
 - Any file containing secrets
@@ -691,6 +748,7 @@ chore: update dependencies
 ### 11.2 Quality Gates
 
 All PRs must pass:
+
 - ESLint checks (no errors)
 - Prettier formatting checks
 - TypeScript compilation (no errors)
@@ -756,23 +814,27 @@ All PRs must pass:
 ### 14.1 Common Issues
 
 **Port 3000 already in use**
+
 ```bash
 lsof -ti:3000 | xargs kill -9
 ```
 
 **Module not found errors**
+
 ```bash
 rm -rf node_modules .next
 npm install
 ```
 
 **Husky hooks not running**
+
 ```bash
 npm run prepare
 chmod +x .husky/pre-commit
 ```
 
 **Database connection errors**
+
 ```bash
 npm run supabase:stop
 npm run supabase:start
@@ -780,6 +842,7 @@ npm run db:status
 ```
 
 **Test failures**
+
 ```bash
 npx jest --clearCache
 npm test
@@ -879,6 +942,7 @@ docker-compose up -d
 **Configuration Status**: Production Ready
 
 For questions or issues, refer to:
+
 - `/Users/aideveloper/Desktop/CitizenSpace/docs/development-setup.md`
 - `/Users/aideveloper/Desktop/CitizenSpace/README.md`
 - Project documentation in `/docs/` directory

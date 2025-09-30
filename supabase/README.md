@@ -53,6 +53,7 @@ ORDER BY tablename;
 ```
 
 Expected tables:
+
 - bookings
 - blog_posts
 - cafe_orders
@@ -72,6 +73,7 @@ Expected tables:
 ### 20250929000001_initial_schema.sql
 
 Creates all 13 core tables with:
+
 - UUID primary keys
 - Foreign key constraints
 - Check constraints for enums
@@ -82,6 +84,7 @@ Creates all 13 core tables with:
 - Utility functions
 
 **Tables Created:**
+
 1. users
 2. membership_plans
 3. workspaces
@@ -99,6 +102,7 @@ Creates all 13 core tables with:
 ### 20250929000002_row_level_security.sql
 
 Sets up comprehensive Row Level Security (RLS) policies:
+
 - Public read access for membership plans, workspaces, menu items, events
 - User-scoped access for bookings, orders, RSVPs, credits
 - Service role full access for admin operations
@@ -109,12 +113,14 @@ Sets up comprehensive Row Level Security (RLS) policies:
 The seed script populates:
 
 ### Membership Plans (4)
+
 - **Hourly** - $2.50/hr pay-as-you-go
 - **Day Pass** - $25/day full access
 - **Cafe Membership** - $150/mo with 2hr meeting room credits
 - **Resident Desk** - $425/mo with 8hr meeting room credits
 
 ### Workspaces (8)
+
 - 2 Hot Desks (Main Floor, Quiet Zone)
 - 2 Focus Rooms (2-4 people)
 - 1 Collaborate Room (4-6 people)
@@ -122,12 +128,14 @@ The seed script populates:
 - 2 Communications Pods (1 person)
 
 ### Menu Items (21)
+
 - Coffee (6 items)
 - Tea (3 items)
 - Pastries (5 items)
 - Meals (6 items)
 
 ### Events (3)
+
 - Sample workshops and networking events
 
 ## Testing
@@ -147,6 +155,7 @@ pg_prove -d "your-connection-string" supabase/tests/schema.test.sql
 ```
 
 **Coverage:** 100 tests covering:
+
 - Table existence (13)
 - Primary keys (13)
 - Foreign keys (8)
@@ -165,6 +174,7 @@ pg_prove -d "your-connection-string" supabase/tests/business-logic.test.sql
 ```
 
 **Coverage:** 50 tests covering:
+
 - User creation and validation
 - Membership plan constraints
 - Workspace availability
@@ -275,7 +285,7 @@ WHERE contype = 'f';
 
 1. **Use Indexes** - All foreign keys and commonly queried columns are indexed
 2. **Limit Results** - Always use `LIMIT` for large tables
-3. **Avoid SELECT *** - Only select columns you need
+3. **Avoid SELECT \*** - Only select columns you need
 4. **Use Connection Pooling** - Enable in Supabase settings
 5. **Monitor Slow Queries** - Check Supabase dashboard
 
@@ -292,6 +302,7 @@ WHERE contype = 'f';
 ## Documentation
 
 For detailed documentation, see:
+
 - [Database Setup Guide](../docs/database-setup.md)
 - [PRD.md](../PRD.md) - Full requirements
 - [BACKLOG.md](../BACKLOG.md) - Implementation tasks
@@ -299,6 +310,7 @@ For detailed documentation, see:
 ## Support
 
 For issues or questions about the database:
+
 1. Check the [Troubleshooting](#troubleshooting) section
 2. Review [Supabase Documentation](https://supabase.com/docs)
 3. Contact the development team

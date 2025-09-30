@@ -99,6 +99,7 @@ DATABASE_URL=postgresql://postgres:[password]@[host]:5432/postgres
 ```
 
 **How to get these:**
+
 1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
 2. Create a new project or select existing one
 3. Go to Settings > API
@@ -113,6 +114,7 @@ ZERODB_DATABASE_ID=your-zerodb-database-id
 ```
 
 **How to get these:**
+
 1. Contact ZeroDB provider or set up your own instance
 2. Configure API credentials for secure access
 3. Document database ID for the CitizenSpace project
@@ -127,6 +129,7 @@ JWT_EXPIRES_IN=7d
 ```
 
 **Generate NEXTAUTH_SECRET:**
+
 ```bash
 openssl rand -base64 32
 ```
@@ -151,6 +154,7 @@ EMAIL_REPLY_TO=support@citizenspace.com
 ```
 
 **SMTP Provider Examples:**
+
 - **Gmail**: smtp.gmail.com:587 (requires App Password)
 - **SendGrid**: smtp.sendgrid.net:587
 - **AWS SES**: email-smtp.us-east-1.amazonaws.com:587
@@ -165,6 +169,7 @@ STRIPE_SECRET_KEY=sk_test_...
 ```
 
 **How to get these:**
+
 1. Go to [Stripe Dashboard](https://dashboard.stripe.com/)
 2. Navigate to Developers > API keys
 3. Copy the publishable key and secret key
@@ -177,6 +182,7 @@ NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=your-project-id
 ```
 
 **How to get this:**
+
 1. Go to [WalletConnect Cloud](https://cloud.walletconnect.com/)
 2. Create a new project
 3. Copy the Project ID
@@ -223,6 +229,7 @@ Configure these for full functionality:
 1. **Create Tables**: Execute the SQL schema from `database/schema.sql` in your Supabase SQL editor
 
 2. **Run Migrations**:
+
    ```bash
    npm run db:migrate
    ```
@@ -235,6 +242,7 @@ Configure these for full functionality:
 ### Option 2: Using Local PostgreSQL
 
 1. **Install PostgreSQL**:
+
    ```bash
    # macOS (Homebrew)
    brew install postgresql@15
@@ -246,11 +254,13 @@ Configure these for full functionality:
    ```
 
 2. **Create Database**:
+
    ```bash
    createdb citizenspace
    ```
 
 3. **Update DATABASE_URL**:
+
    ```bash
    DATABASE_URL=postgresql://postgres:password@localhost:5432/citizenspace
    ```
@@ -273,8 +283,9 @@ npm run dev
 ```
 
 The application will be available at:
+
 - **Frontend**: http://localhost:3000
-- **API Routes**: http://localhost:3000/api/*
+- **API Routes**: http://localhost:3000/api/\*
 
 ### Production Build
 
@@ -324,16 +335,19 @@ The project uses **Husky** to automatically run quality checks before each commi
 If any check fails, the commit will be blocked. Fix the issues and try again.
 
 **Manual pre-commit check:**
+
 ```bash
 npm run pre-commit
 ```
 
 **Bypass pre-commit hooks** (not recommended):
+
 ```bash
 git commit --no-verify -m "message"
 ```
 
 **Reinstall hooks** (if needed):
+
 ```bash
 npm run prepare
 ```
@@ -454,12 +468,14 @@ describe('/api/bookings', () => {
 ### Coverage Thresholds
 
 The project maintains **80% coverage** across:
+
 - Branches
 - Functions
 - Lines
 - Statements
 
 View coverage report:
+
 ```bash
 npm run test:coverage
 open coverage/lcov-report/index.html
@@ -658,6 +674,7 @@ docker-compose down       # Stop all services
 ## Support
 
 For questions or support:
+
 - **Email**: dev@citizenspace.com
 - **Slack**: #dev-support
 - **GitHub Issues**: [Create an issue](https://github.com/citizenspace/app/issues)

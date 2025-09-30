@@ -9,7 +9,10 @@ export const CITIZEN_SPACE_NFT_CONTRACT = {
   address: '0x1234567890123456789012345678901234567890' as `0x${string}`,
   abi: [
     {
-      inputs: [{ name: 'to', type: 'address' }, { name: 'quantity', type: 'uint256' }],
+      inputs: [
+        { name: 'to', type: 'address' },
+        { name: 'quantity', type: 'uint256' },
+      ],
       name: 'mint',
       outputs: [],
       stateMutability: 'payable',
@@ -44,13 +47,13 @@ export const CITIZEN_SPACE_NFT_CONTRACT = {
       type: 'function',
     },
   ] as const,
-} as const;
+} as const
 
-export const MINT_PRICE = '0.10'; // ETH
-export const MAX_SUPPLY = 500;
+export const MINT_PRICE = '0.10' // ETH
+export const MAX_SUPPLY = 500
 
 // NFT holder discount rates
 export const NFT_HOLDER_DISCOUNTS = {
   WORKSPACE: 0.5, // 50% discount on workspace bookings
   CAFE: 0.1, // 10% discount on cafe orders
-} as const;
+} as const

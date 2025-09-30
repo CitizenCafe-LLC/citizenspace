@@ -25,93 +25,93 @@ Task 1.1 has been successfully completed with all requirements met and exceeded.
 
 ### 1. PostgreSQL Database Setup ✅
 
-| Requirement | Status | Details |
-|------------|--------|---------|
-| PostgreSQL connection | ✅ Complete | Via Supabase and direct pg Pool |
-| Database schema | ✅ Complete | All 13 tables + vector tables |
-| UUID primary keys | ✅ Complete | All tables use UUID |
-| Foreign key constraints | ✅ Complete | Proper relationships defined |
-| Indexes | ✅ Complete | Optimized for query performance |
-| Triggers | ✅ Complete | Auto-updating timestamps |
-| Helper functions | ✅ Complete | Confirmation codes, order numbers |
+| Requirement             | Status      | Details                           |
+| ----------------------- | ----------- | --------------------------------- |
+| PostgreSQL connection   | ✅ Complete | Via Supabase and direct pg Pool   |
+| Database schema         | ✅ Complete | All 13 tables + vector tables     |
+| UUID primary keys       | ✅ Complete | All tables use UUID               |
+| Foreign key constraints | ✅ Complete | Proper relationships defined      |
+| Indexes                 | ✅ Complete | Optimized for query performance   |
+| Triggers                | ✅ Complete | Auto-updating timestamps          |
+| Helper functions        | ✅ Complete | Confirmation codes, order numbers |
 
 ### 2. ZeroDB / Vector Storage Setup ✅
 
-| Requirement | Status | Details |
-|------------|--------|---------|
-| pgvector extension | ✅ Complete | Enabled in migration |
-| blog_post_embeddings table | ✅ Complete | 1536-dimension vectors |
-| document_embeddings table | ✅ Complete | General-purpose vectors |
-| search_analytics table | ✅ Complete | Query tracking |
-| Semantic search functions | ✅ Complete | Pure & hybrid search |
-| IVFFlat indexes | ✅ Complete | Optimized for performance |
-| Embedding utilities | ✅ Complete | OpenAI integration examples |
+| Requirement                | Status      | Details                     |
+| -------------------------- | ----------- | --------------------------- |
+| pgvector extension         | ✅ Complete | Enabled in migration        |
+| blog_post_embeddings table | ✅ Complete | 1536-dimension vectors      |
+| document_embeddings table  | ✅ Complete | General-purpose vectors     |
+| search_analytics table     | ✅ Complete | Query tracking              |
+| Semantic search functions  | ✅ Complete | Pure & hybrid search        |
+| IVFFlat indexes            | ✅ Complete | Optimized for performance   |
+| Embedding utilities        | ✅ Complete | OpenAI integration examples |
 
 ### 3. All 13 Database Tables ✅
 
-| Table | Columns | Constraints | Indexes | Status |
-|-------|---------|-------------|---------|--------|
-| 1. users | 17 | ✅ | ✅ | ✅ |
-| 2. membership_plans | 16 | ✅ | ✅ | ✅ |
-| 3. workspaces | 14 | ✅ | ✅ | ✅ |
-| 4. bookings | 26 | ✅ | ✅ | ✅ |
-| 5. membership_credits | 10 | ✅ | ✅ | ✅ |
-| 6. credit_transactions | 9 | ✅ | ✅ | ✅ |
-| 7. menu_items | 12 | ✅ | ✅ | ✅ |
-| 8. cafe_orders | 14 | ✅ | ✅ | ✅ |
-| 9. events | 15 | ✅ | ✅ | ✅ |
-| 10. event_rsvps | 8 | ✅ | ✅ | ✅ |
-| 11. blog_posts | 12 | ✅ | ✅ | ✅ |
-| 12. blog_categories | 5 | ✅ | ✅ | ✅ |
-| 13. contact_submissions | 9 | ✅ | ✅ | ✅ |
-| 14. newsletter_subscribers | 5 | ✅ | ✅ | ✅ |
+| Table                      | Columns | Constraints | Indexes | Status |
+| -------------------------- | ------- | ----------- | ------- | ------ |
+| 1. users                   | 17      | ✅          | ✅      | ✅     |
+| 2. membership_plans        | 16      | ✅          | ✅      | ✅     |
+| 3. workspaces              | 14      | ✅          | ✅      | ✅     |
+| 4. bookings                | 26      | ✅          | ✅      | ✅     |
+| 5. membership_credits      | 10      | ✅          | ✅      | ✅     |
+| 6. credit_transactions     | 9       | ✅          | ✅      | ✅     |
+| 7. menu_items              | 12      | ✅          | ✅      | ✅     |
+| 8. cafe_orders             | 14      | ✅          | ✅      | ✅     |
+| 9. events                  | 15      | ✅          | ✅      | ✅     |
+| 10. event_rsvps            | 8       | ✅          | ✅      | ✅     |
+| 11. blog_posts             | 12      | ✅          | ✅      | ✅     |
+| 12. blog_categories        | 5       | ✅          | ✅      | ✅     |
+| 13. contact_submissions    | 9       | ✅          | ✅      | ✅     |
+| 14. newsletter_subscribers | 5       | ✅          | ✅      | ✅     |
 
 ### 4. Connection Pooling ✅
 
-| Component | Status | Location |
-|-----------|--------|----------|
-| pg Pool configuration | ✅ Complete | `lib/db/connection.ts` |
-| Query utility | ✅ Complete | `query()` function |
-| Transaction utility | ✅ Complete | `transaction()` function |
-| Health check | ✅ Complete | `healthCheck()` function |
-| Pool monitoring | ✅ Complete | `getPoolStats()` function |
-| Error handling | ✅ Complete | Comprehensive logging |
+| Component             | Status      | Location                  |
+| --------------------- | ----------- | ------------------------- |
+| pg Pool configuration | ✅ Complete | `lib/db/connection.ts`    |
+| Query utility         | ✅ Complete | `query()` function        |
+| Transaction utility   | ✅ Complete | `transaction()` function  |
+| Health check          | ✅ Complete | `healthCheck()` function  |
+| Pool monitoring       | ✅ Complete | `getPoolStats()` function |
+| Error handling        | ✅ Complete | Comprehensive logging     |
 
 ### 5. Migrations ✅
 
-| Migration | Purpose | Status |
-|-----------|---------|--------|
-| 20250929000001_initial_schema.sql | Core 13 tables | ✅ |
-| 20250929000002_row_level_security.sql | RLS policies | ✅ |
+| Migration                              | Purpose         | Status |
+| -------------------------------------- | --------------- | ------ |
+| 20250929000001_initial_schema.sql      | Core 13 tables  | ✅     |
+| 20250929000002_row_level_security.sql  | RLS policies    | ✅     |
 | 20250929000003_add_blog_categories.sql | Blog categories | ✅ NEW |
-| 20250929000004_vector_storage.sql | pgvector setup | ✅ NEW |
+| 20250929000004_vector_storage.sql      | pgvector setup  | ✅ NEW |
 
 ### 6. Seed Data ✅
 
-| Data Type | Count | Status |
-|-----------|-------|--------|
-| Membership Plans | 4 | ✅ |
-| Workspaces | 8 | ✅ |
-| Menu Items | 21 | ✅ |
-| Events | 3 | ✅ |
-| Blog Categories | 6 | ✅ NEW |
+| Data Type        | Count | Status |
+| ---------------- | ----- | ------ |
+| Membership Plans | 4     | ✅     |
+| Workspaces       | 8     | ✅     |
+| Menu Items       | 21    | ✅     |
+| Events           | 3     | ✅     |
+| Blog Categories  | 6     | ✅ NEW |
 
 ### 7. Tests ✅
 
-| Test Suite | Tests | Coverage | Status |
-|-----------|-------|----------|--------|
-| Schema Tests | 50+ | 95% | ✅ |
-| Business Logic Tests | 30+ | 80% | ✅ |
-| Overall Coverage | 80+ | 85% | ✅ |
+| Test Suite           | Tests | Coverage | Status |
+| -------------------- | ----- | -------- | ------ |
+| Schema Tests         | 50+   | 95%      | ✅     |
+| Business Logic Tests | 30+   | 80%      | ✅     |
+| Overall Coverage     | 80+   | 85%      | ✅     |
 
 ### 8. Documentation ✅
 
-| Document | Status | Location |
-|----------|--------|----------|
-| Database Setup Guide | ✅ Complete | `docs/database-setup.md` |
-| Vector Storage Guide | ✅ Complete | Included in setup guide |
-| Connection Pooling Guide | ✅ Complete | Included in setup guide |
-| API Reference | ✅ Complete | Inline documentation |
+| Document                 | Status      | Location                 |
+| ------------------------ | ----------- | ------------------------ |
+| Database Setup Guide     | ✅ Complete | `docs/database-setup.md` |
+| Vector Storage Guide     | ✅ Complete | Included in setup guide  |
+| Connection Pooling Guide | ✅ Complete | Included in setup guide  |
+| API Reference            | ✅ Complete | Inline documentation     |
 
 ---
 
@@ -443,7 +443,7 @@ Enables high-performance similarity search using vector embeddings:
 
 - **Query time**: <100ms for semantic search (with proper indexing)
 - **Index build time**: ~5 minutes per 100k documents
-- **Storage overhead**: 6KB per embedding (1536 floats * 4 bytes)
+- **Storage overhead**: 6KB per embedding (1536 floats \* 4 bytes)
 
 ---
 
@@ -475,6 +475,7 @@ Pool Configuration:
 ### Schema Tests (`__tests__/db/schema.test.ts`)
 
 ✅ 50+ tests covering:
+
 - Table existence and structure
 - Column types and constraints
 - Unique constraints (email, confirmation codes, etc.)
@@ -486,6 +487,7 @@ Pool Configuration:
 ### Business Logic Tests (`__tests__/db/business-logic.test.ts`)
 
 ✅ 30+ tests covering:
+
 - Booking price calculations
 - NFT holder discounts (50% workspace, 10% cafe)
 - Credit allocation and usage
@@ -497,13 +499,13 @@ Pool Configuration:
 
 ### Overall Coverage: 85%+
 
-| Category | Coverage |
-|----------|----------|
-| Schema | 95% |
-| Business Logic | 80% |
-| Constraints | 90% |
-| Functions | 85% |
-| Triggers | 80% |
+| Category       | Coverage |
+| -------------- | -------- |
+| Schema         | 95%      |
+| Business Logic | 80%      |
+| Constraints    | 90%      |
+| Functions      | 85%      |
+| Triggers       | 80%      |
 
 ---
 
@@ -568,22 +570,22 @@ VECTOR_SEARCH_LIMIT=10
 
 ### Query Performance
 
-| Operation | Time | Index Used |
-|-----------|------|------------|
-| User lookup by email | <5ms | idx_users_email |
-| Booking availability check | <10ms | idx_bookings_availability |
-| Active credits lookup | <5ms | idx_membership_credits_active |
-| Menu item search | <5ms | idx_menu_items_category |
-| Semantic blog search | <100ms | idx_blog_post_embeddings_embedding |
+| Operation                  | Time   | Index Used                         |
+| -------------------------- | ------ | ---------------------------------- |
+| User lookup by email       | <5ms   | idx_users_email                    |
+| Booking availability check | <10ms  | idx_bookings_availability          |
+| Active credits lookup      | <5ms   | idx_membership_credits_active      |
+| Menu item search           | <5ms   | idx_menu_items_category            |
+| Semantic blog search       | <100ms | idx_blog_post_embeddings_embedding |
 
 ### Database Size Estimates
 
-| Component | Size (Empty) | Size (1 Year) |
-|-----------|--------------|---------------|
-| Core tables | ~10 MB | ~500 MB |
-| Indexes | ~5 MB | ~200 MB |
-| Vector embeddings | ~1 MB | ~50 MB |
-| **Total** | **~16 MB** | **~750 MB** |
+| Component         | Size (Empty) | Size (1 Year) |
+| ----------------- | ------------ | ------------- |
+| Core tables       | ~10 MB       | ~500 MB       |
+| Indexes           | ~5 MB        | ~200 MB       |
+| Vector embeddings | ~1 MB        | ~50 MB        |
+| **Total**         | **~16 MB**   | **~750 MB**   |
 
 ---
 
@@ -603,10 +605,10 @@ All queries use parameterized statements:
 
 ```typescript
 // ✅ SAFE
-await query('SELECT * FROM users WHERE email = $1', [email]);
+await query('SELECT * FROM users WHERE email = $1', [email])
 
 // ❌ DANGEROUS (never use)
-await query(`SELECT * FROM users WHERE email = '${email}'`);
+await query(`SELECT * FROM users WHERE email = '${email}'`)
 ```
 
 ### 3. Sensitive Data Protection
@@ -717,15 +719,15 @@ For production deployments:
 
 ## Acceptance Criteria Verification
 
-| Criterion | Status | Evidence |
-|-----------|--------|----------|
-| All 13 tables created | ✅ | Migration files + seed data |
-| PostgreSQL connected | ✅ | Connection pooling utility |
-| ZeroDB/pgvector set up | ✅ | Vector storage migration |
-| Migrations run successfully | ✅ | Seed data populated |
-| Seed data populated | ✅ | 4 plans, 8 workspaces, 21 menu items, 3 events |
-| Tests written (80%+ coverage) | ✅ | 85% coverage achieved |
-| Documentation complete | ✅ | Comprehensive setup guide |
+| Criterion                     | Status | Evidence                                       |
+| ----------------------------- | ------ | ---------------------------------------------- |
+| All 13 tables created         | ✅     | Migration files + seed data                    |
+| PostgreSQL connected          | ✅     | Connection pooling utility                     |
+| ZeroDB/pgvector set up        | ✅     | Vector storage migration                       |
+| Migrations run successfully   | ✅     | Seed data populated                            |
+| Seed data populated           | ✅     | 4 plans, 8 workspaces, 21 menu items, 3 events |
+| Tests written (80%+ coverage) | ✅     | 85% coverage achieved                          |
+| Documentation complete        | ✅     | Comprehensive setup guide                      |
 
 ---
 

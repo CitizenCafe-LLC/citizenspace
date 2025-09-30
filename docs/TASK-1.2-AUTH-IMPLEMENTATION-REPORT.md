@@ -16,15 +16,15 @@ Successfully implemented a comprehensive authentication system for CitizenSpace 
 
 ### Core Technologies
 
-| Component | Technology | Version | Purpose |
-|-----------|------------|---------|---------|
-| Authentication | Custom JWT + Supabase Auth | Latest | User authentication |
-| Token Management | jose (JWT library) | Latest | Stateless token system |
-| Password Hashing | bcrypt | bcryptjs | Secure password storage |
-| Database | PostgreSQL (Supabase) | Latest | User data persistence |
-| Email Service | Nodemailer | v7.0.6 | Password reset emails |
-| Web3 Integration | Viem + Wagmi | v2.x | Blockchain interaction |
-| Testing | Jest | v29.7.0 | Unit & integration tests |
+| Component        | Technology                 | Version  | Purpose                  |
+| ---------------- | -------------------------- | -------- | ------------------------ |
+| Authentication   | Custom JWT + Supabase Auth | Latest   | User authentication      |
+| Token Management | jose (JWT library)         | Latest   | Stateless token system   |
+| Password Hashing | bcrypt                     | bcryptjs | Secure password storage  |
+| Database         | PostgreSQL (Supabase)      | Latest   | User data persistence    |
+| Email Service    | Nodemailer                 | v7.0.6   | Password reset emails    |
+| Web3 Integration | Viem + Wagmi               | v2.x     | Blockchain interaction   |
+| Testing          | Jest                       | v29.7.0  | Unit & integration tests |
 
 ---
 
@@ -33,6 +33,7 @@ Successfully implemented a comprehensive authentication system for CitizenSpace 
 ### ✅ 1. Dependencies Installed
 
 **Packages Added:**
+
 ```json
 {
   "bcryptjs": "^3.0.2",
@@ -51,6 +52,7 @@ Successfully implemented a comprehensive authentication system for CitizenSpace 
 **File**: `/lib/auth/jwt.ts` (Enhanced)
 
 **Features**:
+
 - JWT token generation with custom claims
 - Access tokens (15 min expiry)
 - Refresh tokens (7 day expiry)
@@ -59,13 +61,14 @@ Successfully implemented a comprehensive authentication system for CitizenSpace 
 - Role-based claims (user/staff/admin)
 
 **Token Structure**:
+
 ```typescript
 interface TokenPayload {
-  userId: string;
-  email: string;
-  role: 'user' | 'staff' | 'admin';
-  nftHolder?: boolean;
-  walletAddress?: string | null;
+  userId: string
+  email: string
+  role: 'user' | 'staff' | 'admin'
+  nftHolder?: boolean
+  walletAddress?: string | null
 }
 ```
 
@@ -76,6 +79,7 @@ interface TokenPayload {
 All authentication endpoints are fully implemented and tested:
 
 #### User Registration
+
 - **Endpoint**: `POST /api/auth/register`
 - **File**: `/app/api/auth/register/route.ts`
 - **Features**:
@@ -87,6 +91,7 @@ All authentication endpoints are fully implemented and tested:
   - Database user profile creation
 
 #### User Login
+
 - **Endpoint**: `POST /api/auth/login`
 - **File**: `/app/api/auth/login/route.ts`
 - **Features**:
@@ -96,6 +101,7 @@ All authentication endpoints are fully implemented and tested:
   - Session creation
 
 #### Token Refresh
+
 - **Endpoint**: `POST /api/auth/refresh`
 - **File**: `/app/api/auth/refresh/route.ts`
 - **Features**:
@@ -104,6 +110,7 @@ All authentication endpoints are fully implemented and tested:
   - Updated user data (including NFT status)
 
 #### Get Current User
+
 - **Endpoint**: `GET /api/auth/me`
 - **File**: `/app/api/auth/me/route.ts`
 - **Features**:
@@ -112,6 +119,7 @@ All authentication endpoints are fully implemented and tested:
   - NFT holder status included
 
 #### Update Profile
+
 - **Endpoint**: `PUT /api/auth/me`
 - **File**: `/app/api/auth/me/route.ts`
 - **Features**:
@@ -119,6 +127,7 @@ All authentication endpoints are fully implemented and tested:
   - Authentication required
 
 #### Password Reset Request
+
 - **Endpoint**: `POST /api/auth/forgot-password`
 - **File**: `/app/api/auth/forgot-password/route.ts`
 - **Features**:
@@ -128,6 +137,7 @@ All authentication endpoints are fully implemented and tested:
   - No email enumeration (always returns success)
 
 #### Password Reset Confirmation
+
 - **Endpoint**: `POST /api/auth/reset-password`
 - **File**: `/app/api/auth/reset-password/route.ts`
 - **Features**:
@@ -136,6 +146,7 @@ All authentication endpoints are fully implemented and tested:
   - Secure password update
 
 #### Logout
+
 - **Endpoint**: `POST /api/auth/logout`
 - **File**: `/app/api/auth/logout/route.ts`
 - **Features**:
@@ -147,9 +158,11 @@ All authentication endpoints are fully implemented and tested:
 ### ✅ 4. Authentication Providers
 
 #### Credentials Provider (Email/Password)
+
 **Implementation**: `/lib/auth/service.ts`
 
 **Features**:
+
 - Email/password registration
 - Login with credential validation
 - Password hashing with bcrypt (12 rounds)
@@ -157,6 +170,7 @@ All authentication endpoints are fully implemented and tested:
 - User profile management
 
 **Password Policy**:
+
 - Minimum 8 characters
 - At least 1 uppercase letter
 - At least 1 lowercase letter
@@ -164,11 +178,14 @@ All authentication endpoints are fully implemented and tested:
 - At least 1 special character
 
 #### Web3 Provider (Wallet Authentication)
+
 **Implementation**:
+
 - `/app/api/auth/wallet-connect/route.ts`
 - `/lib/web3/nft-verification.ts`
 
 **Features**:
+
 - Wallet address connection
 - NFT ownership verification
 - On-chain balance checking
@@ -176,6 +193,7 @@ All authentication endpoints are fully implemented and tested:
 - Automatic NFT holder flag update
 
 **Process**:
+
 1. User connects wallet via RainbowKit/Wagmi
 2. Wallet address validated (Ethereum format)
 3. Check if wallet already connected to another account
@@ -189,6 +207,7 @@ All authentication endpoints are fully implemented and tested:
 ### ✅ 5. JWT Tokens with Custom Claims
 
 **Access Token Claims**:
+
 ```json
 {
   "userId": "uuid",
@@ -205,6 +224,7 @@ All authentication endpoints are fully implemented and tested:
 ```
 
 **Implementation Details**:
+
 - **Algorithm**: HS256 (HMAC-SHA256)
 - **Secret**: 256-bit minimum (env: `JWT_SECRET`)
 - **Issuer**: `citizenspace`
@@ -213,6 +233,7 @@ All authentication endpoints are fully implemented and tested:
 - **Wallet Address**: Included for Web3 features
 
 **Files**:
+
 - `/lib/auth/jwt.ts` - Token creation and verification
 - `/lib/auth/service.ts` - Token generation in auth flow
 - `/lib/auth/session.ts` - Session management with tokens
@@ -226,39 +247,45 @@ All authentication endpoints are fully implemented and tested:
 **Features**:
 
 #### Basic Authentication
+
 ```typescript
 withAuth(handler) // Requires valid JWT token
 ```
 
 #### Role-Based Access Control
+
 ```typescript
-withStaffAuth(handler)  // staff + admin only
-withAdminAuth(handler)  // admin only
+withStaffAuth(handler) // staff + admin only
+withAdminAuth(handler) // admin only
 ```
 
 #### NFT Holder Gating
+
 ```typescript
-withNftHolderAuth(handler)  // NFT holders only
+withNftHolderAuth(handler) // NFT holders only
 ```
 
 #### Custom Protection
+
 ```typescript
 withAuth(handler, {
   roles: ['admin', 'staff'],
-  requireNftHolder: true
+  requireNftHolder: true,
 })
 ```
 
 **Usage Example**:
+
 ```typescript
 // Protected API route
 export const GET = withAuth(async (request, { user }) => {
   // user.userId, user.email, user.nftHolder available
-  return NextResponse.json({ data: 'protected' });
-});
+  return NextResponse.json({ data: 'protected' })
+})
 ```
 
 **Middleware Functions**:
+
 - `authenticateRequest()` - Extract and validate JWT
 - `getCurrentUser()` - Get user from request
 - `hasRole()` - Check user role
@@ -271,9 +298,11 @@ export const GET = withAuth(async (request, { user }) => {
 **Components**:
 
 #### Email Service
+
 **File**: `/lib/email/service.ts`
 
 **Features**:
+
 - Nodemailer configuration
 - SMTP transport setup
 - HTML email templates
@@ -282,6 +311,7 @@ export const GET = withAuth(async (request, { user }) => {
 - 1-hour token expiration
 
 **Email Templates**:
+
 1. **Password Reset Email**:
    - Branded HTML design with CitizenSpace colors
    - Reset link with secure token
@@ -295,9 +325,11 @@ export const GET = withAuth(async (request, { user }) => {
    - Professional branding
 
 #### Password Reset Service
+
 **File**: `/lib/auth/password-reset.ts`
 
 **Features**:
+
 - Secure token generation (32-byte random hex)
 - Email validation
 - User existence check (without enumeration)
@@ -306,6 +338,7 @@ export const GET = withAuth(async (request, { user }) => {
 - Password change for authenticated users
 
 **Security Measures**:
+
 - Always returns success (prevents email enumeration)
 - Token expires after 1 hour
 - Validates new password strength
@@ -320,58 +353,69 @@ export const GET = withAuth(async (request, { user }) => {
 **Features**:
 
 #### Session Creation
+
 ```typescript
 createSession(userId, tokens)
 ```
+
 - Fetches user data from database
 - Includes NFT holder status
 - Returns typed session object
 
 #### Session Validation
+
 ```typescript
 validateSession(accessToken)
 ```
+
 - Verifies JWT token
 - Returns validation result with payload
 
 #### Token Refresh
+
 ```typescript
 refreshSession(refreshToken)
 ```
+
 - Validates refresh token
 - Generates new token pair
 - Fetches latest user data
 - Updates NFT holder status
 
 #### Session Revocation
+
 ```typescript
 revokeSessions(userId)
 ```
+
 - Signs out user from Supabase
 - Invalidates all tokens
 
 #### NFT Status Update
+
 ```typescript
 updateNftHolderStatus(userId, nftHolder)
 ```
+
 - Updates database
 - Generates new tokens with updated flag
 - Returns new session
 
 **Session Object**:
+
 ```typescript
 interface Session {
   user: {
-    id: string;
-    email: string;
-    fullName: string | null;
-    nftHolder: boolean;
-    walletAddress: string | null;
-    role: 'user' | 'staff' | 'admin';
-  };
-  accessToken: string;
-  refreshToken: string;
-  expiresAt: number;
+    id: string
+    email: string
+    fullName: string | null
+    nftHolder: boolean
+    walletAddress: string | null
+    role: 'user' | 'staff' | 'admin'
+  }
+  accessToken: string
+  refreshToken: string
+  expiresAt: number
 }
 ```
 
@@ -384,9 +428,11 @@ interface Session {
 **Test Files Created**:
 
 #### 1. Middleware Tests
+
 **File**: `/__tests__/unit/middleware.test.ts`
 
 **Coverage**:
+
 - ✅ JWT token extraction and validation
 - ✅ Authenticated request handling
 - ✅ Unauthenticated request rejection
@@ -400,9 +446,11 @@ interface Session {
 **Tests**: 15 test cases
 
 #### 2. Session Management Tests
+
 **File**: `/__tests__/unit/session.test.ts`
 
 **Coverage**:
+
 - ✅ Session creation from tokens
 - ✅ NFT holder status in session
 - ✅ User not found error handling
@@ -416,9 +464,11 @@ interface Session {
 **Tests**: 9 test cases
 
 #### 3. Email Service Tests
+
 **File**: `/__tests__/unit/email.test.ts`
 
 **Coverage**:
+
 - ✅ Email configuration check
 - ✅ Email sending success
 - ✅ Email sending failure handling
@@ -432,9 +482,11 @@ interface Session {
 **Tests**: 9 test cases
 
 #### 4. JWT Tests (Enhanced)
+
 **File**: `/__tests__/unit/jwt.test.ts` (Already exists)
 
 **Coverage**:
+
 - ✅ Access token creation with NFT holder flag
 - ✅ Refresh token creation
 - ✅ Token verification with custom claims
@@ -443,18 +495,22 @@ interface Session {
 - ✅ Wallet address in claims
 
 #### 5. Password Tests (Already exists)
+
 **File**: `/__tests__/unit/password.test.ts`
 
 **Coverage**:
+
 - ✅ Password validation rules
 - ✅ bcrypt hashing
 - ✅ Password comparison
 - ✅ Reset token generation
 
 #### 6. Auth Service Tests (Already exists)
+
 **File**: `/__tests__/unit/auth-service.test.ts`
 
 **Coverage**:
+
 - ✅ User registration
 - ✅ User login
 - ✅ Token generation
@@ -467,6 +523,7 @@ interface Session {
 **Test Files Created**:
 
 #### Complete Authentication Flow
+
 **File**: `/__tests__/integration/auth-flow.test.ts`
 
 **Test Scenarios**:
@@ -497,9 +554,11 @@ interface Session {
 **Tests**: 12 integration test cases
 
 #### Web3 Integration Tests (Already exists)
+
 **File**: `/__tests__/api/web3-endpoints.test.ts`
 
 **Coverage**:
+
 - ✅ Wallet connection
 - ✅ NFT verification
 - ✅ Cache handling
@@ -541,6 +600,7 @@ Total Coverage:         88.4%     83.8%      96.2%     87.8%
 **Comprehensive 700+ line documentation including**:
 
 ### Sections Covered:
+
 1. **Architecture Overview** - Technology stack, token structure
 2. **Authentication Endpoints** - 8 detailed endpoint specifications
 3. **Security Features** - Password, token, API, and Web3 security
@@ -553,6 +613,7 @@ Total Coverage:         88.4%     83.8%      96.2%     87.8%
 10. **Rate Limits** - Recommended API throttling
 
 ### Documentation Features:
+
 - Complete request/response examples
 - Code snippets for all patterns
 - Security considerations
@@ -565,6 +626,7 @@ Total Coverage:         88.4%     83.8%      96.2%     87.8%
 ## Authentication Flow Diagrams
 
 ### Registration & Login Flow
+
 ```
 1. User Registration:
    Client → POST /api/auth/register
@@ -592,6 +654,7 @@ Total Coverage:         88.4%     83.8%      96.2%     87.8%
 ```
 
 ### Web3 Wallet Flow
+
 ```
 1. Wallet Connection:
    Client → POST /api/auth/wallet-connect
@@ -621,6 +684,7 @@ Total Coverage:         88.4%     83.8%      96.2%     87.8%
 ```
 
 ### Password Reset Flow
+
 ```
 1. Request Reset:
    Client → POST /api/auth/forgot-password
@@ -645,6 +709,7 @@ Total Coverage:         88.4%     83.8%      96.2%     87.8%
 ## Security Implementation
 
 ### Password Security
+
 - **Hashing**: bcrypt with 12 salt rounds
 - **Policy Enforcement**:
   - Minimum 8 characters
@@ -655,6 +720,7 @@ Total Coverage:         88.4%     83.8%      96.2%     87.8%
 - **Reset**: Secure token with 1-hour expiration
 
 ### Token Security
+
 - **Algorithm**: HS256 (HMAC-SHA256)
 - **Secret**: 256-bit minimum (32+ characters)
 - **Signing**: Server-side only (secret never exposed)
@@ -663,6 +729,7 @@ Total Coverage:         88.4%     83.8%      96.2%     87.8%
 - **Claims**: Minimal PII to reduce exposure
 
 ### API Security
+
 - **Authentication**: JWT validation on all protected routes
 - **Authorization**: Role-based access control (user/staff/admin)
 - **Input Validation**: Type checking and sanitization
@@ -671,6 +738,7 @@ Total Coverage:         88.4%     83.8%      96.2%     87.8%
 - **CSRF**: Token-based (not cookie-based)
 
 ### Web3 Security
+
 - **Wallet Validation**: Ethereum address format check
 - **Uniqueness**: One wallet per user account
 - **On-Chain Verification**: Direct blockchain queries
@@ -682,6 +750,7 @@ Total Coverage:         88.4%     83.8%      96.2%     87.8%
 ## Environment Variables Required
 
 ### Production Environment
+
 ```env
 # JWT Configuration (REQUIRED)
 JWT_SECRET=<256-bit-secret-minimum-32-characters>
@@ -763,6 +832,7 @@ NEXT_PUBLIC_NFT_CONTRACT_ADDRESS=<contract-address>
 **Decision**: Enhanced existing custom authentication system instead of NextAuth.js v5
 
 **Reasoning**:
+
 1. **Compatibility**: NextAuth.js v5 requires Next.js 14+, project uses Next.js 13.5.1
 2. **Customization**: Custom system provides better control over NFT holder claims and Web3 integration
 3. **Existing Foundation**: Project already had Supabase Auth + JWT foundation
@@ -776,6 +846,7 @@ NEXT_PUBLIC_NFT_CONTRACT_ADDRESS=<contract-address>
 ## Key Features Implemented
 
 ### ✅ Core Requirements
+
 - [x] PostgreSQL database integration (via Supabase)
 - [x] JWT token system with custom claims
 - [x] Email/password authentication
@@ -790,6 +861,7 @@ NEXT_PUBLIC_NFT_CONTRACT_ADDRESS=<contract-address>
 - [x] Comprehensive API documentation
 
 ### ✅ Additional Features
+
 - [x] Token refresh mechanism
 - [x] Multiple middleware patterns (withAuth, withStaffAuth, withAdminAuth, withNftHolderAuth)
 - [x] Email templates with branded design
@@ -804,6 +876,7 @@ NEXT_PUBLIC_NFT_CONTRACT_ADDRESS=<contract-address>
 ## Testing Strategy
 
 ### Unit Tests (82%+ coverage)
+
 - JWT token creation and verification
 - Password validation and hashing
 - Authentication service logic
@@ -812,6 +885,7 @@ NEXT_PUBLIC_NFT_CONTRACT_ADDRESS=<contract-address>
 - Email service functionality
 
 ### Integration Tests
+
 - Complete registration flow
 - Login/logout flow
 - Token refresh flow
@@ -820,6 +894,7 @@ NEXT_PUBLIC_NFT_CONTRACT_ADDRESS=<contract-address>
 - Web3 wallet integration
 
 ### Test Quality
+
 - ✅ Mocking external dependencies
 - ✅ Testing error scenarios
 - ✅ Testing edge cases
@@ -832,22 +907,26 @@ NEXT_PUBLIC_NFT_CONTRACT_ADDRESS=<contract-address>
 ## Performance Considerations
 
 ### Token Performance
+
 - **JWT Verification**: < 1ms average
 - **Token Generation**: < 5ms average
 - **Stateless**: No database lookup on token validation
 
 ### Password Hashing
+
 - **bcrypt rounds**: 12 (industry standard)
 - **Hash time**: ~100ms (intentional for brute-force protection)
 - **Async processing**: Non-blocking
 
 ### NFT Verification
+
 - **Cache Hit**: < 1ms (database lookup)
 - **Cache Miss**: ~500ms (blockchain query)
 - **Cache TTL**: 24 hours
 - **Optimization**: Async verification on wallet connect
 
 ### Session Management
+
 - **Session Creation**: ~50ms (includes database fetch)
 - **Session Validation**: < 1ms (JWT verification only)
 - **Token Refresh**: ~100ms (includes database update)
@@ -893,6 +972,7 @@ NEXT_PUBLIC_NFT_CONTRACT_ADDRESS=<contract-address>
 ## Known Limitations & Future Enhancements
 
 ### Current Limitations
+
 1. **Email Service**: Requires SMTP configuration (not included in test environment)
 2. **Rate Limiting**: Not implemented (recommended for production)
 3. **2FA**: Not included (future enhancement)
@@ -900,6 +980,7 @@ NEXT_PUBLIC_NFT_CONTRACT_ADDRESS=<contract-address>
 5. **Session Storage**: Stateless JWT only (no server-side session storage)
 
 ### Recommended Future Enhancements
+
 1. **Add 2FA**: Time-based OTP for enhanced security
 2. **OAuth Providers**: Add Google, GitHub, Twitter authentication
 3. **Rate Limiting**: Implement per-endpoint rate limits
@@ -952,6 +1033,7 @@ NEXT_PUBLIC_NFT_CONTRACT_ADDRESS=<contract-address>
 ## Success Metrics
 
 ### Functional Requirements ✅
+
 - [x] User registration with email/password
 - [x] User login with credentials
 - [x] JWT token generation
@@ -964,6 +1046,7 @@ NEXT_PUBLIC_NFT_CONTRACT_ADDRESS=<contract-address>
 - [x] Role-based access control
 
 ### Technical Requirements ✅
+
 - [x] PostgreSQL database integration
 - [x] bcrypt password hashing (12 rounds)
 - [x] JWT with custom claims
@@ -973,6 +1056,7 @@ NEXT_PUBLIC_NFT_CONTRACT_ADDRESS=<contract-address>
 - [x] Comprehensive documentation
 
 ### Quality Metrics ✅
+
 - **Test Coverage**: 88.4% (exceeds 80% requirement)
 - **Documentation**: 700+ lines of comprehensive API docs
 - **Code Quality**: Type-safe TypeScript with strict mode
@@ -999,11 +1083,13 @@ The authentication system is fully functional, well-tested, and documented, enab
 ## Files Modified/Created
 
 ### Modified Files (9)
+
 - `/lib/auth/jwt.ts` - Enhanced with NFT holder and wallet address claims
 - `/lib/auth/service.ts` - Updated token generation with custom claims
 - `/package.json` - Added bcryptjs and nodemailer dependencies
 
 ### New Files (11)
+
 - `/lib/auth/middleware.ts` - Authentication middleware
 - `/lib/auth/session.ts` - Session management
 - `/lib/auth/password-reset.ts` - Password reset service
@@ -1016,6 +1102,7 @@ The authentication system is fully functional, well-tested, and documented, enab
 - `/docs/TASK-1.2-AUTH-IMPLEMENTATION-REPORT.md` - This report
 
 ### Total Lines of Code: ~3,200 lines
+
 - Production Code: ~1,800 lines
 - Test Code: ~700 lines
 - Documentation: ~700 lines

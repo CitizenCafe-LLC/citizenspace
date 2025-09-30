@@ -1,24 +1,24 @@
-import { NextRequest } from 'next/server';
+import type { NextRequest } from 'next/server'
 import {
   successResponse,
   unauthorizedResponse,
   serverErrorResponse,
   notFoundResponse,
   badRequestResponse,
-} from '@/lib/api/response';
+} from '@/lib/api/response'
 import {
   getBookingById,
   updateBooking,
   isWorkspaceAvailable,
   getUserWithMembership,
-} from '@/lib/db/repositories/booking.repository';
-import { getWorkspaceById } from '@/lib/db/repositories/workspace.repository';
+} from '@/lib/db/repositories/booking.repository'
+import { getWorkspaceById } from '@/lib/db/repositories/workspace.repository'
 import {
   calculateHourlyDeskPricing,
   calculateDurationHours,
   validateBookingDuration,
-} from '@/lib/services/pricing.service';
-import { z } from 'zod';
+} from '@/lib/services/pricing.service'
+import { z } from 'zod'
 
 /**
  * POST /api/bookings/:id/extend
@@ -32,81 +32,76 @@ import { z } from 'zod';
 
 const extendBookingSchema = z.object({
   new_end_time: z.string().regex(/^\d{2}:\d{2}$/, 'End time must be in HH:MM format'),
-});
+})
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const userId = request.headers.get('x-user-id');
+    const userId = request.headers.get('x-user-id')
 
     if (!userId) {
-      return unauthorizedResponse('Authentication required');
+      return unauthorizedResponse('Authentication required')
     }
 
-    const bookingId = params.id;
+    const bookingId = params.id
 
     // Parse request body
-    const body = await request.json();
-    const validation = extendBookingSchema.safeParse(body);
+    const body = await request.json()
+    const validation = extendBookingSchema.safeParse(body)
 
     if (!validation.success) {
       return badRequestResponse(
-        `Invalid request: ${validation.error.errors.map((e) => e.message).join(', ')}`
-      );
+        `Invalid request: ${validation.error.errors.map(e => e.message).join(', ')}`
+      )
     }
 
-    const { new_end_time } = validation.data;
+    const { new_end_time } = validation.data
 
     // 1. Get booking details
-    const { data: booking, error: bookingError } = await getBookingById(bookingId);
+    const { data: booking, error: bookingError } = await getBookingById(bookingId)
     if (bookingError || !booking) {
-      return notFoundResponse('Booking not found');
+      return notFoundResponse('Booking not found')
     }
 
     // 2. Verify ownership
     if (booking.user_id !== userId) {
-      return unauthorizedResponse('You do not have permission to extend this booking');
+      return unauthorizedResponse('You do not have permission to extend this booking')
     }
 
     // 3. Verify booking is active (checked in but not checked out)
     if (!booking.check_in_time) {
-      return badRequestResponse('Must check in before extending booking');
+      return badRequestResponse('Must check in before extending booking')
     }
 
     if (booking.check_out_time) {
-      return badRequestResponse('Cannot extend a completed booking');
+      return badRequestResponse('Cannot extend a completed booking')
     }
 
     if (booking.status === 'cancelled') {
-      return badRequestResponse('Cannot extend a cancelled booking');
+      return badRequestResponse('Cannot extend a cancelled booking')
     }
 
     // 4. Verify new end time is after current end time
-    const currentEndMinutes = timeToMinutes(booking.end_time);
-    const newEndMinutes = timeToMinutes(new_end_time);
+    const currentEndMinutes = timeToMinutes(booking.end_time)
+    const newEndMinutes = timeToMinutes(new_end_time)
 
     if (newEndMinutes <= currentEndMinutes) {
-      return badRequestResponse('New end time must be after current end time');
+      return badRequestResponse('New end time must be after current end time')
     }
 
     // 5. Get workspace details
-    const { data: workspace, error: workspaceError } = await getWorkspaceById(
-      booking.workspace_id
-    );
+    const { data: workspace, error: workspaceError } = await getWorkspaceById(booking.workspace_id)
     if (workspaceError || !workspace) {
-      return serverErrorResponse('Failed to get workspace details');
+      return serverErrorResponse('Failed to get workspace details')
     }
 
     // 6. Calculate new duration
-    const newDurationHours = calculateDurationHours(booking.start_time, new_end_time);
-    const additionalHours = calculateDurationHours(booking.end_time, new_end_time);
+    const newDurationHours = calculateDurationHours(booking.start_time, new_end_time)
+    const additionalHours = calculateDurationHours(booking.end_time, new_end_time)
 
     // 7. Validate new duration against workspace constraints
-    const durationValidation = validateBookingDuration(workspace, newDurationHours);
+    const durationValidation = validateBookingDuration(workspace, newDurationHours)
     if (!durationValidation.valid) {
-      return badRequestResponse(durationValidation.error!);
+      return badRequestResponse(durationValidation.error!)
     }
 
     // 8. Check availability for the extended time
@@ -116,20 +111,20 @@ export async function POST(
       booking.end_time,
       new_end_time,
       bookingId // Exclude current booking from availability check
-    );
+    )
 
     if (availabilityError) {
-      return serverErrorResponse('Error checking availability');
+      return serverErrorResponse('Error checking availability')
     }
 
     if (!available) {
-      return badRequestResponse('Extended time slot is not available');
+      return badRequestResponse('Extended time slot is not available')
     }
 
     // 9. Get user details for pricing
-    const { data: user, error: userError } = await getUserWithMembership(userId);
+    const { data: user, error: userError } = await getUserWithMembership(userId)
     if (userError || !user) {
-      return serverErrorResponse('Failed to get user details');
+      return serverErrorResponse('Failed to get user details')
     }
 
     // 10. Calculate additional pricing
@@ -142,12 +137,12 @@ export async function POST(
             membership_status: user.membership_status || undefined,
           }
         : null,
-    });
+    })
 
     // 11. Calculate new totals
-    const newSubtotal = booking.subtotal + additionalPricing.subtotal;
-    const newDiscountAmount = booking.discount_amount + additionalPricing.discountAmount;
-    const newTotalPrice = booking.total_price + additionalPricing.totalPrice;
+    const newSubtotal = booking.subtotal + additionalPricing.subtotal
+    const newDiscountAmount = booking.discount_amount + additionalPricing.discountAmount
+    const newTotalPrice = booking.total_price + additionalPricing.totalPrice
 
     // 12. Update booking
     const { data: updatedBooking, error: updateError } = await updateBooking(bookingId, {
@@ -157,15 +152,15 @@ export async function POST(
       discount_amount: newDiscountAmount,
       total_price: newTotalPrice,
       // TODO: Update payment_intent_id when Stripe is integrated
-    });
+    })
 
     if (updateError || !updatedBooking) {
-      console.error('Error extending booking:', updateError);
-      return serverErrorResponse('Failed to extend booking');
+      console.error('Error extending booking:', updateError)
+      return serverErrorResponse('Failed to extend booking')
     }
 
     // 13. Return updated booking with additional payment info
-    const requiresAdditionalPayment = additionalPricing.totalPrice > 0;
+    const requiresAdditionalPayment = additionalPricing.totalPrice > 0
 
     return successResponse(
       {
@@ -186,10 +181,10 @@ export async function POST(
         // TODO: Add payment_intent_client_secret when Stripe is integrated
       },
       'Booking extended successfully'
-    );
+    )
   } catch (error) {
-    console.error('Unexpected error in POST /api/bookings/:id/extend:', error);
-    return serverErrorResponse('An unexpected error occurred');
+    console.error('Unexpected error in POST /api/bookings/:id/extend:', error)
+    return serverErrorResponse('An unexpected error occurred')
   }
 }
 
@@ -197,6 +192,6 @@ export async function POST(
  * Convert time string (HH:MM) to minutes since midnight
  */
 function timeToMinutes(time: string): number {
-  const [hours, minutes] = time.split(':').map(Number);
-  return hours * 60 + minutes;
+  const [hours, minutes] = time.split(':').map(Number)
+  return hours * 60 + minutes
 }

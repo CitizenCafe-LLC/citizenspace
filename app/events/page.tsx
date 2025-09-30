@@ -1,25 +1,26 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Link from 'next/link';
-import { 
-  Calendar, 
-  Clock, 
-  MapPin, 
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import Link from 'next/link'
+import {
+  Calendar,
+  Clock,
+  MapPin,
   Users,
   ExternalLink,
   ArrowRight,
   Palette,
   Code,
-  Coffee
-} from 'lucide-react';
-import type { Metadata } from 'next';
+  Coffee,
+} from 'lucide-react'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Events',
-  description: 'Join our community events, workshops, and networking sessions. From creative workshops to tech talks.',
-};
+  description:
+    'Join our community events, workshops, and networking sessions. From creative workshops to tech talks.',
+}
 
 const upcomingEvents = [
   {
@@ -33,10 +34,11 @@ const upcomingEvents = [
     type: 'Workshop',
     capacity: 20,
     price: 25,
-    description: 'Learn the fundamentals of digital art creation using Procreate and Adobe Creative Suite.',
+    description:
+      'Learn the fundamentals of digital art creation using Procreate and Adobe Creative Suite.',
     image: '/events/digital-art.jpg',
     tags: ['Creative', 'Beginner-Friendly'],
-    rsvpLink: 'https://lu.ma/digital-art-basics'
+    rsvpLink: 'https://lu.ma/digital-art-basics',
   },
   {
     id: '2',
@@ -49,10 +51,11 @@ const upcomingEvents = [
     type: 'Networking',
     capacity: 30,
     price: 0,
-    description: 'Monthly networking breakfast for startup founders and entrepreneurs in the Bay Area.',
+    description:
+      'Monthly networking breakfast for startup founders and entrepreneurs in the Bay Area.',
     image: '/events/networking.jpg',
     tags: ['Networking', 'Business'],
-    rsvpLink: 'https://eventbrite.com/entrepreneur-breakfast'
+    rsvpLink: 'https://eventbrite.com/entrepreneur-breakfast',
   },
   {
     id: '3',
@@ -68,7 +71,7 @@ const upcomingEvents = [
     description: 'Advanced JavaScript concepts, async patterns, and modern ES6+ features.',
     image: '/events/javascript.jpg',
     tags: ['Technical', 'Advanced'],
-    rsvpLink: 'https://lu.ma/javascript-deep-dive'
+    rsvpLink: 'https://lu.ma/javascript-deep-dive',
   },
   {
     id: '4',
@@ -84,17 +87,17 @@ const upcomingEvents = [
     description: 'Learn to taste coffee like a professional with our partner roasters.',
     image: '/events/cupping.jpg',
     tags: ['Coffee', 'Educational'],
-    rsvpLink: 'https://eventbrite.com/coffee-cupping'
-  }
-];
+    rsvpLink: 'https://eventbrite.com/coffee-cupping',
+  },
+]
 
 const eventTypes = [
   { id: 'all', name: 'All Events', icon: Calendar },
   { id: 'workshop', name: 'Workshops', icon: Palette },
   { id: 'networking', name: 'Networking', icon: Users },
   { id: 'tech-talk', name: 'Tech Talks', icon: Code },
-  { id: 'experience', name: 'Experiences', icon: Coffee }
-];
+  { id: 'experience', name: 'Experiences', icon: Coffee },
+]
 
 export default function EventsPage() {
   return (
@@ -102,17 +105,17 @@ export default function EventsPage() {
       {/* Hero Section */}
       <section className="pb-20">
         <div className="container">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="mx-auto max-w-4xl text-center">
             <Badge variant="secondary" className="mb-6">
               Community Events
             </Badge>
-            <h1 className="font-display text-4xl lg:text-6xl font-bold mb-6">
-              Learn, Connect,{' '}
-              <span className="gradient-text">Create Together</span>
+            <h1 className="mb-6 font-display text-4xl font-bold lg:text-6xl">
+              Learn, Connect, <span className="gradient-text">Create Together</span>
             </h1>
-            <p className="text-xl text-muted-foreground mb-8">
-              Join our vibrant community for workshops, talks, networking events, and unique experiences. 
-              From creative sessions to tech deep-dives, there's something for everyone.
+            <p className="mb-8 text-xl text-muted-foreground">
+              Join our vibrant community for workshops, talks, networking events, and unique
+              experiences. From creative sessions to tech deep-dives, there's something for
+              everyone.
             </p>
             <Button asChild size="lg" className="btn-primary">
               <Link href="#upcoming-events">
@@ -127,18 +130,16 @@ export default function EventsPage() {
       {/* Event Types Filter */}
       <section className="pb-12" id="upcoming-events">
         <div className="container">
-          <Tabs defaultValue="all" className="max-w-6xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="font-display text-3xl lg:text-4xl font-bold mb-4">
-                Upcoming Events
-              </h2>
+          <Tabs defaultValue="all" className="mx-auto max-w-6xl">
+            <div className="mb-8 text-center">
+              <h2 className="mb-4 font-display text-3xl font-bold lg:text-4xl">Upcoming Events</h2>
               <p className="text-lg text-muted-foreground">
                 Filter by type or browse all our community events
               </p>
             </div>
-            
-            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 mb-12">
-              {eventTypes.map((type) => (
+
+            <TabsList className="mb-12 grid w-full grid-cols-2 lg:grid-cols-5">
+              {eventTypes.map(type => (
                 <TabsTrigger key={type.id} value={type.id} className="flex items-center gap-2">
                   <type.icon className="h-4 w-4" />
                   <span className="hidden sm:inline">{type.name}</span>
@@ -147,19 +148,19 @@ export default function EventsPage() {
             </TabsList>
 
             <TabsContent value="all">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {upcomingEvents.map((event) => (
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                {upcomingEvents.map(event => (
                   <EventCard key={event.id} event={event} />
                 ))}
               </div>
             </TabsContent>
 
-            {eventTypes.slice(1).map((type) => (
+            {eventTypes.slice(1).map(type => (
               <TabsContent key={type.id} value={type.id}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   {upcomingEvents
                     .filter(event => event.type.toLowerCase().replace(' ', '-') === type.id)
-                    .map((event) => (
+                    .map(event => (
                       <EventCard key={event.id} event={event} />
                     ))}
                 </div>
@@ -170,17 +171,17 @@ export default function EventsPage() {
       </section>
 
       {/* Host an Event CTA */}
-      <section className="py-20 bg-muted/30">
+      <section className="bg-muted/30 py-20">
         <div className="container">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="font-display text-3xl lg:text-4xl font-bold mb-6">
+          <div className="mx-auto max-w-4xl text-center">
+            <h2 className="mb-6 font-display text-3xl font-bold lg:text-4xl">
               Want to Host an Event?
             </h2>
-            <p className="text-xl text-muted-foreground mb-8">
-              Share your expertise with our community. We provide the space, 
-              you bring the knowledge and passion.
+            <p className="mb-8 text-xl text-muted-foreground">
+              Share your expertise with our community. We provide the space, you bring the knowledge
+              and passion.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col justify-center gap-4 sm:flex-row">
               <Button asChild size="lg" className="btn-primary">
                 <Link href="/contact">Propose an Event</Link>
               </Button>
@@ -192,17 +193,17 @@ export default function EventsPage() {
         </div>
       </section>
     </div>
-  );
+  )
 }
 
-function EventCard({ event }: { event: typeof upcomingEvents[0] }) {
+function EventCard({ event }: { event: (typeof upcomingEvents)[0] }) {
   return (
     <Card className="card-hover">
-      <div className="aspect-video bg-muted rounded-t-lg flex items-center justify-center">
+      <div className="flex aspect-video items-center justify-center rounded-t-lg bg-muted">
         <Calendar className="h-12 w-12 text-muted-foreground" />
       </div>
       <CardHeader>
-        <div className="flex justify-between items-start mb-2">
+        <div className="mb-2 flex items-start justify-between">
           <Badge variant="outline">{event.type}</Badge>
           <div className="text-right">
             {event.price > 0 ? (
@@ -221,25 +222,25 @@ function EventCard({ event }: { event: typeof upcomingEvents[0] }) {
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center text-sm text-muted-foreground">
-          <Clock className="h-4 w-4 mr-2" />
+          <Clock className="mr-2 h-4 w-4" />
           {new Date(event.date).toLocaleDateString()} • {event.time}
         </div>
         <div className="flex items-center text-sm text-muted-foreground">
-          <MapPin className="h-4 w-4 mr-2" />
+          <MapPin className="mr-2 h-4 w-4" />
           {event.location}
         </div>
         <div className="flex items-center text-sm text-muted-foreground">
-          <Users className="h-4 w-4 mr-2" />
+          <Users className="mr-2 h-4 w-4" />
           {event.capacity} spots available • Hosted by {event.host}
         </div>
         <div className="flex gap-2">
-          {event.tags.map((tag) => (
+          {event.tags.map(tag => (
             <Badge key={tag} variant="secondary" className="text-xs">
               {tag}
             </Badge>
           ))}
         </div>
-        <Button asChild className="w-full btn-primary">
+        <Button asChild className="btn-primary w-full">
           <Link href={event.rsvpLink} target="_blank" rel="noopener noreferrer">
             RSVP on {event.rsvpLink.includes('lu.ma') ? 'Luma' : 'Eventbrite'}
             <ExternalLink className="ml-2 h-4 w-4" />
@@ -247,5 +248,5 @@ function EventCard({ event }: { event: typeof upcomingEvents[0] }) {
         </Button>
       </CardContent>
     </Card>
-  );
+  )
 }

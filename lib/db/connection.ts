@@ -7,7 +7,8 @@
  * @module lib/db/connection
  */
 
-import { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
+import type { PoolClient, QueryResult, QueryResultRow } from 'pg';
+import { Pool } from 'pg'
 
 // Connection pool configuration
 const poolConfig = {
@@ -29,13 +30,16 @@ const poolConfig = {
   statement_timeout: 30000,
 
   // SSL configuration (required for production)
-  ssl: process.env.NODE_ENV === 'production' ? {
-    rejectUnauthorized: false
-  } : false,
-};
+  ssl:
+    process.env.NODE_ENV === 'production'
+      ? {
+          rejectUnauthorized: false,
+        }
+      : false,
+}
 
 // Create connection pool instance
-let pool: Pool | null = null;
+let pool: Pool | null = null
 
 /**
  * Get or create the database connection pool
@@ -43,26 +47,26 @@ let pool: Pool | null = null;
  */
 export function getPool(): Pool {
   if (!pool) {
-    pool = new Pool(poolConfig);
+    pool = new Pool(poolConfig)
 
     // Handle pool errors
-    pool.on('error', (err) => {
-      console.error('Unexpected error on idle database client', err);
-    });
+    pool.on('error', err => {
+      console.error('Unexpected error on idle database client', err)
+    })
 
     // Log pool events in development
     if (process.env.NODE_ENV === 'development') {
       pool.on('connect', () => {
-        console.log('[DB] New client connected to pool');
-      });
+        console.log('[DB] New client connected to pool')
+      })
 
       pool.on('remove', () => {
-        console.log('[DB] Client removed from pool');
-      });
+        console.log('[DB] Client removed from pool')
+      })
     }
   }
 
-  return pool;
+  return pool
 }
 
 /**
@@ -76,12 +80,12 @@ export async function query<T extends QueryResultRow = any>(
   text: string,
   params?: any[]
 ): Promise<QueryResult<T>> {
-  const pool = getPool();
-  const start = Date.now();
+  const pool = getPool()
+  const start = Date.now()
 
   try {
-    const result = await pool.query<T>(text, params);
-    const duration = Date.now() - start;
+    const result = await pool.query<T>(text, params)
+    const duration = Date.now() - start
 
     // Log slow queries in development (> 100ms)
     if (process.env.NODE_ENV === 'development' && duration > 100) {
@@ -89,16 +93,16 @@ export async function query<T extends QueryResultRow = any>(
         query: text.substring(0, 100),
         duration: `${duration}ms`,
         rows: result.rowCount,
-      });
+      })
     }
 
-    return result;
+    return result
   } catch (error) {
     console.error('[DB] Query error:', {
       error: error instanceof Error ? error.message : 'Unknown error',
       query: text.substring(0, 200),
-    });
-    throw error;
+    })
+    throw error
   }
 }
 
@@ -109,8 +113,8 @@ export async function query<T extends QueryResultRow = any>(
  * @returns Database client
  */
 export async function getClient(): Promise<PoolClient> {
-  const pool = getPool();
-  return await pool.connect();
+  const pool = getPool()
+  return await pool.connect()
 }
 
 /**
@@ -120,22 +124,20 @@ export async function getClient(): Promise<PoolClient> {
  * @param callback - Function containing transaction queries
  * @returns Transaction result
  */
-export async function transaction<T>(
-  callback: (client: PoolClient) => Promise<T>
-): Promise<T> {
-  const client = await getClient();
+export async function transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
+  const client = await getClient()
 
   try {
-    await client.query('BEGIN');
-    const result = await callback(client);
-    await client.query('COMMIT');
-    return result;
+    await client.query('BEGIN')
+    const result = await callback(client)
+    await client.query('COMMIT')
+    return result
   } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('[DB] Transaction rolled back:', error);
-    throw error;
+    await client.query('ROLLBACK')
+    console.error('[DB] Transaction rolled back:', error)
+    throw error
   } finally {
-    client.release();
+    client.release()
   }
 }
 
@@ -145,9 +147,9 @@ export async function transaction<T>(
  */
 export async function closePool(): Promise<void> {
   if (pool) {
-    await pool.end();
-    pool = null;
-    console.log('[DB] Connection pool closed');
+    await pool.end()
+    pool = null
+    console.log('[DB] Connection pool closed')
   }
 }
 
@@ -158,11 +160,11 @@ export async function closePool(): Promise<void> {
  */
 export async function healthCheck(): Promise<boolean> {
   try {
-    const result = await query('SELECT 1 as health');
-    return result.rows[0]?.health === 1;
+    const result = await query('SELECT 1 as health')
+    return result.rows[0]?.health === 1
   } catch (error) {
-    console.error('[DB] Health check failed:', error);
-    return false;
+    console.error('[DB] Health check failed:', error)
+    return false
   }
 }
 
@@ -171,13 +173,13 @@ export async function healthCheck(): Promise<boolean> {
  * Useful for monitoring and debugging
  */
 export function getPoolStats() {
-  const pool = getPool();
+  const pool = getPool()
   return {
     totalCount: pool.totalCount,
     idleCount: pool.idleCount,
     waitingCount: pool.waitingCount,
-  };
+  }
 }
 
 // Export types for use in other modules
-export type { Pool, PoolClient, QueryResult, QueryResultRow };
+export type { Pool, PoolClient, QueryResult, QueryResultRow }

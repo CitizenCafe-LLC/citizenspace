@@ -3,13 +3,7 @@
  * These types provide type safety for database operations
  */
 
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export interface Database {
   public: {
@@ -38,7 +32,12 @@ export interface Database {
     Views: {}
     Functions: {}
     Enums: {
-      workspace_type: 'hot-desk' | 'focus-room' | 'collaborate-room' | 'boardroom' | 'communications-pod'
+      workspace_type:
+        | 'hot-desk'
+        | 'focus-room'
+        | 'collaborate-room'
+        | 'boardroom'
+        | 'communications-pod'
       resource_category: 'desk' | 'meeting-room'
       booking_type: 'hourly-desk' | 'meeting-room' | 'day-pass'
       booking_status: 'pending' | 'confirmed' | 'cancelled' | 'completed'

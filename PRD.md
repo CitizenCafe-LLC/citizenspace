@@ -9,6 +9,7 @@ Your CitizenSpace main app is **100% frontend-only with hardcoded/mock data**. T
 ## 🗄️ DATABASE SCHEMA REQUIREMENTS
 
 ### **1. Users & Authentication**
+
 ```sql
 users
 ├── id (UUID, primary key)
@@ -29,6 +30,7 @@ users
 ```
 
 ### **2. Workspaces**
+
 ```sql
 workspaces
 ├── id (UUID, primary key)
@@ -49,6 +51,7 @@ workspaces
 ```
 
 ### **3. Bookings/Reservations**
+
 ```sql
 bookings
 ├── id (UUID, primary key)
@@ -83,6 +86,7 @@ bookings
 ```
 
 ### **4. Membership Plans**
+
 ```sql
 membership_plans
 ├── id (UUID, primary key)
@@ -106,6 +110,7 @@ membership_plans
 ```
 
 ### **4a. Membership Credits Ledger** (NEW TABLE)
+
 ```sql
 membership_credits
 ├── id (UUID, primary key)
@@ -122,6 +127,7 @@ membership_credits
 ```
 
 ### **4b. Credit Transactions** (NEW TABLE)
+
 ```sql
 credit_transactions
 ├── id (UUID, primary key)
@@ -137,6 +143,7 @@ credit_transactions
 ```
 
 ### **5. Menu Items (Cafe)**
+
 ```sql
 menu_items
 ├── id (UUID, primary key)
@@ -156,6 +163,7 @@ menu_items
 ```
 
 ### **6. Cafe Orders**
+
 ```sql
 cafe_orders
 ├── id (UUID, primary key)
@@ -177,6 +185,7 @@ cafe_orders
 ```
 
 ### **7. Events**
+
 ```sql
 events
 ├── id (UUID, primary key)
@@ -211,6 +220,7 @@ event_rsvps
 ```
 
 ### **8. Blog/CMS**
+
 ```sql
 blog_posts
 ├── id (UUID, primary key)
@@ -237,6 +247,7 @@ blog_categories
 ```
 
 ### **9. Contact Form Submissions**
+
 ```sql
 contact_submissions
 ├── id (UUID, primary key)
@@ -252,6 +263,7 @@ contact_submissions
 ```
 
 ### **10. Newsletter Subscribers**
+
 ```sql
 newsletter_subscribers
 ├── id (UUID, primary key)
@@ -267,6 +279,7 @@ newsletter_subscribers
 ## 🔌 REQUIRED API ENDPOINTS
 
 ### **Authentication & User Management**
+
 ```
 POST   /api/auth/register          # User registration
 POST   /api/auth/login             # User login
@@ -281,6 +294,7 @@ GET    /api/auth/verify-nft        # Verify NFT ownership
 ```
 
 ### **Bookings & Reservations**
+
 ```
 GET    /api/workspaces                           # List all workspaces
 GET    /api/workspaces/:id                       # Get workspace details
@@ -304,6 +318,7 @@ GET    /api/bookings/:id/calculate-cost          # Calculate final cost for hour
 ```
 
 ### **Membership Plans & Credits**
+
 ```
 GET    /api/memberships                          # List all plans
 GET    /api/memberships/:id                      # Get plan details
@@ -321,6 +336,7 @@ POST   /api/memberships/credits/allocate         # Allocate credits (monthly cyc
 ```
 
 ### **Cafe Menu & Orders**
+
 ```
 GET    /api/menu                                 # Get full menu
 GET    /api/menu/:category                       # Get menu by category
@@ -333,6 +349,7 @@ DELETE /api/orders/:id                           # Cancel order
 ```
 
 ### **Events**
+
 ```
 GET    /api/events                               # List all events
 GET    /api/events/:slug                         # Get event details
@@ -343,6 +360,7 @@ GET    /api/events/:id/attendees                 # List event attendees (host on
 ```
 
 ### **Blog/Content**
+
 ```
 GET    /api/blog/posts                           # List all posts
 GET    /api/blog/posts/:slug                     # Get single post
@@ -353,6 +371,7 @@ POST   /api/blog/posts/:id/view                  # Increment view count
 ```
 
 ### **Contact & Communication**
+
 ```
 POST   /api/contact                              # Submit contact form
 POST   /api/newsletter/subscribe                 # Subscribe to newsletter
@@ -360,6 +379,7 @@ POST   /api/newsletter/unsubscribe               # Unsubscribe
 ```
 
 ### **Payments (Stripe)**
+
 ```
 POST   /api/payments/create-intent               # Create payment intent
 POST   /api/payments/webhook                     # Stripe webhook handler
@@ -367,6 +387,7 @@ GET    /api/payments/history                     # Get payment history
 ```
 
 ### **Admin APIs (Staff Only)**
+
 ```
 GET    /api/admin/dashboard                      # Dashboard stats
 GET    /api/admin/bookings                       # All bookings
@@ -401,6 +422,7 @@ DELETE /api/admin/menu/items/:id                 # Delete menu item
 ## 💳 PAYMENT PROCESSING REQUIREMENTS
 
 ### **Stripe Integration**
+
 1. **Checkout Sessions** for bookings & memberships
 2. **Payment Intents** for cafe orders
 3. **Webhook handling** for:
@@ -414,11 +436,12 @@ DELETE /api/admin/menu/items/:id                 # Delete menu item
 5. **Subscription management** for monthly memberships
 
 ### **Pricing Logic**
+
 ```typescript
 // NFT holder discount calculation
 if (user.nft_holder) {
-  workspacePrice = basePrice * 0.5; // 50% off
-  cafePrice = basePrice * 0.9;      // 10% off
+  workspacePrice = basePrice * 0.5 // 50% off
+  cafePrice = basePrice * 0.9 // 10% off
 }
 ```
 
@@ -440,6 +463,7 @@ if (user.nft_holder) {
 ## 🔄 DATA MIGRATION FROM MOCK TO REAL
 
 Currently hardcoded in `/lib/data.ts`:
+
 - ✅ Membership plans → needs to move to database
 - ✅ Menu items → needs to move to database
 - ✅ Events → needs to move to database
@@ -451,34 +475,41 @@ Currently hardcoded in `/lib/data.ts`:
 ## 🛠️ TECHNOLOGY STACK RECOMMENDATIONS
 
 ### **Backend Framework**
+
 - **Option 1:** Next.js API Routes (already using Next.js)
 - **Option 2:** Separate Node.js/Express backend
 - **Option 3:** Serverless (Vercel Functions, AWS Lambda)
 
 ### **Database**
+
 - **PostgreSQL** (recommended) via Supabase or Neon
 - Already have `@supabase/supabase-js` in dependencies
 
 ### **Authentication**
+
 - **Supabase Auth** (built-in)
 - **NextAuth.js** (alternative)
 - **Custom JWT** implementation
 
 ### **Web3 Integration**
+
 - Already have RainbowKit/Wagmi in NFT site
 - Needs integration into main app for wallet connect
 - Use Viem/Ethers to query blockchain for NFT ownership
 
 ### **Payment Processing**
+
 - **Stripe** (standard for SaaS)
 - `stripe` npm package
 - Stripe Checkout for bookings
 - Payment Intents for cafe orders
 
 ### **File Storage**
+
 - **Cloudinary** or **S3** for images (menu, events, blog)
 
 ### **Email Service**
+
 - **Resend**, **SendGrid**, or **Postmark** for transactional emails
 
 ---
@@ -486,22 +517,26 @@ Currently hardcoded in `/lib/data.ts`:
 ## 📝 IMPLEMENTATION PRIORITY ORDER
 
 ### **Phase 1: Core Backend (Weeks 1-2)**
+
 1. Set up Supabase database with schema
 2. Create authentication system
 3. Build booking system APIs
 4. Integrate Stripe payments
 
 ### **Phase 2: Cafe & Membership (Week 3)**
+
 5. Menu management & ordering APIs
 6. Membership subscription flow
 7. NFT verification system
 
 ### **Phase 3: Events & Content (Week 4)**
+
 8. Events RSVP system
 9. Blog CMS integration
 10. Contact form backend
 
 ### **Phase 4: Admin & Polish (Week 5)**
+
 11. Admin dashboard
 12. Real-time features
 13. Email notifications
@@ -527,6 +562,7 @@ Currently hardcoded in `/lib/data.ts`:
 ## 🎯 SUCCESS METRICS
 
 ### **Technical Metrics**
+
 - ✅ All API endpoints return real data from database
 - ✅ Authentication system allows login/registration
 - ✅ NFT holders see discounted prices automatically
@@ -536,6 +572,7 @@ Currently hardcoded in `/lib/data.ts`:
 - ✅ Admin can manage content via CMS
 
 ### **Business Metrics**
+
 - Track booking conversion rate
 - Monitor NFT holder adoption
 - Measure cafe order frequency
@@ -565,9 +602,11 @@ Currently hardcoded in `/lib/data.ts`:
 **Use Case:** User without membership wants to rent a desk for 3 hours
 
 **Flow:**
+
 1. User selects "Hot Desk" and duration (3 hours)
 2. System checks availability in real-time
 3. System calculates price:
+
    ```typescript
    basePrice = 2.50 per hour
    duration = 3 hours
@@ -581,6 +620,7 @@ Currently hardcoded in `/lib/data.ts`:
    processingFee = $2.00
    total = subtotal + processingFee
    ```
+
 4. User pays upfront via Stripe
 5. Booking created with `booking_type: 'hourly-desk'`
 6. User checks in → `check_in_time` recorded
@@ -590,6 +630,7 @@ Currently hardcoded in `/lib/data.ts`:
 10. If actual > booked: Charge overage
 
 **Database Updates:**
+
 - Insert into `bookings` with `payment_method: 'card'`
 - No credit deduction (user has no membership)
 
@@ -600,6 +641,7 @@ Currently hardcoded in `/lib/data.ts`:
 **Use Case:** Member with "Resident" plan (8 hours/month credits) books 2-hour meeting room
 
 **Flow:**
+
 1. User selects "Focus Room" for 2 hours
 2. System checks user's credit balance:
    ```sql
@@ -623,6 +665,7 @@ Currently hardcoded in `/lib/data.ts`:
    - `total_price: 0`
 
 **Database Updates:**
+
 - Insert into `bookings`
 - Update `membership_credits.used_amount` = 2
 - Update `membership_credits.remaining_amount` = 6
@@ -643,9 +686,11 @@ Currently hardcoded in `/lib/data.ts`:
 **Use Case:** Member with 2 hours remaining wants to book 4-hour meeting
 
 **Flow:**
+
 1. User selects "Boardroom" for 4 hours
 2. System checks credits: only 2 hours remaining
 3. System calculates overage:
+
    ```typescript
    requestedHours = 4
    availableCredits = 2
@@ -664,6 +709,7 @@ Currently hardcoded in `/lib/data.ts`:
    processingFee = $2
    totalPrice = overageCharge + processingFee
    ```
+
 4. User pays overage via Stripe
 5. Booking created with:
    - `credits_used: 2`
@@ -672,6 +718,7 @@ Currently hardcoded in `/lib/data.ts`:
    - `total_price: $62`
 
 **Database Updates:**
+
 - Insert into `bookings`
 - Update `membership_credits` to use remaining 2 hours
 - Insert credit transaction for usage
@@ -684,6 +731,7 @@ Currently hardcoded in `/lib/data.ts`:
 **Use Case:** User purchased $25 day pass (includes hot desk access)
 
 **Flow:**
+
 1. User buys day pass → Creates entry in `bookings` table:
    ```sql
    {
@@ -707,6 +755,7 @@ Currently hardcoded in `/lib/data.ts`:
 **Use Case:** "Cafe Membership" ($150/mo) includes hot desk 9am-5pm
 
 **Flow:**
+
 1. User with active membership doesn't need to "book" hot desk
 2. User checks in via app → System verifies:
    ```typescript
@@ -731,29 +780,30 @@ Currently hardcoded in `/lib/data.ts`:
 
 ### **Hot Desk Pricing Matrix**
 
-| User Type | Base Rate | NFT Holder Rate | Payment Method |
-|-----------|-----------|-----------------|----------------|
-| Walk-in (no membership) | $2.50/hr | $1.25/hr | Card (upfront) |
-| Day Pass Holder | $0 (included) | $0 (included) | Already paid |
-| Monthly Member (with hot desk access) | $0 (included) | $0 (included) | Monthly subscription |
-| Monthly Member (no hot desk access) | $2.50/hr | $1.25/hr | Card |
+| User Type                             | Base Rate     | NFT Holder Rate | Payment Method       |
+| ------------------------------------- | ------------- | --------------- | -------------------- |
+| Walk-in (no membership)               | $2.50/hr      | $1.25/hr        | Card (upfront)       |
+| Day Pass Holder                       | $0 (included) | $0 (included)   | Already paid         |
+| Monthly Member (with hot desk access) | $0 (included) | $0 (included)   | Monthly subscription |
+| Monthly Member (no hot desk access)   | $2.50/hr      | $1.25/hr        | Card                 |
 
 ### **Meeting Room Pricing Matrix**
 
-| Room Type | Base Rate | With Credits | Overage Rate | NFT Overage |
-|-----------|-----------|--------------|--------------|-------------|
-| Focus Room (2-4 ppl) | $25/hr | Free (if credits available) | $25/hr | $12.50/hr |
-| Collaborate Room (4-6 ppl) | $40/hr | Free (if credits available) | $40/hr | $20/hr |
-| Boardroom (6-8 ppl) | $60/hr | Free (if credits available) | $60/hr | $30/hr |
-| Communications Pod | $5/hr | Free (if credits available) | $5/hr | $2.50/hr |
+| Room Type                  | Base Rate | With Credits                | Overage Rate | NFT Overage |
+| -------------------------- | --------- | --------------------------- | ------------ | ----------- |
+| Focus Room (2-4 ppl)       | $25/hr    | Free (if credits available) | $25/hr       | $12.50/hr   |
+| Collaborate Room (4-6 ppl) | $40/hr    | Free (if credits available) | $40/hr       | $20/hr      |
+| Boardroom (6-8 ppl)        | $60/hr    | Free (if credits available) | $60/hr       | $30/hr      |
+| Communications Pod         | $5/hr     | Free (if credits available) | $5/hr        | $2.50/hr    |
 
 ### **Credit Allocation Schedule**
 
 Monthly members receive credits on their billing cycle:
+
 ```typescript
 // On subscription renewal:
 async function allocateMonthlyCredits(user) {
-  const plan = user.membership_plan;
+  const plan = user.membership_plan
 
   // Create new credit allocation
   await createMembershipCredit({
@@ -764,11 +814,11 @@ async function allocateMonthlyCredits(user) {
     remaining_amount: plan.meeting_room_credits_hours,
     billing_cycle_start: today,
     billing_cycle_end: addMonths(today, 1),
-    status: 'active'
-  });
+    status: 'active',
+  })
 
   // Expire previous cycle
-  await expireOldCredits(user.id);
+  await expireOldCredits(user.id)
 }
 ```
 
@@ -777,10 +827,12 @@ async function allocateMonthlyCredits(user) {
 ## 🔄 CREDIT ROLLOVER POLICY
 
 **Default Behavior:** Credits DO NOT roll over
+
 - Unused credits expire at end of billing cycle
 - New credits allocated on renewal
 
 **Premium Option (Future):** Allow rollover for premium plans
+
 - Max 1 month rollover
 - Capped at 2x monthly allocation
 
@@ -789,6 +841,7 @@ async function allocateMonthlyCredits(user) {
 ## ✅ BOOKING VALIDATION RULES
 
 ### **Hot Desk Booking**
+
 ```typescript
 function validateHotDeskBooking(request) {
   // 1. Check desk availability
@@ -797,24 +850,25 @@ function validateHotDeskBooking(request) {
     request.date,
     request.start_time,
     request.end_time
-  );
+  )
 
   // 2. Validate user access
   if (user.membership_plan?.includes_hot_desk) {
     // Check access hours
     if (!isWithinAccessHours(request.time, user.membership_plan.access_hours)) {
-      throw new Error('Outside membership access hours');
+      throw new Error('Outside membership access hours')
     }
   }
 
   // 3. Calculate pricing
-  const pricing = calculatePricing(user, request);
+  const pricing = calculatePricing(user, request)
 
-  return { isAvailable, pricing };
+  return { isAvailable, pricing }
 }
 ```
 
 ### **Meeting Room Booking**
+
 ```typescript
 function validateMeetingRoomBooking(request) {
   // 1. Check room availability
@@ -845,12 +899,14 @@ function validateMeetingRoomBooking(request) {
 ## 🔔 NOTIFICATION TRIGGERS
 
 ### **Booking Notifications**
+
 - ✉️ Booking confirmed → Email + SMS
 - ⏰ 1 hour before start → Reminder
 - ✅ Check-in successful → Confirmation
 - 💰 Final charge calculated → Receipt
 
 ### **Credit Notifications**
+
 - 📊 Monthly allocation → "Your 8 hours of meeting room credits are available"
 - ⚠️ Low credits → "You have 1 hour remaining"
 - ❌ Credits expired → "Your unused 3 hours have expired"

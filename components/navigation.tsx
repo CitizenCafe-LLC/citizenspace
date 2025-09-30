@@ -1,20 +1,20 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
-import { 
+import { useState } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
+import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from '@/components/ui/navigation-menu';
-import { Menu, Coffee, Users, Calendar, Camera, MapPin, Phone, Wallet } from 'lucide-react';
+} from '@/components/ui/navigation-menu'
+import { Menu, Coffee, Users, Calendar, Camera, MapPin, Phone, Wallet } from 'lucide-react'
 
 const navigation = [
   { name: 'Cafe', href: '/cafe' },
@@ -23,8 +23,16 @@ const navigation = [
     href: '/workspaces',
     children: [
       { name: 'Desks', href: '/workspaces/desks', description: 'Hourly & daily workspace options' },
-      { name: 'Meeting Rooms', href: '/workspaces/meeting-rooms', description: 'Private rooms for teams' },
-      { name: 'Communications Pods', href: '/workspaces/communications-pods', description: 'Private phone booths' },
+      {
+        name: 'Meeting Rooms',
+        href: '/workspaces/meeting-rooms',
+        description: 'Private rooms for teams',
+      },
+      {
+        name: 'Communications Pods',
+        href: '/workspaces/communications-pods',
+        description: 'Private phone booths',
+      },
     ],
   },
   { name: 'Membership', href: '/membership' },
@@ -33,11 +41,11 @@ const navigation = [
   { name: 'Blog', href: '/blog' },
   { name: 'Location', href: '/location' },
   { name: 'Contact', href: '/contact' },
-];
+]
 
 export function Navigation() {
-  const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname()
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -50,7 +58,7 @@ export function Navigation() {
         {/* Desktop Navigation */}
         <NavigationMenu className="hidden lg:flex">
           <NavigationMenuList>
-            {navigation.map((item) => (
+            {navigation.map(item => (
               <NavigationMenuItem key={item.name}>
                 {item.children ? (
                   <>
@@ -59,14 +67,14 @@ export function Navigation() {
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <ul className="grid w-[400px] gap-3 p-4">
-                        {item.children.map((child) => (
+                        {item.children.map(child => (
                           <li key={child.name}>
                             <NavigationMenuLink asChild>
                               <Link
                                 href={child.href}
                                 className={cn(
-                                  "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-                                  pathname === child.href && "bg-accent text-accent-foreground"
+                                  'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
+                                  pathname === child.href && 'bg-accent text-accent-foreground'
                                 )}
                               >
                                 <div className="text-sm font-medium leading-none">{child.name}</div>
@@ -84,8 +92,8 @@ export function Navigation() {
                   <Link href={item.href} legacyBehavior passHref>
                     <NavigationMenuLink
                       className={cn(
-                        "group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50",
-                        pathname === item.href && "bg-accent text-accent-foreground"
+                        'group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50',
+                        pathname === item.href && 'bg-accent text-accent-foreground'
                       )}
                     >
                       {item.name}
@@ -104,8 +112,8 @@ export function Navigation() {
               Connect Wallet
             </Link>
           </Button>
-          
-          <Button asChild className="hidden sm:inline-flex btn-primary">
+
+          <Button asChild className="btn-primary hidden sm:inline-flex">
             <Link href="/booking">Book Now</Link>
           </Button>
 
@@ -119,24 +127,24 @@ export function Navigation() {
             </SheetTrigger>
             <SheetContent side="right" className="w-80">
               <SheetTitle className="sr-only">Citizen Space Mobile Navigation</SheetTitle>
-              <div className="flex flex-col space-y-4 mt-4">
+              <div className="mt-4 flex flex-col space-y-4">
                 <Link
                   href="/"
-                  className="flex items-center space-x-2 pb-4 border-b"
+                  className="flex items-center space-x-2 border-b pb-4"
                   onClick={() => setIsOpen(false)}
                 >
                   <Coffee className="h-6 w-6 text-cs-blue" />
                   <span className="font-display text-lg font-bold">Citizen Space</span>
                 </Link>
-                
+
                 <nav className="flex flex-col space-y-2">
-                  {navigation.map((item) => (
+                  {navigation.map(item => (
                     <div key={item.name}>
                       <Link
                         href={item.href}
                         className={cn(
-                          "block px-2 py-2 text-sm font-medium rounded-md transition-colors hover:bg-accent",
-                          pathname === item.href && "bg-accent text-accent-foreground"
+                          'block rounded-md px-2 py-2 text-sm font-medium transition-colors hover:bg-accent',
+                          pathname === item.href && 'bg-accent text-accent-foreground'
                         )}
                         onClick={() => setIsOpen(false)}
                       >
@@ -144,13 +152,13 @@ export function Navigation() {
                       </Link>
                       {item.children && (
                         <div className="ml-4 mt-2 space-y-1">
-                          {item.children.map((child) => (
+                          {item.children.map(child => (
                             <Link
                               key={child.name}
                               href={child.href}
                               className={cn(
-                                "block px-2 py-1 text-sm text-muted-foreground rounded-md transition-colors hover:bg-accent hover:text-accent-foreground",
-                                pathname === child.href && "bg-accent text-accent-foreground"
+                                'block rounded-md px-2 py-1 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground',
+                                pathname === child.href && 'bg-accent text-accent-foreground'
                               )}
                               onClick={() => setIsOpen(false)}
                             >
@@ -162,16 +170,21 @@ export function Navigation() {
                     </div>
                   ))}
                 </nav>
-                
-                <div className="pt-4 border-t">
+
+                <div className="border-t pt-4">
                   <Button asChild variant="outline" className="w-full">
-                    <Link href="#" onClick={() => setIsOpen(false)} target="_blank" rel="noopener noreferrer">
+                    <Link
+                      href="#"
+                      onClick={() => setIsOpen(false)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <Wallet className="mr-2 h-4 w-4" />
                       Connect Wallet
                     </Link>
                   </Button>
-                  
-                  <Button asChild className="w-full btn-primary">
+
+                  <Button asChild className="btn-primary w-full">
                     <Link href="/booking" onClick={() => setIsOpen(false)}>
                       Book Now
                     </Link>
@@ -183,5 +196,5 @@ export function Navigation() {
         </div>
       </div>
     </header>
-  );
+  )
 }

@@ -3,12 +3,13 @@
  * User login endpoint
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { loginUser, AuthenticationError } from '@/lib/auth/service';
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server'
+import { loginUser, AuthenticationError } from '@/lib/auth/service'
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json()
 
     // Validate required fields
     if (!body.email || !body.password) {
@@ -19,14 +20,14 @@ export async function POST(request: NextRequest) {
           code: 'MISSING_FIELDS',
         },
         { status: 400 }
-      );
+      )
     }
 
     // Login user
     const result = await loginUser({
       email: body.email,
       password: body.password,
-    });
+    })
 
     return NextResponse.json(
       {
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
         message: 'Login successful',
       },
       { status: 200 }
-    );
+    )
   } catch (error) {
     if (error instanceof AuthenticationError) {
       return NextResponse.json(
@@ -49,10 +50,10 @@ export async function POST(request: NextRequest) {
           code: error.code,
         },
         { status: error.statusCode }
-      );
+      )
     }
 
-    console.error('Login error:', error);
+    console.error('Login error:', error)
     return NextResponse.json(
       {
         error: 'Internal Server Error',
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
         code: 'INTERNAL_ERROR',
       },
       { status: 500 }
-    );
+    )
   }
 }
 
@@ -71,5 +72,5 @@ export async function GET() {
       message: 'This endpoint only accepts POST requests',
     },
     { status: 405 }
-  );
+  )
 }
