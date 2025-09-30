@@ -113,6 +113,7 @@ export interface User {
   membership_start_date: string | null
   membership_end_date: string | null
   stripe_customer_id: string | null
+  stripe_subscription_id: string | null
   created_at: string
   updated_at: string
 }
@@ -205,5 +206,46 @@ export interface CreditTransaction {
   balance_after: number
   description: string
   metadata: Record<string, any>
+  created_at: string
+}
+
+// Menu and Orders Types
+export interface MenuItem {
+  id: string
+  title: string
+  description: string | null
+  price: number
+  category: 'coffee' | 'tea' | 'pastries' | 'meals'
+  dietary_tags: string[]
+  image: string | null
+  orderable: boolean
+  featured: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface Order {
+  id: string
+  user_id: string | null
+  subtotal: number
+  discount_amount: number
+  nft_discount_applied: boolean
+  processing_fee: number
+  total_price: number
+  status: 'pending' | 'preparing' | 'ready' | 'completed' | 'cancelled'
+  payment_status: 'pending' | 'paid' | 'refunded'
+  payment_intent_id: string | null
+  special_instructions: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface OrderItem {
+  id: string
+  order_id: string
+  menu_item_id: string | null
+  quantity: number
+  unit_price: number
+  subtotal: number
   created_at: string
 }

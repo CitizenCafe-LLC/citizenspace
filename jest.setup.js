@@ -7,8 +7,19 @@ process.env = {
   NEXT_PUBLIC_SUPABASE_URL: 'https://test.supabase.co',
   NEXT_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: 'pk_test_mock',
+  STRIPE_SECRET_KEY: 'sk_test_mock',
+  STRIPE_WEBHOOK_SECRET: 'whsec_test_mock',
+  DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
+  JWT_SECRET: 'test-jwt-secret',
   NODE_ENV: 'test',
 }
+
+// Mock global fetch for Next.js
+global.fetch = jest.fn()
+
+// Mock TextEncoder/TextDecoder for Node.js environment
+global.TextEncoder = require('util').TextEncoder
+global.TextDecoder = require('util').TextDecoder
 
 // Mock Next.js router
 jest.mock('next/router', () => ({
@@ -57,20 +68,22 @@ jest.mock('next/navigation', () => ({
   },
 }))
 
-// Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: jest.fn().mockImplementation(query => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: jest.fn(), // Deprecated
-    removeListener: jest.fn(), // Deprecated
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
-})
+// Mock window.matchMedia (only if window is available)
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: jest.fn().mockImplementation(query => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: jest.fn(), // Deprecated
+      removeListener: jest.fn(), // Deprecated
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      dispatchEvent: jest.fn(),
+    })),
+  })
+}
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
