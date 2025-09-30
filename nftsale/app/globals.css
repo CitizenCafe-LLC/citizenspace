@@ -1,0 +1,152 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Citizen Space Color System */
+  --cs-blue-500: #79AEF2;
+  --cs-sun-500: #F2BE5C;
+  --cs-apricot: #F2AA52;
+  --cs-caramel: #D9965B;
+  --cs-espresso: #592B11;
+  
+  --cs-bg: #FFFDFB;
+  --cs-ink: #1E1B16;
+  --cs-muted: #6A5F55;
+  --cs-border: #EDE3D9;
+  --cs-success: #4F6D4D;
+  --cs-alert: #A23E48;
+  
+  /* shadcn/ui compatibility */
+  --background: 0 0% 100%;
+  --foreground: 224 71.4% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 224 71.4% 4.1%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 224 71.4% 4.1%;
+  --primary: 220.9 39.3% 11%;
+  --primary-foreground: 210 20% 98%;
+  --secondary: 220 14.3% 95.9%;
+  --secondary-foreground: 220.9 39.3% 11%;
+  --muted: 220 14.3% 95.9%;
+  --muted-foreground: 220 8.9% 46.1%;
+  --accent: 220 14.3% 95.9%;
+  --accent-foreground: 220.9 39.3% 11%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 20% 98%;
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 224 71.4% 4.1%;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --cs-bg: #141210;
+  --cs-ink: #F7F3EE;
+  --cs-muted: #C9C1B9;
+  --cs-border: #2A241F;
+  
+  --background: 224 71.4% 4.1%;
+  --foreground: 210 20% 98%;
+  --card: 224 71.4% 4.1%;
+  --card-foreground: 210 20% 98%;
+  --popover: 224 71.4% 4.1%;
+  --popover-foreground: 210 20% 98%;
+  --primary: 210 20% 98%;
+  --primary-foreground: 220.9 39.3% 11%;
+  --secondary: 215 27.9% 16.9%;
+  --secondary-foreground: 210 20% 98%;
+  --muted: 215 27.9% 16.9%;
+  --muted-foreground: 217.9 10.6% 64.9%;
+  --accent: 215 27.9% 16.9%;
+  --accent-foreground: 210 20% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 20% 98%;
+  --border: 215 27.9% 16.9%;
+  --input: 215 27.9% 16.9%;
+  --ring: 216 12.2% 83.9%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-sans;
+    background-color: var(--cs-bg);
+    color: var(--cs-ink);
+    font-family: 'Inter', sans-serif;
+  }
+  
+  h1, h2, h3 {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Manrope', sans-serif;
+  }
+  
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+  
+  .text-cs-ink {
+    color: var(--cs-ink);
+  }
+  
+  .text-cs-muted {
+    color: var(--cs-muted);
+  }
+  
+  .bg-cs-bg {
+    background-color: var(--cs-bg);
+  }
+  
+  .border-cs-border {
+    border-color: var(--cs-border);
+  }
+  
+  .gradient-brand {
+    background: linear-gradient(135deg, var(--cs-apricot), var(--cs-blue-500));
+  }
+  
+  .gradient-warm {
+    background: linear-gradient(135deg, var(--cs-caramel), var(--cs-sun-500));
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cs-border);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--cs-muted);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cs-ink);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
