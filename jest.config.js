@@ -10,8 +10,11 @@ const customJestConfig = {
   // Setup files to run before each test
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 
-  // Test environment - use node for API tests
-  testEnvironment: 'node',
+  // Test environment - use jsdom for component tests, node for API tests
+  testEnvironment: 'jsdom',
+  testEnvironmentOptions: {
+    customExportConditions: [''],
+  },
 
   // Module name mapper for absolute imports
   moduleNameMapper: {

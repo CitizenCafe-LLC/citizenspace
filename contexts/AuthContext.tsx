@@ -30,6 +30,9 @@ interface AuthContextType {
   logout: () => Promise<void>
   updateProfile: (data: Partial<User>) => Promise<void>
   refreshAccessToken: () => Promise<void>
+  connectWallet: (walletAddress: string, signature: string) => Promise<void>
+  verifyNFT: (walletAddress: string) => Promise<boolean>
+  fetchUser: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -218,6 +221,116 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [refreshToken, clearAuthData])
 
+  // Fetch current user data
+  const fetchUser = useCallback(async () => {
+    try {
+      if (!accessToken) {
+        throw new Error('Not authenticated')
+      }
+
+      const response = await fetch('/api/auth/me', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch user')
+      }
+
+      setUser(data.data.user)
+      localStorage.setItem(USER_KEY, JSON.stringify(data.data.user))
+    } catch (error) {
+      console.error('Fetch user error:', error)
+      throw error
+    }
+  }, [accessToken])
+
+  // Connect wallet and link to account
+  const connectWallet = useCallback(
+    async (walletAddress: string, signature: string) => {
+      try {
+        if (!accessToken) {
+          throw new Error('Not authenticated')
+        }
+
+        const response = await fetch('/api/auth/wallet-connect', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ walletAddress, signature }),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Wallet connection failed')
+        }
+
+        // Update user with wallet address
+        if (user) {
+          const updatedUser = { ...user, walletAddress: data.data.walletAddress }
+          setUser(updatedUser)
+          localStorage.setItem(USER_KEY, JSON.stringify(updatedUser))
+        }
+
+        // Verify NFT ownership after connecting wallet
+        await verifyNFT(walletAddress)
+      } catch (error) {
+        console.error('Wallet connection error:', error)
+        throw error
+      }
+    },
+    [accessToken, user]
+  )
+
+  // Verify NFT ownership
+  const verifyNFT = useCallback(
+    async (walletAddress: string) => {
+      try {
+        if (!accessToken) {
+          throw new Error('Not authenticated')
+        }
+
+        const response = await fetch('/api/auth/verify-nft', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ walletAddress }),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.message || 'NFT verification failed')
+        }
+
+        const isHolder = data.data.isNFTHolder
+
+        // Update user NFT holder status
+        if (user) {
+          const updatedUser = { ...user, nftHolder: isHolder }
+          setUser(updatedUser)
+          localStorage.setItem(USER_KEY, JSON.stringify(updatedUser))
+        }
+
+        return isHolder
+      } catch (error) {
+        console.error('NFT verification error:', error)
+        return false
+      }
+    },
+    [accessToken, user]
+  )
+
   // Auto-refresh token before expiry (every 10 minutes)
   useEffect(() => {
     if (!accessToken || !refreshToken) return
@@ -232,6 +345,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => clearInterval(interval)
   }, [accessToken, refreshToken, refreshAccessToken])
 
+  // Fetch user data on mount if token exists
+  useEffect(() => {
+    if (accessToken && !user) {
+      fetchUser().catch(console.error)
+    }
+  }, [accessToken, user, fetchUser])
+
   const value: AuthContextType = {
     user,
     accessToken,
@@ -243,6 +363,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     logout,
     updateProfile,
     refreshAccessToken,
+    connectWallet,
+    verifyNFT,
+    fetchUser,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

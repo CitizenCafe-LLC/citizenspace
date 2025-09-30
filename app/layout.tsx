@@ -5,7 +5,9 @@ import { cn } from '@/lib/utils'
 import { Navigation } from '@/components/navigation'
 import { Footer } from '@/components/footer'
 import { Web3Provider } from '@/components/providers/web3-provider'
+import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeProvider } from 'next-themes'
+import { Toaster } from '@/components/ui/sonner'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -84,9 +86,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           disableTransitionOnChange
         >
           <Web3Provider>
-            <Navigation />
-            <main className="flex-1">{children}</main>
-            <Footer />
+            <AuthProvider>
+              <Navigation />
+              <main className="flex-1">{children}</main>
+              <Footer />
+              <Toaster />
+            </AuthProvider>
           </Web3Provider>
         </ThemeProvider>
       </body>
