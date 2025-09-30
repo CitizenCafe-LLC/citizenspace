@@ -304,6 +304,246 @@ export function generateAvailableSlots(
 }
 
 /**
+ * ADMIN FUNCTIONS - Full CRUD Operations
+ */
+
+/**
+ * Create a new workspace (admin only)
+ */
+export async function createWorkspace(data: {
+  name: string
+  type: string
+  resource_category: 'desk' | 'meeting-room'
+  description: string
+  capacity: number
+  base_price_hourly: number
+  requires_credits: boolean
+  min_duration: number
+  max_duration: number
+  amenities: string[]
+  images: string[]
+  available: boolean
+  floor_location: string
+}) {
+  try {
+    const query = `
+      INSERT INTO workspaces (
+        name, type, resource_category, description, capacity,
+        base_price_hourly, requires_credits, min_duration, max_duration,
+        amenities, images, available, floor_location
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      RETURNING *
+    `
+
+    const params = [
+      data.name,
+      data.type,
+      data.resource_category,
+      data.description,
+      data.capacity,
+      data.base_price_hourly,
+      data.requires_credits,
+      data.min_duration,
+      data.max_duration,
+      JSON.stringify(data.amenities),
+      JSON.stringify(data.images),
+      data.available,
+      data.floor_location,
+    ]
+
+    const result = await executeQuerySingle<Workspace>(query, params)
+
+    if (result.error) {
+      console.error('Error creating workspace:', result.error)
+      return { data: null, error: result.error }
+    }
+
+    return { data: result.data, error: null }
+  } catch (error) {
+    console.error('Error in createWorkspace:', error)
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to create workspace',
+    }
+  }
+}
+
+/**
+ * Update workspace (admin only)
+ */
+export async function updateWorkspace(
+  id: string,
+  data: Partial<{
+    name: string
+    type: string
+    resource_category: 'desk' | 'meeting-room'
+    description: string
+    capacity: number
+    base_price_hourly: number
+    requires_credits: boolean
+    min_duration: number
+    max_duration: number
+    amenities: string[]
+    images: string[]
+    available: boolean
+    floor_location: string
+  }>
+) {
+  try {
+    const setClauses: string[] = []
+    const params: any[] = []
+    let paramCount = 1
+
+    if (data.name !== undefined) {
+      setClauses.push(`name = $${paramCount++}`)
+      params.push(data.name)
+    }
+    if (data.type !== undefined) {
+      setClauses.push(`type = $${paramCount++}`)
+      params.push(data.type)
+    }
+    if (data.resource_category !== undefined) {
+      setClauses.push(`resource_category = $${paramCount++}`)
+      params.push(data.resource_category)
+    }
+    if (data.description !== undefined) {
+      setClauses.push(`description = $${paramCount++}`)
+      params.push(data.description)
+    }
+    if (data.capacity !== undefined) {
+      setClauses.push(`capacity = $${paramCount++}`)
+      params.push(data.capacity)
+    }
+    if (data.base_price_hourly !== undefined) {
+      setClauses.push(`base_price_hourly = $${paramCount++}`)
+      params.push(data.base_price_hourly)
+    }
+    if (data.requires_credits !== undefined) {
+      setClauses.push(`requires_credits = $${paramCount++}`)
+      params.push(data.requires_credits)
+    }
+    if (data.min_duration !== undefined) {
+      setClauses.push(`min_duration = $${paramCount++}`)
+      params.push(data.min_duration)
+    }
+    if (data.max_duration !== undefined) {
+      setClauses.push(`max_duration = $${paramCount++}`)
+      params.push(data.max_duration)
+    }
+    if (data.amenities !== undefined) {
+      setClauses.push(`amenities = $${paramCount++}`)
+      params.push(JSON.stringify(data.amenities))
+    }
+    if (data.images !== undefined) {
+      setClauses.push(`images = $${paramCount++}`)
+      params.push(JSON.stringify(data.images))
+    }
+    if (data.available !== undefined) {
+      setClauses.push(`available = $${paramCount++}`)
+      params.push(data.available)
+    }
+    if (data.floor_location !== undefined) {
+      setClauses.push(`floor_location = $${paramCount++}`)
+      params.push(data.floor_location)
+    }
+
+    if (setClauses.length === 0) {
+      return { data: null, error: 'No fields to update' }
+    }
+
+    params.push(id)
+
+    const query = `
+      UPDATE workspaces
+      SET ${setClauses.join(', ')}
+      WHERE id = $${paramCount}
+      RETURNING *
+    `
+
+    const result = await executeQuerySingle<Workspace>(query, params)
+
+    if (result.error) {
+      console.error('Error updating workspace:', result.error)
+      return { data: null, error: result.error }
+    }
+
+    if (!result.data) {
+      return { data: null, error: 'Workspace not found' }
+    }
+
+    return { data: result.data, error: null }
+  } catch (error) {
+    console.error('Error in updateWorkspace:', error)
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to update workspace',
+    }
+  }
+}
+
+/**
+ * Delete workspace (admin only)
+ * Checks for active bookings before deletion
+ */
+export async function deleteWorkspace(id: string) {
+  try {
+    // Check for active bookings
+    const checkQuery = `
+      SELECT COUNT(*) as active_bookings
+      FROM bookings
+      WHERE workspace_id = $1
+        AND status IN ('pending', 'confirmed')
+        AND booking_date >= CURRENT_DATE
+    `
+
+    const checkResult = await executeQuerySingle<{ active_bookings: string }>(
+      checkQuery,
+      [id]
+    )
+
+    const activeBookings = parseInt(checkResult.data?.active_bookings || '0')
+
+    if (activeBookings > 0) {
+      return {
+        data: null,
+        error: `Cannot delete workspace with ${activeBookings} active or upcoming booking(s)`,
+      }
+    }
+
+    // Soft delete by marking as unavailable
+    const deleteQuery = `
+      UPDATE workspaces
+      SET available = false
+      WHERE id = $1
+      RETURNING id, name
+    `
+
+    const result = await executeQuerySingle<{ id: string; name: string }>(
+      deleteQuery,
+      [id]
+    )
+
+    if (result.error) {
+      console.error('Error deleting workspace:', result.error)
+      return { data: null, error: result.error }
+    }
+
+    if (!result.data) {
+      return { data: null, error: 'Workspace not found' }
+    }
+
+    return { data: result.data, error: null }
+  } catch (error) {
+    console.error('Error in deleteWorkspace:', error)
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to delete workspace',
+    }
+  }
+}
+
+/**
  * Check availability for multiple workspaces
  * Returns workspaces with availability information
  */

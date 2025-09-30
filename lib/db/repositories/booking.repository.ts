@@ -641,3 +641,309 @@ export async function getUserWithMembership(userId: string) {
 
   return { data: result.data, error: null }
 }
+
+/**
+ * ADMIN FUNCTIONS
+ */
+
+/**
+ * Get all bookings with filters (admin/staff)
+ */
+export async function getAllBookings(filters?: {
+  status?: string
+  booking_type?: string
+  user_id?: string
+  workspace_id?: string
+  start_date?: string
+  end_date?: string
+  payment_status?: string
+  page?: number
+  limit?: number
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
+}) {
+  const whereClauses: string[] = []
+  const params: any[] = []
+  let paramCount = 1
+
+  if (filters?.status) {
+    whereClauses.push(`b.status = $${paramCount++}`)
+    params.push(filters.status)
+  }
+
+  if (filters?.booking_type) {
+    whereClauses.push(`b.booking_type = $${paramCount++}`)
+    params.push(filters.booking_type)
+  }
+
+  if (filters?.user_id) {
+    whereClauses.push(`b.user_id = $${paramCount++}`)
+    params.push(filters.user_id)
+  }
+
+  if (filters?.workspace_id) {
+    whereClauses.push(`b.workspace_id = $${paramCount++}`)
+    params.push(filters.workspace_id)
+  }
+
+  if (filters?.start_date) {
+    whereClauses.push(`b.booking_date >= $${paramCount++}`)
+    params.push(filters.start_date)
+  }
+
+  if (filters?.end_date) {
+    whereClauses.push(`b.booking_date <= $${paramCount++}`)
+    params.push(filters.end_date)
+  }
+
+  if (filters?.payment_status) {
+    whereClauses.push(`b.payment_status = $${paramCount++}`)
+    params.push(filters.payment_status)
+  }
+
+  const whereClause = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : ''
+
+  // Count total records
+  const countQuery = `SELECT COUNT(*) FROM bookings b ${whereClause}`
+  const countResult = await executeQuerySingle<{ count: string }>(countQuery, params)
+  const count = parseInt(countResult.data?.count || '0')
+
+  // Build pagination
+  const page = filters?.page || 1
+  const limit = filters?.limit || 20
+  const offset = (page - 1) * limit
+  const sortBy = filters?.sortBy || 'b.booking_date'
+  const sortOrder = filters?.sortOrder === 'asc' ? 'ASC' : 'DESC'
+
+  params.push(limit, offset)
+
+  const query = `
+    SELECT
+      b.*,
+      jsonb_build_object(
+        'id', w.id,
+        'name', w.name,
+        'type', w.type,
+        'resource_category', w.resource_category
+      ) as workspaces,
+      jsonb_build_object(
+        'id', u.id,
+        'email', u.email,
+        'full_name', u.full_name,
+        'nft_holder', u.nft_holder
+      ) as users
+    FROM bookings b
+    LEFT JOIN workspaces w ON b.workspace_id = w.id
+    LEFT JOIN users u ON b.user_id = u.id
+    ${whereClause}
+    ORDER BY ${sortBy} ${sortOrder}
+    LIMIT $${paramCount++} OFFSET $${paramCount++}
+  `
+
+  const result = await executeQuery<Booking>(query, params)
+
+  if (result.error) {
+    console.error('Error fetching all bookings:', result.error)
+    return { data: null, error: result.error, count: 0 }
+  }
+
+  return { data: result.data, error: null, count }
+}
+
+/**
+ * Update booking with admin notes (admin only)
+ */
+export async function updateBookingAdmin(
+  id: string,
+  params: UpdateBookingParams & {
+    booking_date?: string
+    start_time?: string
+    end_time?: string
+    workspace_id?: string
+    admin_notes?: string
+  }
+) {
+  const setClauses: string[] = []
+  const queryParams: any[] = []
+  let paramCount = 1
+
+  if (params.status !== undefined) {
+    setClauses.push(`status = $${paramCount++}`)
+    queryParams.push(params.status)
+  }
+
+  if (params.payment_status !== undefined) {
+    setClauses.push(`payment_status = $${paramCount++}`)
+    queryParams.push(params.payment_status)
+  }
+
+  if (params.booking_date !== undefined) {
+    setClauses.push(`booking_date = $${paramCount++}`)
+    queryParams.push(params.booking_date)
+  }
+
+  if (params.start_time !== undefined) {
+    setClauses.push(`start_time = $${paramCount++}`)
+    queryParams.push(params.start_time)
+  }
+
+  if (params.end_time !== undefined) {
+    setClauses.push(`end_time = $${paramCount++}`)
+    queryParams.push(params.end_time)
+  }
+
+  if (params.workspace_id !== undefined) {
+    setClauses.push(`workspace_id = $${paramCount++}`)
+    queryParams.push(params.workspace_id)
+  }
+
+  if (params.admin_notes !== undefined) {
+    setClauses.push(`admin_notes = $${paramCount++}`)
+    queryParams.push(params.admin_notes)
+  }
+
+  if (setClauses.length === 0) {
+    return { data: null, error: 'No fields to update' }
+  }
+
+  queryParams.push(id)
+
+  const query = `
+    UPDATE bookings
+    SET ${setClauses.join(', ')}, updated_at = NOW()
+    WHERE id = $${paramCount}
+    RETURNING *
+  `
+
+  const result = await executeQuerySingle<Booking>(query, queryParams)
+
+  if (result.error) {
+    console.error('Error updating booking:', result.error)
+    return { data: null, error: result.error }
+  }
+
+  return { data: result.data, error: null }
+}
+
+/**
+ * Delete/cancel booking with reason (admin only)
+ */
+export async function deleteBookingAdmin(id: string, reason?: string) {
+  // First, get the booking to check if refund is needed
+  const booking = await getBookingById(id)
+
+  if (booking.error || !booking.data) {
+    return { data: null, error: 'Booking not found' }
+  }
+
+  // Update booking to cancelled with reason
+  const updateQuery = `
+    UPDATE bookings
+    SET status = 'cancelled',
+        admin_notes = CONCAT(COALESCE(admin_notes, ''), ' [CANCELLED BY ADMIN: ', $1, ']'),
+        updated_at = NOW()
+    WHERE id = $2
+    RETURNING *
+  `
+
+  const result = await executeQuerySingle<Booking>(updateQuery, [
+    reason || 'No reason provided',
+    id,
+  ])
+
+  if (result.error) {
+    console.error('Error deleting booking:', result.error)
+    return { data: null, error: result.error }
+  }
+
+  return {
+    data: result.data,
+    error: null,
+    shouldRefund: booking.data.payment_status === 'paid'
+  }
+}
+
+/**
+ * Get booking statistics (admin dashboard)
+ */
+export async function getBookingStatistics(filters?: {
+  start_date?: string
+  end_date?: string
+}) {
+  const whereClauses: string[] = []
+  const params: any[] = []
+  let paramCount = 1
+
+  if (filters?.start_date) {
+    whereClauses.push(`booking_date >= $${paramCount++}`)
+    params.push(filters.start_date)
+  }
+
+  if (filters?.end_date) {
+    whereClauses.push(`booking_date <= $${paramCount++}`)
+    params.push(filters.end_date)
+  }
+
+  const whereClause = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : ''
+
+  const query = `
+    SELECT
+      COUNT(*) as total_bookings,
+      COUNT(*) FILTER (WHERE status = 'pending') as pending_bookings,
+      COUNT(*) FILTER (WHERE status = 'confirmed') as confirmed_bookings,
+      COUNT(*) FILTER (WHERE status = 'completed') as completed_bookings,
+      COUNT(*) FILTER (WHERE status = 'cancelled') as cancelled_bookings,
+      COUNT(*) FILTER (WHERE booking_type = 'hourly-desk') as hourly_desk_bookings,
+      COUNT(*) FILTER (WHERE booking_type = 'meeting-room') as meeting_room_bookings,
+      COALESCE(SUM(total_price) FILTER (WHERE payment_status = 'paid'), 0) as total_revenue,
+      COALESCE(AVG(total_price) FILTER (WHERE payment_status = 'paid'), 0) as average_booking_value,
+      COALESCE(SUM(total_price) FILTER (WHERE payment_status = 'refunded'), 0) as total_refunded
+    FROM bookings
+    ${whereClause}
+  `
+
+  const result = await executeQuerySingle(query, params)
+
+  if (result.error) {
+    console.error('Error fetching booking statistics:', result.error)
+    return { data: null, error: result.error }
+  }
+
+  // Parse numeric fields
+  const stats = result.data
+    ? {
+        ...result.data,
+        total_revenue: parseFloat(result.data.total_revenue || '0'),
+        average_booking_value: parseFloat(result.data.average_booking_value || '0'),
+        total_refunded: parseFloat(result.data.total_refunded || '0'),
+      }
+    : null
+
+  return { data: stats, error: null }
+}
+
+/**
+ * Get popular booking times (admin analytics)
+ */
+export async function getPopularBookingTimes() {
+  const query = `
+    SELECT
+      EXTRACT(HOUR FROM start_time::time) as hour,
+      COUNT(*) as booking_count
+    FROM bookings
+    WHERE status != 'cancelled'
+      AND booking_date >= NOW() - INTERVAL '90 days'
+    GROUP BY hour
+    ORDER BY booking_count DESC
+    LIMIT 10
+  `
+
+  const result = await executeQuery(query)
+
+  if (result.error) {
+    console.error('Error fetching popular times:', result.error)
+    return { data: null, error: result.error }
+  }
+
+  return { data: result.data, error: null }
+}
