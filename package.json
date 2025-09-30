@@ -18,6 +18,7 @@
     "db:migrate": "npx supabase db push",
     "db:migrate:dev": "npx supabase migration new",
     "db:seed": "npx supabase db seed",
+    "db:seed:events": "npx tsx scripts/migrate-events-data.ts",
     "db:reset": "npx supabase db reset",
     "db:status": "npx supabase db status",
     "supabase:start": "npx supabase start",
@@ -113,6 +114,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "prettier": "^3.1.1",
     "prettier-plugin-tailwindcss": "^0.5.9",
-    "ts-jest": "^29.4.4"
+    "ts-jest": "^29.4.4",
+    "tsx": "^4.19.2"
   }
 }

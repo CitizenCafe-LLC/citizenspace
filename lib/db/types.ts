@@ -249,3 +249,41 @@ export interface OrderItem {
   subtotal: number
   created_at: string
 }
+
+// Blog Types
+export interface BlogPost {
+  id: string
+  title: string
+  slug: string
+  excerpt: string
+  content: string
+  image: string | null
+  author_name: string
+  author_avatar: string | null
+  author_bio: string | null
+  tags: string[]
+  published_at: string
+  reading_time: number
+  published: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface BlogCategory {
+  id: string
+  name: string
+  slug: string
+  post_count: number
+  created_at: string
+}
+
+export interface BlogPostFilters {
+  tag?: string
+  category?: string
+  search?: string
+  published?: boolean
+}
+
+export interface BlogSearchResult extends BlogPost {
+  rank?: number
+}

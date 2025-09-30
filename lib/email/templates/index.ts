@@ -31,3 +31,20 @@ export type { CreditAllocationData } from './credit-allocation'
 // Order ready
 export { generateOrderReadyHTML, generateOrderReadyText } from './order-ready'
 export type { OrderReadyData } from './order-ready'
+
+// Contact notification
+export {
+  generateContactNotificationHTML,
+  generateContactNotificationText,
+  getContactNotificationSubject,
+  getAdminEmail,
+} from './contact-notification'
+export type { ContactNotificationData } from './contact-notification'
+
+// Newsletter welcome
+export {
+  generateNewsletterWelcomeHTML,
+  generateNewsletterWelcomeText,
+  getNewsletterWelcomeSubject,
+} from './newsletter-welcome'
+export type { NewsletterWelcomeData } from './newsletter-welcome'
