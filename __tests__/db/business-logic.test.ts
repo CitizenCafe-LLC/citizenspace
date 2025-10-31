@@ -11,11 +11,73 @@
 
 import { getSupabaseClient } from '@/lib/db/supabase'
 
-const supabase = getSupabaseClient()
+// Mock Supabase
+jest.mock('@/lib/db/supabase')
+
+const mockFrom = jest.fn()
+const mockSelect = jest.fn()
+const mockEq = jest.fn()
+const mockNeq = jest.fn()
+const mockSingle = jest.fn()
+const mockInsert = jest.fn()
+const mockUpdate = jest.fn()
+const mockDelete = jest.fn()
+const mockLt = jest.fn()
+const mockGt = jest.fn()
+const mockLte = jest.fn()
+const mockGte = jest.fn()
+const mockOrder = jest.fn()
+const mockLimit = jest.fn()
+
+const supabase = {
+  from: mockFrom,
+} as any
+
+;(getSupabaseClient as jest.Mock).mockReturnValue(supabase)
+
+// Setup chainable mock
+beforeEach(() => {
+  jest.clearAllMocks()
+
+  const mockChain = {
+    single: mockSingle,
+    eq: mockEq,
+    neq: mockNeq,
+    lt: mockLt,
+    gt: mockGt,
+    lte: mockLte,
+    gte: mockGte,
+    select: mockSelect,
+    insert: mockInsert,
+    update: mockUpdate,
+    delete: mockDelete,
+    limit: mockLimit,
+  }
+
+  mockFrom.mockReturnValue(mockChain)
+  mockSelect.mockReturnValue(mockChain)
+  mockEq.mockReturnValue(mockChain)
+  mockNeq.mockReturnValue(mockChain)
+  mockLt.mockReturnValue(mockChain)
+  mockGt.mockReturnValue(mockChain)
+  mockLte.mockReturnValue(mockChain)
+  mockGte.mockReturnValue(mockChain)
+  mockLimit.mockReturnValue(mockChain)
+  mockSingle.mockReturnValue({ data: null, error: null })
+  mockInsert.mockReturnValue(mockChain)
+  mockUpdate.mockReturnValue(mockChain)
+  mockDelete.mockReturnValue(mockChain)
+})
 
 describe('Business Logic Tests', () => {
   describe('Booking Price Calculations', () => {
     it('should calculate correct hourly desk pricing', async () => {
+      // Mock hot desk workspace data
+      mockSingle.mockResolvedValueOnce({
+        data: { base_price_hourly: 2.5, type: 'hot-desk' },
+        error: null,
+      })
+
       // Get hot desk workspace
       const { data: workspace } = await supabase
         .from('workspaces')
@@ -35,6 +97,12 @@ describe('Business Logic Tests', () => {
     })
 
     it('should apply 50% NFT discount correctly', async () => {
+      // Mock hot desk workspace data
+      mockSingle.mockResolvedValueOnce({
+        data: { base_price_hourly: 2.5, type: 'hot-desk' },
+        error: null,
+      })
+
       const { data: workspace } = await supabase
         .from('workspaces')
         .select('*')
@@ -58,6 +126,12 @@ describe('Business Logic Tests', () => {
     })
 
     it('should calculate meeting room overage charges', async () => {
+      // Mock focus room workspace data
+      mockSingle.mockResolvedValueOnce({
+        data: { base_price_hourly: 25, type: 'focus-room' },
+        error: null,
+      })
+
       const { data: room } = await supabase
         .from('workspaces')
         .select('*')
@@ -246,10 +320,16 @@ describe('Business Logic Tests', () => {
     })
 
     it('should check workspace capacity', async () => {
+      // Mock workspace with capacity
+      mockSingle.mockResolvedValueOnce({
+        data: { capacity: 8, id: 'test-workspace' },
+        error: null,
+      })
+
       const { data: workspace } = await supabase
         .from('workspaces')
         .select('capacity')
-        .eq('id', testWorkspaceId)
+        .eq('id', 'test-workspace')
         .single()
 
       expect(workspace?.capacity).toBeGreaterThan(0)

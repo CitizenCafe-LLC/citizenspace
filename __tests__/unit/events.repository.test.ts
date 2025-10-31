@@ -148,7 +148,7 @@ describe('Events Repository', () => {
 
       expect(result.error).toBeNull()
       const params = mockExecuteQuery.mock.calls[0][1]
-      expect(params).toContain(['workshop', 'networking'])
+      expect(params).toContainEqual(['workshop', 'networking'])
     })
 
     it('should include user RSVP status when userId provided', async () => {

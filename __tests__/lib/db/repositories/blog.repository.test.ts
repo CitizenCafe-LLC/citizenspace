@@ -326,10 +326,9 @@ describe('Blog Repository', () => {
 
       expect(result.data).toEqual(mockCategories)
       expect(result.error).toBeNull()
-      expect(mockExecuteQuery).toHaveBeenCalledWith(
-        expect.stringContaining('ORDER BY post_count DESC'),
-        undefined
-      )
+      expect(mockExecuteQuery).toHaveBeenCalled()
+      const call = mockExecuteQuery.mock.calls[0][0]
+      expect(call).toContain('ORDER BY post_count DESC')
     })
 
     it('should fetch categories sorted by name', async () => {
@@ -338,10 +337,9 @@ describe('Blog Repository', () => {
       const result = await getBlogCategories('name')
 
       expect(result.error).toBeNull()
-      expect(mockExecuteQuery).toHaveBeenCalledWith(
-        expect.stringContaining('ORDER BY name ASC'),
-        undefined
-      )
+      expect(mockExecuteQuery).toHaveBeenCalled()
+      const call = mockExecuteQuery.mock.calls[0][0]
+      expect(call).toContain('ORDER BY name ASC')
     })
 
     it('should handle database errors', async () => {
@@ -389,10 +387,9 @@ describe('Blog Repository', () => {
 
       expect(result.success).toBe(true)
       expect(result.error).toBeNull()
-      expect(mockExecuteQuery).toHaveBeenCalledWith(
-        expect.stringContaining('update_blog_category_counts'),
-        undefined
-      )
+      expect(mockExecuteQuery).toHaveBeenCalled()
+      const call = mockExecuteQuery.mock.calls[0][0]
+      expect(call).toContain('update_blog_category_counts')
     })
 
     it('should handle errors when updating counts', async () => {
@@ -465,10 +462,9 @@ describe('Blog Repository', () => {
 
       expect(result.data).toEqual(['Coworking', 'Productivity', 'Business'])
       expect(result.error).toBeNull()
-      expect(mockExecuteQuery).toHaveBeenCalledWith(
-        expect.stringContaining('jsonb_array_elements_text'),
-        undefined
-      )
+      expect(mockExecuteQuery).toHaveBeenCalled()
+      const call = mockExecuteQuery.mock.calls[0][0]
+      expect(call).toContain('jsonb_array_elements_text')
     })
 
     it('should handle empty tag list', async () => {

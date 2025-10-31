@@ -4,6 +4,7 @@
 
 import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { BookingsList } from '@/components/admin/BookingsList'
 
 const mockBookings = [
@@ -90,14 +91,24 @@ describe('BookingsList', () => {
     expect(screen.queryByText('Meeting Room A')).not.toBeInTheDocument()
   })
 
-  it('calls onView when view button clicked', () => {
+  it('calls onView when view button clicked', async () => {
+    const user = userEvent.setup()
     render(<BookingsList bookings={mockBookings} {...mockHandlers} />)
 
-    const moreButton = screen.getAllByRole('button', { name: '' })[0]
-    fireEvent.click(moreButton)
+    // Get all ghost variant buttons (these are the dropdown triggers)
+    const allButtons = screen.getAllByRole('button')
+    // The dropdown triggers come after the status select and export button
+    // Find buttons that are size icon (the three-dot menu buttons)
+    const dropdownButtons = allButtons.filter(
+      (btn) => btn.className.includes('h-10 w-10') || btn.getAttribute('data-state') === 'closed'
+    )
 
-    const viewButton = screen.getByText('View Details')
-    fireEvent.click(viewButton)
+    // Click the first dropdown trigger
+    await user.click(dropdownButtons[0])
+
+    // Wait for and find the View Details menu item
+    const viewButton = await screen.findByRole('menuitem', { name: /view details/i })
+    await user.click(viewButton)
 
     expect(mockHandlers.onView).toHaveBeenCalledWith('1')
   })

@@ -1,5 +1,6 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { BookingCard } from '@/components/dashboard/BookingCard'
 import { toast } from 'sonner'
 
@@ -49,6 +50,7 @@ describe('BookingCard', () => {
   })
 
   it('allows cancelling a confirmed booking', async () => {
+    const user = userEvent.setup()
     ;(fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: async () => ({ success: true }),
@@ -58,17 +60,15 @@ describe('BookingCard', () => {
 
     // Open dropdown menu
     const menuButton = screen.getAllByRole('button')[0]
-    fireEvent.click(menuButton)
+    await user.click(menuButton)
 
     // Click cancel option
-    const cancelButton = screen.getByText('Cancel Booking')
-    fireEvent.click(cancelButton)
+    const cancelButton = await screen.findByText('Cancel Booking')
+    await user.click(cancelButton)
 
     // Confirm in dialog
-    await waitFor(() => {
-      const confirmButton = screen.getByText('Yes, cancel')
-      fireEvent.click(confirmButton)
-    })
+    const confirmButton = await screen.findByText('Yes, cancel')
+    await user.click(confirmButton)
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith('/api/bookings/booking-1', {
@@ -80,6 +80,7 @@ describe('BookingCard', () => {
   })
 
   it('handles cancel error gracefully', async () => {
+    const user = userEvent.setup()
     ;(fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
       json: async () => ({ message: 'Cancellation failed' }),
@@ -88,15 +89,13 @@ describe('BookingCard', () => {
     render(<BookingCard booking={mockBooking} onUpdate={mockOnUpdate} />)
 
     const menuButton = screen.getAllByRole('button')[0]
-    fireEvent.click(menuButton)
+    await user.click(menuButton)
 
-    const cancelButton = screen.getByText('Cancel Booking')
-    fireEvent.click(cancelButton)
+    const cancelButton = await screen.findByText('Cancel Booking')
+    await user.click(cancelButton)
 
-    await waitFor(() => {
-      const confirmButton = screen.getByText('Yes, cancel')
-      fireEvent.click(confirmButton)
-    })
+    const confirmButton = await screen.findByText('Yes, cancel')
+    await user.click(confirmButton)
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith('Cancellation failed')
@@ -105,6 +104,7 @@ describe('BookingCard', () => {
   })
 
   it('allows extending a checked-in booking', async () => {
+    const user = userEvent.setup()
     ;(fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: async () => ({ success: true }),
@@ -114,10 +114,10 @@ describe('BookingCard', () => {
     render(<BookingCard booking={checkedInBooking} onUpdate={mockOnUpdate} />)
 
     const menuButton = screen.getAllByRole('button')[0]
-    fireEvent.click(menuButton)
+    await user.click(menuButton)
 
-    const extendButton = screen.getByText('Extend Booking')
-    fireEvent.click(extendButton)
+    const extendButton = await screen.findByText('Extend Booking')
+    await user.click(extendButton)
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith('/api/bookings/booking-1/extend', {
@@ -131,13 +131,14 @@ describe('BookingCard', () => {
   })
 
   it('displays QR code dialog for upcoming bookings', async () => {
+    const user = userEvent.setup()
     render(<BookingCard booking={mockBooking} />)
 
     const menuButton = screen.getAllByRole('button')[0]
-    fireEvent.click(menuButton)
+    await user.click(menuButton)
 
-    const qrButton = screen.getByText('View QR Code')
-    fireEvent.click(qrButton)
+    const qrButton = await screen.findByText('View QR Code')
+    await user.click(qrButton)
 
     await waitFor(() => {
       expect(screen.getByText('Check-in QR Code')).toBeInTheDocument()

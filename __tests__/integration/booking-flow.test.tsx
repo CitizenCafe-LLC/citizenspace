@@ -19,6 +19,9 @@ jest.mock('next/link', () => ({
 describe('Booking Flow Integration', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    // Reset the store state before each test
+    useBookingStore.getState().resetBooking()
+
     ;(global.fetch as jest.Mock).mockImplementation((url) => {
       // Mock availability check
       if (url.includes('/api/workspaces/availability')) {
@@ -123,8 +126,6 @@ describe('Booking Flow Integration', () => {
   })
 
   it('should calculate pricing correctly for hot desk without discounts', () => {
-    const store = useBookingStore.getState()
-
     const mockWorkspace = {
       id: 'test-id',
       name: 'Hot Desk 1',
@@ -138,9 +139,9 @@ describe('Booking Flow Integration', () => {
       max_duration: 8,
     }
 
-    store.setSelectedWorkspace(mockWorkspace)
-    store.setDuration(4)
-    store.setUserInfo({ isNftHolder: false, isMember: false, creditBalance: 0 })
+    useBookingStore.getState().setSelectedWorkspace(mockWorkspace)
+    useBookingStore.getState().setDuration(4)
+    useBookingStore.getState().setUserInfo({ isNftHolder: false, isMember: false, creditBalance: 0 })
 
     // Base price: $2.50 * 4 hours = $10.00
     // Processing fee: $10.00 * 0.029 + $0.30 = $0.59
@@ -150,7 +151,7 @@ describe('Booking Flow Integration', () => {
     const expectedProcessingFee = 0.59
     const expectedTotal = 10.59
 
-    store.setPricing({
+    useBookingStore.getState().setPricing({
       subtotal: expectedSubtotal,
       discountAmount: 0,
       nftDiscountApplied: false,
@@ -158,12 +159,12 @@ describe('Booking Flow Integration', () => {
       totalPrice: expectedTotal,
     })
 
+    // Get the state after setting pricing
+    const store = useBookingStore.getState()
     expect(store.totalPrice).toBeCloseTo(expectedTotal, 2)
   })
 
   it('should apply NFT discount correctly', () => {
-    const store = useBookingStore.getState()
-
     const mockWorkspace = {
       id: 'test-id',
       name: 'Hot Desk 1',
@@ -177,9 +178,9 @@ describe('Booking Flow Integration', () => {
       max_duration: 8,
     }
 
-    store.setSelectedWorkspace(mockWorkspace)
-    store.setDuration(4)
-    store.setUserInfo({ isNftHolder: true, isMember: false, creditBalance: 0 })
+    useBookingStore.getState().setSelectedWorkspace(mockWorkspace)
+    useBookingStore.getState().setDuration(4)
+    useBookingStore.getState().setUserInfo({ isNftHolder: true, isMember: false, creditBalance: 0 })
 
     // Base price: $2.50 * 4 hours = $10.00
     // NFT discount: $10.00 * 0.5 = $5.00
@@ -187,7 +188,7 @@ describe('Booking Flow Integration', () => {
     // Processing fee: $5.00 * 0.029 + $0.30 = $0.445
     // Total: $5.445 ≈ $5.45
 
-    store.setPricing({
+    useBookingStore.getState().setPricing({
       subtotal: 5,
       discountAmount: 5,
       nftDiscountApplied: true,
@@ -195,13 +196,13 @@ describe('Booking Flow Integration', () => {
       totalPrice: 5.445,
     })
 
+    // Get the state after setting pricing
+    const store = useBookingStore.getState()
     expect(store.nftDiscountApplied).toBe(true)
     expect(store.discountAmount).toBe(5)
   })
 
   it('should apply meeting room credits correctly', () => {
-    const store = useBookingStore.getState()
-
     const mockWorkspace = {
       id: 'test-id',
       name: 'Meeting Room 1',
@@ -215,16 +216,16 @@ describe('Booking Flow Integration', () => {
       max_duration: 8,
     }
 
-    store.setSelectedWorkspace(mockWorkspace)
-    store.setDuration(3)
-    store.setUserInfo({ isNftHolder: false, isMember: true, creditBalance: 5 })
+    useBookingStore.getState().setSelectedWorkspace(mockWorkspace)
+    useBookingStore.getState().setDuration(3)
+    useBookingStore.getState().setUserInfo({ isNftHolder: false, isMember: true, creditBalance: 5 })
 
     // Base price: $25 * 3 hours = $75
     // Credits used: 3 hours (fully covered)
     // Subtotal: $0
     // Total: $0
 
-    store.setPricing({
+    useBookingStore.getState().setPricing({
       subtotal: 0,
       discountAmount: 0,
       nftDiscountApplied: false,
@@ -234,13 +235,13 @@ describe('Booking Flow Integration', () => {
       overageHours: 0,
     })
 
+    // Get the state after setting pricing
+    const store = useBookingStore.getState()
     expect(store.creditsUsed).toBe(3)
     expect(store.totalPrice).toBe(0)
   })
 
   it('should calculate overage charges when credits are insufficient', () => {
-    const store = useBookingStore.getState()
-
     const mockWorkspace = {
       id: 'test-id',
       name: 'Meeting Room 1',
@@ -254,9 +255,9 @@ describe('Booking Flow Integration', () => {
       max_duration: 8,
     }
 
-    store.setSelectedWorkspace(mockWorkspace)
-    store.setDuration(5)
-    store.setUserInfo({ isNftHolder: false, isMember: true, creditBalance: 2 })
+    useBookingStore.getState().setSelectedWorkspace(mockWorkspace)
+    useBookingStore.getState().setDuration(5)
+    useBookingStore.getState().setUserInfo({ isNftHolder: false, isMember: true, creditBalance: 2 })
 
     // Base price: $25 * 5 hours = $125
     // Credits used: 2 hours ($50 value)
@@ -264,7 +265,7 @@ describe('Booking Flow Integration', () => {
     // Processing fee: $75 * 0.029 + $0.30 = $2.475
     // Total: $77.475 ≈ $77.48
 
-    store.setPricing({
+    useBookingStore.getState().setPricing({
       subtotal: 75,
       discountAmount: 0,
       nftDiscountApplied: false,
@@ -274,22 +275,24 @@ describe('Booking Flow Integration', () => {
       overageHours: 3,
     })
 
+    // Get the state after setting pricing
+    const store = useBookingStore.getState()
     expect(store.creditsUsed).toBe(2)
     expect(store.overageHours).toBe(3)
   })
 
   it('should reset booking state when starting new booking', () => {
-    const store = useBookingStore.getState()
-
     // Set some booking data
-    store.setWorkspaceType('hot-desk')
-    store.setBookingDate(new Date())
-    store.setStartTime('09:00')
-    store.setCurrentStep(3)
+    useBookingStore.getState().setWorkspaceType('hot-desk')
+    useBookingStore.getState().setBookingDate(new Date())
+    useBookingStore.getState().setStartTime('09:00')
+    useBookingStore.getState().setCurrentStep(3)
 
     // Reset
-    store.resetBooking()
+    useBookingStore.getState().resetBooking()
 
+    // Get the state after reset
+    const store = useBookingStore.getState()
     expect(store.selectedWorkspaceType).toBeNull()
     expect(store.bookingDate).toBeNull()
     expect(store.startTime).toBeNull()

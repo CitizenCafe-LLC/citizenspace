@@ -2,6 +2,7 @@
  * AuthContext Tests
  */
 
+import React from 'react'
 import { render, screen, waitFor, act } from '@testing-library/react'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 
@@ -11,12 +12,23 @@ global.fetch = jest.fn()
 // Helper component to test the context
 function TestComponent() {
   const auth = useAuth()
+  const [loginError, setLoginError] = React.useState<string | null>(null)
+
+  const handleLogin = async () => {
+    try {
+      await auth.login('test@example.com', 'password')
+    } catch (error) {
+      setLoginError((error as Error).message)
+    }
+  }
+
   return (
     <div>
       <div data-testid="authenticated">{auth.isAuthenticated ? 'true' : 'false'}</div>
       <div data-testid="loading">{auth.isLoading ? 'true' : 'false'}</div>
       <div data-testid="user">{auth.user?.email || 'null'}</div>
-      <button onClick={() => auth.login('test@example.com', 'password')}>Login</button>
+      <div data-testid="error">{loginError || 'null'}</div>
+      <button onClick={handleLogin}>Login</button>
       <button onClick={() => auth.logout()}>Logout</button>
     </div>
   )
@@ -101,16 +113,13 @@ describe('AuthContext', () => {
     )
 
     await act(async () => {
-      try {
-        screen.getByText('Login').click()
-      } catch (error) {
-        // Expected to throw
-      }
+      screen.getByText('Login').click()
     })
 
     await waitFor(() => {
       expect(screen.getByTestId('authenticated')).toHaveTextContent('false')
       expect(screen.getByTestId('user')).toHaveTextContent('null')
+      expect(screen.getByTestId('error')).toHaveTextContent('Invalid credentials')
     })
   })
 
@@ -239,14 +248,13 @@ describe('AuthContext', () => {
 
     function RegisterTestComponent() {
       const auth = useAuth()
+      const handleRegister = async () => {
+        await auth.register('newuser@example.com', 'Password123', 'New User', '+1234567890')
+      }
       return (
         <div>
           <div data-testid="user">{auth.user?.email || 'null'}</div>
-          <button
-            onClick={() =>
-              auth.register('newuser@example.com', 'Password123', 'New User', '+1234567890')
-            }
-          >
+          <button onClick={handleRegister}>
             Register
           </button>
         </div>

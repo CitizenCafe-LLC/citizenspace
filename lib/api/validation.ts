@@ -95,6 +95,7 @@ export function safeValidateParams<T>(
  */
 export function validateFutureDate(dateString: string): boolean {
   const date = new Date(dateString)
+  date.setHours(0, 0, 0, 0)
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   return date >= today

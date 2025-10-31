@@ -79,7 +79,7 @@ describe('CartSidebar', () => {
     expect(screen.getByText('3 items')).toBeInTheDocument()
     expect(screen.getByText('Cappuccino')).toBeInTheDocument()
     expect(screen.getByText('Croissant')).toBeInTheDocument()
-    expect(screen.getByText('$12.50')).toBeInTheDocument()
+    expect(screen.getAllByText('$12.50')[0]).toBeInTheDocument()
   })
 
   it('displays NFT discount when applicable', () => {

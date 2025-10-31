@@ -5,11 +5,8 @@
  */
 
 import { NextRequest } from 'next/server'
-import { POST as createOrder, GET as getOrders } from '@/app/api/orders/route'
-import { GET as getOrderById } from '@/app/api/orders/[id]/route'
-import { PATCH as updateOrderStatus } from '@/app/api/orders/[id]/status/route'
 
-// Mock repository functions
+// Mock all dependencies BEFORE importing the route handlers
 jest.mock('@/lib/db/repositories/orders.repository')
 jest.mock('@/lib/db/repositories/menu.repository')
 jest.mock('@/lib/auth/middleware')
@@ -17,6 +14,60 @@ jest.mock('@/lib/auth/middleware')
 import * as ordersRepo from '@/lib/db/repositories/orders.repository'
 import * as menuRepo from '@/lib/db/repositories/menu.repository'
 import * as authMiddleware from '@/lib/auth/middleware'
+
+// Mock data
+const mockMenuItem = {
+  id: 'menu-item-1',
+  title: 'House Blend',
+  price: 3.5,
+  orderable: true,
+}
+
+const mockOrder = {
+  id: '123e4567-e89b-12d3-a456-426614174000',
+  user_id: '123e4567-e89b-12d3-a456-426614174001',
+  subtotal: 7.0,
+  discount_amount: 0,
+  nft_discount_applied: false,
+  processing_fee: 0.5,
+  total_price: 7.5,
+  status: 'pending' as const,
+  payment_status: 'pending' as const,
+  payment_intent_id: null,
+  special_instructions: null,
+  created_at: '2025-01-01T00:00:00Z',
+  updated_at: '2025-01-01T00:00:00Z',
+  items: [
+    {
+      id: 'item-1',
+      order_id: '123e4567-e89b-12d3-a456-426614174000',
+      menu_item_id: 'menu-item-1',
+      quantity: 2,
+      unit_price: 3.5,
+      subtotal: 7.0,
+      created_at: '2025-01-01T00:00:00Z',
+      menu_item: {
+        id: 'menu-item-1',
+        title: 'House Blend',
+        category: 'coffee',
+      },
+    },
+  ],
+}
+
+const mockUser = {
+  userId: '123e4567-e89b-12d3-a456-426614174001',
+  email: 'test@example.com',
+  role: 'user' as const,
+  nftHolder: false,
+}
+
+const mockStaffUser = {
+  userId: '123e4567-e89b-12d3-a456-426614174002',
+  email: 'staff@example.com',
+  role: 'staff' as const,
+  nftHolder: false,
+}
 
 // Helper to create mock NextRequest
 function createMockRequest(
@@ -45,63 +96,44 @@ function createMockRequest(
   } as any
 }
 
-// Mock data
-const mockMenuItem = {
-  id: 'menu-item-1',
-  title: 'House Blend',
-  price: 3.5,
-  orderable: true,
-}
+// Setup withAuth mock before tests
+const mockWithAuth = authMiddleware.withAuth as jest.MockedFunction<typeof authMiddleware.withAuth>
+let currentMockUser = mockUser
 
-const mockOrder = {
-  id: 'order-123',
-  user_id: 'user-123',
-  subtotal: 7.0,
-  discount_amount: 0,
-  nft_discount_applied: false,
-  processing_fee: 0.5,
-  total_price: 7.5,
-  status: 'pending' as const,
-  payment_status: 'pending' as const,
-  payment_intent_id: null,
-  special_instructions: null,
-  created_at: '2025-01-01T00:00:00Z',
-  updated_at: '2025-01-01T00:00:00Z',
-  items: [
-    {
-      id: 'item-1',
-      order_id: 'order-123',
-      menu_item_id: 'menu-item-1',
-      quantity: 2,
-      unit_price: 3.5,
-      subtotal: 7.0,
-      created_at: '2025-01-01T00:00:00Z',
-      menu_item: {
-        id: 'menu-item-1',
-        title: 'House Blend',
-        category: 'coffee',
-      },
-    },
-  ],
-}
+mockWithAuth.mockImplementation((handler, options) => {
+  return async (request: NextRequest, context?: any) => {
+    const authHeader = request.headers.get('Authorization')
 
-const mockUser = {
-  userId: 'user-123',
-  email: 'test@example.com',
-  role: 'user' as const,
-  nftHolder: false,
-}
+    if (!authHeader) {
+      return Response.json(
+        { error: 'Unauthorized', message: 'Authentication required', code: 'UNAUTHORIZED' },
+        { status: 401 }
+      )
+    }
 
-const mockStaffUser = {
-  userId: 'staff-123',
-  email: 'staff@example.com',
-  role: 'staff' as const,
-  nftHolder: false,
-}
+    // Check role-based access
+    if (options?.roles && !options.roles.includes(currentMockUser.role)) {
+      return Response.json(
+        { error: 'Forbidden', message: 'Insufficient permissions', code: 'FORBIDDEN' },
+        { status: 403 }
+      )
+    }
+
+    // Call the actual handler with authenticated user
+    return handler(request, { user: currentMockUser, ...context })
+  }
+})
+
+// Mock withStaffAuth wrapper
+const mockWithStaffAuth = authMiddleware.withStaffAuth as jest.MockedFunction<typeof authMiddleware.withStaffAuth>
+mockWithStaffAuth.mockImplementation((handler) => {
+  return mockWithAuth(handler, { roles: ['staff', 'admin'] })
+})
 
 describe('POST /api/orders', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    currentMockUser = mockUser
   })
 
   it('should create order successfully for authenticated user', async () => {
@@ -133,10 +165,8 @@ describe('POST /api/orders', () => {
 
     const request = createMockRequest('/api/orders', 'POST', requestBody, 'valid-token')
 
-    // Mock the withAuth wrapper by calling the handler directly with user context
     const { POST } = await import('@/app/api/orders/route')
-    const handler = POST as any
-    const response = await handler(request, { user: mockUser })
+    const response = await POST(request)
     const data = await response.json()
 
     expect(response.status).toBe(201)
@@ -146,6 +176,8 @@ describe('POST /api/orders', () => {
   })
 
   it('should apply NFT discount for NFT holder', async () => {
+    currentMockUser = { ...mockUser, nftHolder: true }
+
     const mockGetMenuItem = menuRepo.getMenuItemById as jest.MockedFunction<
       typeof menuRepo.getMenuItemById
     >
@@ -178,12 +210,10 @@ describe('POST /api/orders', () => {
       ],
     }
 
-    const nftUser = { ...mockUser, nftHolder: true }
     const request = createMockRequest('/api/orders', 'POST', requestBody, 'valid-token')
 
     const { POST } = await import('@/app/api/orders/route')
-    const handler = POST as any
-    const response = await handler(request, { user: nftUser })
+    const response = await POST(request)
     const data = await response.json()
 
     expect(response.status).toBe(201)
@@ -199,8 +229,7 @@ describe('POST /api/orders', () => {
     const request = createMockRequest('/api/orders', 'POST', requestBody, 'valid-token')
 
     const { POST } = await import('@/app/api/orders/route')
-    const handler = POST as any
-    const response = await handler(request, { user: mockUser })
+    const response = await POST(request)
     const data = await response.json()
 
     expect(response.status).toBe(400)
@@ -229,8 +258,7 @@ describe('POST /api/orders', () => {
     const request = createMockRequest('/api/orders', 'POST', requestBody, 'valid-token')
 
     const { POST } = await import('@/app/api/orders/route')
-    const handler = POST as any
-    const response = await handler(request, { user: mockUser })
+    const response = await POST(request)
     const data = await response.json()
 
     expect(response.status).toBe(400)
@@ -261,8 +289,7 @@ describe('POST /api/orders', () => {
     const request = createMockRequest('/api/orders', 'POST', requestBody, 'valid-token')
 
     const { POST } = await import('@/app/api/orders/route')
-    const handler = POST as any
-    const response = await handler(request, { user: mockUser })
+    const response = await POST(request)
     const data = await response.json()
 
     expect(response.status).toBe(400)
@@ -283,8 +310,7 @@ describe('POST /api/orders', () => {
     const request = createMockRequest('/api/orders', 'POST', requestBody, 'valid-token')
 
     const { POST } = await import('@/app/api/orders/route')
-    const handler = POST as any
-    const response = await handler(request, { user: mockUser })
+    const response = await POST(request)
     const data = await response.json()
 
     expect(response.status).toBe(400)
@@ -314,8 +340,7 @@ describe('POST /api/orders', () => {
     const request = createMockRequest('/api/orders', 'POST', requestBody, 'valid-token')
 
     const { POST } = await import('@/app/api/orders/route')
-    const handler = POST as any
-    const response = await handler(request, { user: mockUser })
+    const response = await POST(request)
     const data = await response.json()
 
     expect(response.status).toBe(400)
@@ -327,6 +352,7 @@ describe('POST /api/orders', () => {
 describe('GET /api/orders', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    currentMockUser = mockUser
   })
 
   it('should return user orders for regular user', async () => {
@@ -348,13 +374,15 @@ describe('GET /api/orders', () => {
     })
 
     const request = createMockRequest('/api/orders', 'GET', null, 'valid-token')
+
+    const { GET: getOrders } = await import('@/app/api/orders/route')
     const response = await getOrders(request)
     const data = await response.json()
 
     expect(response.status).toBe(200)
     expect(data.success).toBe(true)
     expect(data.data).toHaveLength(1)
-    expect(mockGetUserOrders).toHaveBeenCalledWith('user-123', expect.any(Object))
+    expect(mockGetUserOrders).toHaveBeenCalledWith('123e4567-e89b-12d3-a456-426614174001', expect.any(Object))
   })
 
   it('should return all orders for staff', async () => {
@@ -376,6 +404,8 @@ describe('GET /api/orders', () => {
     })
 
     const request = createMockRequest('/api/orders', 'GET', null, 'valid-token')
+
+    const { GET: getOrders } = await import('@/app/api/orders/route')
     const response = await getOrders(request)
     const data = await response.json()
 
@@ -404,6 +434,8 @@ describe('GET /api/orders', () => {
     })
 
     const request = createMockRequest('/api/orders?status=pending', 'GET', null, 'valid-token')
+
+    const { GET: getOrders } = await import('@/app/api/orders/route')
     const response = await getOrders(request)
     const data = await response.json()
 
@@ -421,6 +453,8 @@ describe('GET /api/orders', () => {
     })
 
     const request = createMockRequest('/api/orders', 'GET')
+
+    const { GET: getOrders } = await import('@/app/api/orders/route')
     const response = await getOrders(request)
     const data = await response.json()
 
@@ -447,6 +481,8 @@ describe('GET /api/orders', () => {
     })
 
     const request = createMockRequest('/api/orders?page=2&limit=5', 'GET', null, 'valid-token')
+
+    const { GET: getOrders } = await import('@/app/api/orders/route')
     const response = await getOrders(request)
     const data = await response.json()
 
@@ -460,6 +496,7 @@ describe('GET /api/orders', () => {
 describe('GET /api/orders/:id', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    currentMockUser = mockUser
   })
 
   it('should return order for owner', async () => {
@@ -474,16 +511,17 @@ describe('GET /api/orders/:id', () => {
     const request = createMockRequest('/api/orders/order-123', 'GET', null, 'valid-token')
 
     const { GET } = await import('@/app/api/orders/[id]/route')
-    const handler = GET as any
-    const response = await handler(request, { user: mockUser, params: { id: 'order-123' } })
+    const response = await GET(request, { params: { id: '123e4567-e89b-12d3-a456-426614174000' } })
     const data = await response.json()
 
     expect(response.status).toBe(200)
     expect(data.success).toBe(true)
-    expect(data.data.id).toBe('order-123')
+    expect(data.data.id).toBe('123e4567-e89b-12d3-a456-426614174000')
   })
 
   it('should allow staff to view any order', async () => {
+    currentMockUser = mockStaffUser
+
     const mockGetOrderById = ordersRepo.getOrderById as jest.MockedFunction<
       typeof ordersRepo.getOrderById
     >
@@ -495,8 +533,7 @@ describe('GET /api/orders/:id', () => {
     const request = createMockRequest('/api/orders/order-123', 'GET', null, 'staff-token')
 
     const { GET } = await import('@/app/api/orders/[id]/route')
-    const handler = GET as any
-    const response = await handler(request, { user: mockStaffUser, params: { id: 'order-123' } })
+    const response = await GET(request, { params: { id: '123e4567-e89b-12d3-a456-426614174000' } })
     const data = await response.json()
 
     expect(response.status).toBe(200)
@@ -504,6 +541,8 @@ describe('GET /api/orders/:id', () => {
   })
 
   it('should deny access to other users orders', async () => {
+    currentMockUser = { ...mockUser, userId: 'other-user' }
+
     const mockGetOrderById = ordersRepo.getOrderById as jest.MockedFunction<
       typeof ordersRepo.getOrderById
     >
@@ -512,12 +551,10 @@ describe('GET /api/orders/:id', () => {
       error: null,
     })
 
-    const otherUser = { ...mockUser, userId: 'other-user' }
     const request = createMockRequest('/api/orders/order-123', 'GET', null, 'other-token')
 
     const { GET } = await import('@/app/api/orders/[id]/route')
-    const handler = GET as any
-    const response = await handler(request, { user: otherUser, params: { id: 'order-123' } })
+    const response = await GET(request, { params: { id: '123e4567-e89b-12d3-a456-426614174000' } })
     const data = await response.json()
 
     expect(response.status).toBe(403)
@@ -534,11 +571,11 @@ describe('GET /api/orders/:id', () => {
       error: 'Order not found',
     })
 
-    const request = createMockRequest('/api/orders/invalid-id', 'GET', null, 'valid-token')
+    const nonExistentId = '999e9999-e99b-99d3-a999-999999999999'
+    const request = createMockRequest(`/api/orders/${nonExistentId}`, 'GET', null, 'valid-token')
 
     const { GET } = await import('@/app/api/orders/[id]/route')
-    const handler = GET as any
-    const response = await handler(request, { user: mockUser, params: { id: 'invalid-id' } })
+    const response = await GET(request, { params: { id: nonExistentId } })
     const data = await response.json()
 
     expect(response.status).toBe(404)
@@ -549,8 +586,7 @@ describe('GET /api/orders/:id', () => {
     const request = createMockRequest('/api/orders/invalid', 'GET', null, 'valid-token')
 
     const { GET } = await import('@/app/api/orders/[id]/route')
-    const handler = GET as any
-    const response = await handler(request, { user: mockUser, params: { id: 'invalid' } })
+    const response = await GET(request, { params: { id: 'invalid' } })
     const data = await response.json()
 
     expect(response.status).toBe(400)
@@ -562,6 +598,7 @@ describe('GET /api/orders/:id', () => {
 describe('PATCH /api/orders/:id/status', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    currentMockUser = mockStaffUser // Status updates require staff role
   })
 
   it('should update order status for staff', async () => {
@@ -579,8 +616,7 @@ describe('PATCH /api/orders/:id/status', () => {
     const request = createMockRequest('/api/orders/order-123/status', 'PATCH', requestBody, 'staff-token')
 
     const { PATCH } = await import('@/app/api/orders/[id]/status/route')
-    const handler = PATCH as any
-    const response = await handler(request, { user: mockStaffUser, params: { id: 'order-123' } })
+    const response = await PATCH(request, { params: { id: '123e4567-e89b-12d3-a456-426614174000' } })
     const data = await response.json()
 
     expect(response.status).toBe(200)
@@ -604,8 +640,7 @@ describe('PATCH /api/orders/:id/status', () => {
       const request = createMockRequest('/api/orders/order-123/status', 'PATCH', requestBody, 'staff-token')
 
       const { PATCH } = await import('@/app/api/orders/[id]/status/route')
-      const handler = PATCH as any
-      const response = await handler(request, { user: mockStaffUser, params: { id: 'order-123' } })
+      const response = await PATCH(request, { params: { id: '123e4567-e89b-12d3-a456-426614174000' } })
       const data = await response.json()
 
       expect(response.status).toBe(200)
@@ -618,8 +653,7 @@ describe('PATCH /api/orders/:id/status', () => {
     const request = createMockRequest('/api/orders/order-123/status', 'PATCH', requestBody, 'staff-token')
 
     const { PATCH } = await import('@/app/api/orders/[id]/status/route')
-    const handler = PATCH as any
-    const response = await handler(request, { user: mockStaffUser, params: { id: 'order-123' } })
+    const response = await PATCH(request, { params: { id: '123e4567-e89b-12d3-a456-426614174000' } })
     const data = await response.json()
 
     expect(response.status).toBe(400)
@@ -632,8 +666,7 @@ describe('PATCH /api/orders/:id/status', () => {
     const request = createMockRequest('/api/orders/order-123/status', 'PATCH', requestBody, 'staff-token')
 
     const { PATCH } = await import('@/app/api/orders/[id]/status/route')
-    const handler = PATCH as any
-    const response = await handler(request, { user: mockStaffUser, params: { id: 'order-123' } })
+    const response = await PATCH(request, { params: { id: '123e4567-e89b-12d3-a456-426614174000' } })
     const data = await response.json()
 
     expect(response.status).toBe(400)
@@ -650,12 +683,12 @@ describe('PATCH /api/orders/:id/status', () => {
       error: 'Order not found',
     })
 
+    const nonExistentId = '999e9999-e99b-99d3-a999-999999999999'
     const requestBody = { status: 'preparing' }
-    const request = createMockRequest('/api/orders/invalid/status', 'PATCH', requestBody, 'staff-token')
+    const request = createMockRequest(`/api/orders/${nonExistentId}/status`, 'PATCH', requestBody, 'staff-token')
 
     const { PATCH } = await import('@/app/api/orders/[id]/status/route')
-    const handler = PATCH as any
-    const response = await handler(request, { user: mockStaffUser, params: { id: 'invalid' } })
+    const response = await PATCH(request, { params: { id: nonExistentId } })
     const data = await response.json()
 
     expect(response.status).toBe(404)

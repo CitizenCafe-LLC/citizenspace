@@ -26,28 +26,46 @@ import type {
   OrderReadyData,
 } from './templates'
 
-// Email configuration from environment variables
-const EMAIL_PROVIDER = process.env.EMAIL_PROVIDER || 'smtp' // 'smtp', 'resend', 'sendgrid'
-const RESEND_API_KEY = process.env.RESEND_API_KEY
-const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY
-const EMAIL_HOST = process.env.EMAIL_HOST || process.env.SMTP_HOST || 'smtp.gmail.com'
-const EMAIL_PORT = parseInt(process.env.EMAIL_PORT || process.env.SMTP_PORT || '587')
-const EMAIL_USER = process.env.EMAIL_USER || process.env.SMTP_USER
-const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD || process.env.SMTP_PASSWORD
-const EMAIL_FROM = process.env.EMAIL_FROM || 'noreply@citizenspace.com'
-const EMAIL_FROM_NAME = process.env.EMAIL_FROM_NAME || 'CitizenSpace'
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+// Email configuration helpers - read from environment dynamically
+const getEmailConfig = () => ({
+  EMAIL_PROVIDER: process.env.EMAIL_PROVIDER || 'smtp', // 'smtp', 'resend', 'sendgrid'
+  RESEND_API_KEY: process.env.RESEND_API_KEY,
+  SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
+  EMAIL_HOST: process.env.EMAIL_HOST || process.env.SMTP_HOST || 'smtp.gmail.com',
+  EMAIL_PORT: parseInt(process.env.EMAIL_PORT || process.env.SMTP_PORT || '587'),
+  EMAIL_USER: process.env.EMAIL_USER || process.env.SMTP_USER,
+  EMAIL_PASSWORD: process.env.EMAIL_PASSWORD || process.env.SMTP_PASSWORD,
+  EMAIL_FROM: process.env.EMAIL_FROM || 'noreply@citizenspace.com',
+  EMAIL_FROM_NAME: process.env.EMAIL_FROM_NAME || 'CitizenSpace',
+  APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+})
 
-// Create reusable transporter
+// Create reusable transporter (reset on each call to support testing)
 let transporter: Transporter | null = null
+let lastConfig: string = ''
 
 /**
  * Initialize email transporter based on configured provider
+ * Resets transporter if configuration changes (useful for testing)
  */
 function getTransporter(): Transporter {
+  const config = getEmailConfig()
+  const currentConfig = JSON.stringify({
+    user: config.EMAIL_USER,
+    pass: config.EMAIL_PASSWORD,
+    host: config.EMAIL_HOST,
+    port: config.EMAIL_PORT,
+  })
+
+  // Reset transporter if config changed
+  if (currentConfig !== lastConfig) {
+    transporter = null
+    lastConfig = currentConfig
+  }
+
   if (!transporter) {
     // Check if email is configured
-    if (!EMAIL_USER || !EMAIL_PASSWORD) {
+    if (!config.EMAIL_USER || !config.EMAIL_PASSWORD) {
       console.warn(
         'Email service not configured. Set EMAIL_USER and EMAIL_PASSWORD environment variables.'
       )
@@ -59,12 +77,12 @@ function getTransporter(): Transporter {
       })
     } else {
       transporter = nodemailer.createTransport({
-        host: EMAIL_HOST,
-        port: EMAIL_PORT,
-        secure: EMAIL_PORT === 465,
+        host: config.EMAIL_HOST,
+        port: config.EMAIL_PORT,
+        secure: config.EMAIL_PORT === 465,
         auth: {
-          user: EMAIL_USER,
-          pass: EMAIL_PASSWORD,
+          user: config.EMAIL_USER,
+          pass: config.EMAIL_PASSWORD,
         },
       })
     }
@@ -81,7 +99,8 @@ async function sendWithResend(
   html: string,
   text?: string
 ): Promise<boolean> {
-  if (!RESEND_API_KEY) {
+  const config = getEmailConfig()
+  if (!config.RESEND_API_KEY) {
     throw new Error('RESEND_API_KEY not configured')
   }
 
@@ -90,10 +109,10 @@ async function sendWithResend(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${RESEND_API_KEY}`,
+        Authorization: `Bearer ${config.RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: `${EMAIL_FROM_NAME} <${EMAIL_FROM}>`,
+        from: `${config.EMAIL_FROM_NAME} <${config.EMAIL_FROM}>`,
         to: [to],
         subject,
         html,
@@ -123,7 +142,8 @@ async function sendWithSendGrid(
   html: string,
   text?: string
 ): Promise<boolean> {
-  if (!SENDGRID_API_KEY) {
+  const config = getEmailConfig()
+  if (!config.SENDGRID_API_KEY) {
     throw new Error('SENDGRID_API_KEY not configured')
   }
 
@@ -132,11 +152,11 @@ async function sendWithSendGrid(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${SENDGRID_API_KEY}`,
+        Authorization: `Bearer ${config.SENDGRID_API_KEY}`,
       },
       body: JSON.stringify({
         personalizations: [{ to: [{ email: to }] }],
-        from: { email: EMAIL_FROM, name: EMAIL_FROM_NAME },
+        from: { email: config.EMAIL_FROM, name: config.EMAIL_FROM_NAME },
         subject,
         content: [
           { type: 'text/plain', value: text || '' },
@@ -170,8 +190,9 @@ export interface EmailOptions {
  */
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
   try {
+    const config = getEmailConfig()
     // Use configured email provider
-    switch (EMAIL_PROVIDER.toLowerCase()) {
+    switch (config.EMAIL_PROVIDER.toLowerCase()) {
       case 'resend':
         return await sendWithResend(options.to, options.subject, options.html, options.text)
 
@@ -182,7 +203,7 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       default:
         const transporter = getTransporter()
         await transporter.sendMail({
-          from: `${EMAIL_FROM_NAME} <${EMAIL_FROM}>`,
+          from: `${config.EMAIL_FROM_NAME} <${config.EMAIL_FROM}>`,
           to: options.to,
           subject: options.subject,
           html: options.html,
@@ -200,7 +221,8 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
  * Send password reset email
  */
 export async function sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
-  const resetUrl = `${APP_URL}/auth/reset-password?token=${resetToken}`
+  const config = getEmailConfig()
+  const resetUrl = `${config.APP_URL}/auth/reset-password?token=${resetToken}`
 
   const html = `
     <!DOCTYPE html>
@@ -288,6 +310,7 @@ If you didn't request a password reset, you can safely ignore this email.
  * Send welcome email to new users
  */
 export async function sendWelcomeEmail(email: string, name: string): Promise<boolean> {
+  const config = getEmailConfig()
   const html = `
     <!DOCTYPE html>
     <html>
@@ -316,7 +339,7 @@ export async function sendWelcomeEmail(email: string, name: string): Promise<boo
           </ul>
 
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${APP_URL}/dashboard"
+            <a href="${config.APP_URL}/dashboard"
                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                       color: white;
                       padding: 14px 30px;
@@ -354,7 +377,7 @@ Your account has been successfully created. You can now:
 - Attend events and workshops
 - Connect with our community
 
-Visit ${APP_URL}/dashboard to get started!
+Visit ${config.APP_URL}/dashboard to get started!
 
 © ${new Date().getFullYear()} CitizenSpace. All rights reserved.
   `
@@ -435,20 +458,22 @@ export async function sendOrderReadyEmail(data: OrderReadyData): Promise<boolean
  * Verify email service is configured
  */
 export function isEmailConfigured(): boolean {
+  const config = getEmailConfig()
   // Check if any email provider is configured
-  if (EMAIL_PROVIDER === 'resend') {
-    return !!RESEND_API_KEY
+  if (config.EMAIL_PROVIDER === 'resend') {
+    return !!config.RESEND_API_KEY
   }
-  if (EMAIL_PROVIDER === 'sendgrid') {
-    return !!SENDGRID_API_KEY
+  if (config.EMAIL_PROVIDER === 'sendgrid') {
+    return !!config.SENDGRID_API_KEY
   }
   // Default SMTP check
-  return !!(EMAIL_USER && EMAIL_PASSWORD)
+  return !!(config.EMAIL_USER && config.EMAIL_PASSWORD)
 }
 
 /**
  * Get current email provider
  */
 export function getEmailProvider(): string {
-  return EMAIL_PROVIDER
+  const config = getEmailConfig()
+  return config.EMAIL_PROVIDER
 }

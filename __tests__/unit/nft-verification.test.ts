@@ -29,37 +29,34 @@ jest.mock('viem/chains', () => ({
   baseSepolia: { id: 84532, name: 'Base Sepolia' },
 }))
 
+// Mock postgres module
+jest.mock('@/lib/db/postgres', () => ({
+  executeQuery: jest.fn(),
+  executeQuerySingle: jest.fn(),
+}))
+
 describe('NFT Verification Service', () => {
   const mockWalletAddress = '0x1234567890123456789012345678901234567890'
   const mockUserId = 'user-123'
 
-  let mockSupabase: any
   let mockPublicClient: any
+  let mockExecuteQuery: jest.Mock
+  let mockExecuteQuerySingle: jest.Mock
 
   beforeEach(() => {
     // Reset all mocks
     jest.clearAllMocks()
-
-    // Mock Supabase client
-    mockSupabase = {
-      from: jest.fn().mockReturnThis(),
-      select: jest.fn().mockReturnThis(),
-      insert: jest.fn().mockReturnThis(),
-      update: jest.fn().mockReturnThis(),
-      upsert: jest.fn().mockReturnThis(),
-      delete: jest.fn().mockReturnThis(),
-      eq: jest.fn().mockReturnThis(),
-      neq: jest.fn().mockReturnThis(),
-      gt: jest.fn().mockReturnThis(),
-      lt: jest.fn().mockReturnThis(),
-      single: jest.fn(),
-    }
 
     // Mock Viem public client
     mockPublicClient = {
       readContract: jest.fn(),
     }
     ;(createPublicClient as jest.Mock).mockReturnValue(mockPublicClient)
+
+    // Get mocked postgres functions
+    const postgres = require('@/lib/db/postgres')
+    mockExecuteQuery = postgres.executeQuery as jest.Mock
+    mockExecuteQuerySingle = postgres.executeQuerySingle as jest.Mock
 
     // Set up environment variables
     process.env.NEXT_PUBLIC_CHAIN = 'sepolia'
@@ -120,37 +117,39 @@ describe('NFT Verification Service', () => {
         expires_at: futureDate.toISOString(),
       }
 
-      mockSupabase.single.mockResolvedValue({ data: mockData, error: null })
+      mockExecuteQuerySingle.mockResolvedValue({ data: mockData, error: null })
 
-      const result = await getCachedVerification(mockSupabase, mockUserId, mockWalletAddress)
+      const result = await getCachedVerification(mockUserId, mockWalletAddress)
 
       expect(result).toBeDefined()
       expect(result?.balance).toBe(2)
       expect(result?.wallet_address).toBe(mockWalletAddress.toLowerCase())
-      expect(mockSupabase.from).toHaveBeenCalledWith('nft_verifications')
-      expect(mockSupabase.eq).toHaveBeenCalledWith('user_id', mockUserId)
+      expect(mockExecuteQuerySingle).toHaveBeenCalledWith(
+        expect.stringContaining('SELECT wallet_address, nft_balance, verified_at, expires_at'),
+        [mockUserId, mockWalletAddress.toLowerCase()]
+      )
     })
 
     it('should return null when cache expired', async () => {
-      mockSupabase.single.mockResolvedValue({ data: null, error: { message: 'Not found' } })
+      mockExecuteQuerySingle.mockResolvedValue({ data: null, error: 'Not found' })
 
-      const result = await getCachedVerification(mockSupabase, mockUserId, mockWalletAddress)
+      const result = await getCachedVerification(mockUserId, mockWalletAddress)
 
       expect(result).toBeNull()
     })
 
     it('should return null when no cache exists', async () => {
-      mockSupabase.single.mockResolvedValue({ data: null, error: null })
+      mockExecuteQuerySingle.mockResolvedValue({ data: null, error: null })
 
-      const result = await getCachedVerification(mockSupabase, mockUserId, mockWalletAddress)
+      const result = await getCachedVerification(mockUserId, mockWalletAddress)
 
       expect(result).toBeNull()
     })
 
     it('should handle database errors gracefully', async () => {
-      mockSupabase.single.mockRejectedValue(new Error('Database connection failed'))
+      mockExecuteQuerySingle.mockRejectedValue(new Error('Database connection failed'))
 
-      const result = await getCachedVerification(mockSupabase, mockUserId, mockWalletAddress)
+      const result = await getCachedVerification(mockUserId, mockWalletAddress)
 
       expect(result).toBeNull()
     })
@@ -158,82 +157,98 @@ describe('NFT Verification Service', () => {
 
   describe('cacheVerification', () => {
     it('should successfully cache verification result', async () => {
-      mockSupabase.upsert.mockResolvedValue({ error: null })
+      mockExecuteQuery.mockResolvedValue({ error: null })
 
       await expect(
-        cacheVerification(mockSupabase, mockUserId, mockWalletAddress, 5)
+        cacheVerification(mockUserId, mockWalletAddress, 5)
       ).resolves.not.toThrow()
 
-      expect(mockSupabase.from).toHaveBeenCalledWith('nft_verifications')
-      expect(mockSupabase.upsert).toHaveBeenCalledWith(
-        expect.objectContaining({
-          user_id: mockUserId,
-          wallet_address: mockWalletAddress.toLowerCase(),
-          nft_balance: 5,
-        }),
-        { onConflict: 'user_id,wallet_address' }
+      expect(mockExecuteQuery).toHaveBeenCalledWith(
+        expect.stringContaining('INSERT INTO nft_verifications'),
+        expect.arrayContaining([
+          mockUserId,
+          mockWalletAddress.toLowerCase(),
+          5,
+          expect.any(String),
+          expect.any(String),
+          expect.any(String),
+        ])
       )
     })
 
     it('should cache zero balance correctly', async () => {
-      mockSupabase.upsert.mockResolvedValue({ error: null })
+      mockExecuteQuery.mockResolvedValue({ error: null })
 
-      await cacheVerification(mockSupabase, mockUserId, mockWalletAddress, 0)
+      await cacheVerification(mockUserId, mockWalletAddress, 0)
 
-      expect(mockSupabase.upsert).toHaveBeenCalledWith(
-        expect.objectContaining({
-          nft_balance: 0,
-        }),
-        expect.any(Object)
+      expect(mockExecuteQuery).toHaveBeenCalledWith(
+        expect.stringContaining('INSERT INTO nft_verifications'),
+        expect.arrayContaining([
+          mockUserId,
+          mockWalletAddress.toLowerCase(),
+          0,
+          expect.any(String),
+          expect.any(String),
+          expect.any(String),
+        ])
       )
     })
 
     it('should throw error when caching fails', async () => {
-      mockSupabase.upsert.mockResolvedValue({ error: { message: 'Insert failed' } })
+      mockExecuteQuery.mockResolvedValue({ error: 'Insert failed' })
 
       await expect(
-        cacheVerification(mockSupabase, mockUserId, mockWalletAddress, 3)
-      ).rejects.toThrow()
+        cacheVerification(mockUserId, mockWalletAddress, 3)
+      ).rejects.toThrow('Failed to cache verification result')
     })
 
     it('should normalize wallet address to lowercase', async () => {
       const upperCaseWallet = '0xABCDEF1234567890ABCDEF1234567890ABCDEF12'
-      mockSupabase.upsert.mockResolvedValue({ error: null })
+      mockExecuteQuery.mockResolvedValue({ error: null })
 
-      await cacheVerification(mockSupabase, mockUserId, upperCaseWallet, 1)
+      await cacheVerification(mockUserId, upperCaseWallet, 1)
 
-      expect(mockSupabase.upsert).toHaveBeenCalledWith(
-        expect.objectContaining({
-          wallet_address: upperCaseWallet.toLowerCase(),
-        }),
-        expect.any(Object)
+      expect(mockExecuteQuery).toHaveBeenCalledWith(
+        expect.stringContaining('INSERT INTO nft_verifications'),
+        expect.arrayContaining([
+          mockUserId,
+          upperCaseWallet.toLowerCase(),
+          1,
+          expect.any(String),
+          expect.any(String),
+          expect.any(String),
+        ])
       )
     })
   })
 
   describe('updateUserNftStatus', () => {
     it('should update user NFT holder status to true', async () => {
-      mockSupabase.update.mockResolvedValue({ error: null })
+      mockExecuteQuery.mockResolvedValue({ error: null })
 
-      await expect(updateUserNftStatus(mockSupabase, mockUserId, true)).resolves.not.toThrow()
+      await expect(updateUserNftStatus(mockUserId, true)).resolves.not.toThrow()
 
-      expect(mockSupabase.from).toHaveBeenCalledWith('users')
-      expect(mockSupabase.update).toHaveBeenCalledWith({ nft_holder: true })
-      expect(mockSupabase.eq).toHaveBeenCalledWith('id', mockUserId)
+      expect(mockExecuteQuery).toHaveBeenCalledWith(
+        expect.stringContaining('UPDATE users'),
+        [true, mockUserId]
+      )
     })
 
     it('should update user NFT holder status to false', async () => {
-      mockSupabase.update.mockResolvedValue({ error: null })
+      mockExecuteQuery.mockResolvedValue({ error: null })
 
-      await updateUserNftStatus(mockSupabase, mockUserId, false)
+      await updateUserNftStatus(mockUserId, false)
 
-      expect(mockSupabase.update).toHaveBeenCalledWith({ nft_holder: false })
+      expect(mockExecuteQuery).toHaveBeenCalledWith(
+        expect.stringContaining('UPDATE users'),
+        [false, mockUserId]
+      )
     })
 
     it('should throw error when update fails', async () => {
-      mockSupabase.update.mockResolvedValue({ error: { message: 'Update failed' } })
+      mockExecuteQuery.mockResolvedValue({ error: 'Update failed' })
 
-      await expect(updateUserNftStatus(mockSupabase, mockUserId, true)).rejects.toThrow(
+      await expect(updateUserNftStatus(mockUserId, true)).rejects.toThrow(
         'Failed to update user NFT holder status'
       )
     })
@@ -242,15 +257,14 @@ describe('NFT Verification Service', () => {
   describe('verifyNftOwnership', () => {
     beforeEach(() => {
       // Mock successful cache and update operations
-      mockSupabase.upsert.mockResolvedValue({ error: null })
-      mockSupabase.update.mockResolvedValue({ error: null })
+      mockExecuteQuery.mockResolvedValue({ error: null })
     })
 
     it('should use cached result when available and not forcing refresh', async () => {
       const now = new Date()
       const futureDate = new Date(now.getTime() + 1000 * 60 * 60)
 
-      mockSupabase.single.mockResolvedValue({
+      mockExecuteQuerySingle.mockResolvedValue({
         data: {
           wallet_address: mockWalletAddress.toLowerCase(),
           nft_balance: 3,
@@ -260,7 +274,7 @@ describe('NFT Verification Service', () => {
         error: null,
       })
 
-      const result = await verifyNftOwnership(mockSupabase, mockUserId, mockWalletAddress, false)
+      const result = await verifyNftOwnership(mockUserId, mockWalletAddress, false)
 
       expect(result.cached).toBe(true)
       expect(result.nft_holder).toBe(true)
@@ -269,21 +283,20 @@ describe('NFT Verification Service', () => {
     })
 
     it('should query blockchain when cache not available', async () => {
-      mockSupabase.single.mockResolvedValue({ data: null, error: null })
+      mockExecuteQuerySingle.mockResolvedValue({ data: null, error: null })
       mockPublicClient.readContract.mockResolvedValue(BigInt(5))
 
-      const result = await verifyNftOwnership(mockSupabase, mockUserId, mockWalletAddress, false)
+      const result = await verifyNftOwnership(mockUserId, mockWalletAddress, false)
 
       expect(result.cached).toBe(false)
       expect(result.nft_holder).toBe(true)
       expect(result.balance).toBe(5)
       expect(mockPublicClient.readContract).toHaveBeenCalled()
-      expect(mockSupabase.upsert).toHaveBeenCalled()
-      expect(mockSupabase.update).toHaveBeenCalled()
+      expect(mockExecuteQuery).toHaveBeenCalled()
     })
 
     it('should query blockchain when forceRefresh is true', async () => {
-      mockSupabase.single.mockResolvedValue({
+      mockExecuteQuerySingle.mockResolvedValue({
         data: {
           wallet_address: mockWalletAddress.toLowerCase(),
           nft_balance: 3,
@@ -295,7 +308,6 @@ describe('NFT Verification Service', () => {
       mockPublicClient.readContract.mockResolvedValue(BigInt(7))
 
       const result = await verifyNftOwnership(
-        mockSupabase,
         mockUserId,
         mockWalletAddress,
         true // Force refresh
@@ -307,31 +319,34 @@ describe('NFT Verification Service', () => {
     })
 
     it('should correctly identify non-NFT holder (zero balance)', async () => {
-      mockSupabase.single.mockResolvedValue({ data: null, error: null })
+      mockExecuteQuerySingle.mockResolvedValue({ data: null, error: null })
       mockPublicClient.readContract.mockResolvedValue(BigInt(0))
 
-      const result = await verifyNftOwnership(mockSupabase, mockUserId, mockWalletAddress, false)
+      const result = await verifyNftOwnership(mockUserId, mockWalletAddress, false)
 
       expect(result.nft_holder).toBe(false)
       expect(result.balance).toBe(0)
-      expect(mockSupabase.update).toHaveBeenCalledWith({ nft_holder: false })
+      expect(mockExecuteQuery).toHaveBeenCalledWith(
+        expect.stringContaining('UPDATE users'),
+        [false, mockUserId]
+      )
     })
 
     it('should handle blockchain errors', async () => {
-      mockSupabase.single.mockResolvedValue({ data: null, error: null })
+      mockExecuteQuerySingle.mockResolvedValue({ data: null, error: null })
       mockPublicClient.readContract.mockRejectedValue(new Error('RPC error'))
 
       await expect(
-        verifyNftOwnership(mockSupabase, mockUserId, mockWalletAddress, false)
+        verifyNftOwnership(mockUserId, mockWalletAddress, false)
       ).rejects.toThrow()
     })
 
     it('should set correct expiration time (24 hours)', async () => {
-      mockSupabase.single.mockResolvedValue({ data: null, error: null })
+      mockExecuteQuerySingle.mockResolvedValue({ data: null, error: null })
       mockPublicClient.readContract.mockResolvedValue(BigInt(1))
 
       const beforeTime = Date.now()
-      const result = await verifyNftOwnership(mockSupabase, mockUserId, mockWalletAddress, false)
+      const result = await verifyNftOwnership(mockUserId, mockWalletAddress, false)
       const afterTime = Date.now()
 
       const expiresAt = new Date(result.expires_at!).getTime()
@@ -346,42 +361,43 @@ describe('NFT Verification Service', () => {
     it('should delete expired verifications', async () => {
       const mockDeletedRecords = [{ id: '1' }, { id: '2' }, { id: '3' }]
 
-      mockSupabase.select.mockResolvedValue({
+      mockExecuteQuery.mockResolvedValue({
         data: mockDeletedRecords,
         error: null,
       })
 
-      const count = await cleanupExpiredVerifications(mockSupabase)
+      const count = await cleanupExpiredVerifications()
 
       expect(count).toBe(3)
-      expect(mockSupabase.from).toHaveBeenCalledWith('nft_verifications')
-      expect(mockSupabase.delete).toHaveBeenCalled()
-      expect(mockSupabase.lt).toHaveBeenCalledWith('expires_at', expect.any(String))
+      expect(mockExecuteQuery).toHaveBeenCalledWith(
+        expect.stringContaining('DELETE FROM nft_verifications'),
+        []
+      )
     })
 
     it('should return 0 when no expired verifications exist', async () => {
-      mockSupabase.select.mockResolvedValue({ data: [], error: null })
+      mockExecuteQuery.mockResolvedValue({ data: [], error: null })
 
-      const count = await cleanupExpiredVerifications(mockSupabase)
+      const count = await cleanupExpiredVerifications()
 
       expect(count).toBe(0)
     })
 
     it('should handle deletion errors gracefully', async () => {
-      mockSupabase.select.mockResolvedValue({
+      mockExecuteQuery.mockResolvedValue({
         data: null,
-        error: { message: 'Delete failed' },
+        error: 'Delete failed',
       })
 
-      const count = await cleanupExpiredVerifications(mockSupabase)
+      const count = await cleanupExpiredVerifications()
 
       expect(count).toBe(0)
     })
 
     it('should handle database exceptions', async () => {
-      mockSupabase.select.mockRejectedValue(new Error('Database error'))
+      mockExecuteQuery.mockRejectedValue(new Error('Database error'))
 
-      const count = await cleanupExpiredVerifications(mockSupabase)
+      const count = await cleanupExpiredVerifications()
 
       expect(count).toBe(0)
     })
@@ -389,15 +405,14 @@ describe('NFT Verification Service', () => {
 
   describe('Edge Cases and Integration', () => {
     it('should handle concurrent verification requests', async () => {
-      mockSupabase.single.mockResolvedValue({ data: null, error: null })
-      mockSupabase.upsert.mockResolvedValue({ error: null })
-      mockSupabase.update.mockResolvedValue({ error: null })
+      mockExecuteQuerySingle.mockResolvedValue({ data: null, error: null })
+      mockExecuteQuery.mockResolvedValue({ error: null })
       mockPublicClient.readContract.mockResolvedValue(BigInt(1))
 
       const promises = [
-        verifyNftOwnership(mockSupabase, mockUserId, mockWalletAddress, false),
-        verifyNftOwnership(mockSupabase, mockUserId, mockWalletAddress, false),
-        verifyNftOwnership(mockSupabase, mockUserId, mockWalletAddress, false),
+        verifyNftOwnership(mockUserId, mockWalletAddress, false),
+        verifyNftOwnership(mockUserId, mockWalletAddress, false),
+        verifyNftOwnership(mockUserId, mockWalletAddress, false),
       ]
 
       const results = await Promise.all(promises)
@@ -413,22 +428,143 @@ describe('NFT Verification Service', () => {
       const upperCaseWallet = '0xABCDEF1234567890ABCDEF1234567890ABCDEF12'
       const mixedCaseWallet = '0xAbCdEf1234567890AbCdEf1234567890AbCdEf12'
 
-      mockSupabase.single.mockResolvedValue({ data: null, error: null })
-      mockSupabase.upsert.mockResolvedValue({ error: null })
-      mockSupabase.update.mockResolvedValue({ error: null })
+      mockExecuteQuerySingle.mockResolvedValue({ data: null, error: null })
+      mockExecuteQuery.mockResolvedValue({ error: null })
       mockPublicClient.readContract.mockResolvedValue(BigInt(1))
 
-      await verifyNftOwnership(mockSupabase, 'user1', lowerCaseWallet, false)
-      await verifyNftOwnership(mockSupabase, 'user2', upperCaseWallet, false)
-      await verifyNftOwnership(mockSupabase, 'user3', mixedCaseWallet, false)
+      await verifyNftOwnership('user1', lowerCaseWallet, false)
+      await verifyNftOwnership('user2', upperCaseWallet, false)
+      await verifyNftOwnership('user3', mixedCaseWallet, false)
 
       // All should be normalized to lowercase
-      expect(mockSupabase.upsert).toHaveBeenCalledWith(
-        expect.objectContaining({
-          wallet_address: lowerCaseWallet.toLowerCase(),
-        }),
-        expect.any(Object)
+      expect(mockExecuteQuery).toHaveBeenCalledWith(
+        expect.stringContaining('INSERT INTO nft_verifications'),
+        expect.arrayContaining([
+          expect.any(String),
+          lowerCaseWallet.toLowerCase(),
+          expect.any(Number),
+          expect.any(String),
+          expect.any(String),
+          expect.any(String),
+        ])
       )
+    })
+  })
+
+  describe('Additional Coverage Tests', () => {
+    describe('getPublicClient', () => {
+      it('should create client for mainnet chain', async () => {
+        process.env.NEXT_PUBLIC_CHAIN = 'mainnet'
+        mockPublicClient.readContract.mockResolvedValue(BigInt(1))
+
+        await checkNftBalanceOnChain(mockWalletAddress)
+
+        expect(createPublicClient).toHaveBeenCalled()
+      })
+
+      it('should create client for base chain', async () => {
+        process.env.NEXT_PUBLIC_CHAIN = 'base'
+        mockPublicClient.readContract.mockResolvedValue(BigInt(1))
+
+        await checkNftBalanceOnChain(mockWalletAddress)
+
+        expect(createPublicClient).toHaveBeenCalled()
+      })
+
+      it('should create client for base-sepolia chain', async () => {
+        process.env.NEXT_PUBLIC_CHAIN = 'base-sepolia'
+        mockPublicClient.readContract.mockResolvedValue(BigInt(1))
+
+        await checkNftBalanceOnChain(mockWalletAddress)
+
+        expect(createPublicClient).toHaveBeenCalled()
+      })
+
+      it('should default to sepolia for unknown chain', async () => {
+        process.env.NEXT_PUBLIC_CHAIN = 'unknown-chain'
+        mockPublicClient.readContract.mockResolvedValue(BigInt(1))
+
+        await checkNftBalanceOnChain(mockWalletAddress)
+
+        expect(createPublicClient).toHaveBeenCalled()
+      })
+    })
+
+    describe('Cache expiration logic', () => {
+      it('should set expiration to 24 hours from now', async () => {
+        mockExecuteQuery.mockResolvedValue({ error: null })
+
+        const before = Date.now()
+        await cacheVerification(mockUserId, mockWalletAddress, 5)
+        const after = Date.now()
+
+        const [[query, params]] = mockExecuteQuery.mock.calls
+        const expiresAt = new Date(params[4]).getTime()
+        const expectedMin = before + 24 * 60 * 60 * 1000
+        const expectedMax = after + 24 * 60 * 60 * 1000
+
+        expect(expiresAt).toBeGreaterThanOrEqual(expectedMin)
+        expect(expiresAt).toBeLessThanOrEqual(expectedMax)
+      })
+    })
+
+    describe('Error handling edge cases', () => {
+      it('should handle null balance from blockchain', async () => {
+        mockPublicClient.readContract.mockResolvedValue(null)
+
+        const balance = await checkNftBalanceOnChain(mockWalletAddress)
+
+        expect(balance).toBe(0)
+      })
+
+      it('should throw when cacheVerification encounters exception', async () => {
+        mockExecuteQuery.mockRejectedValue(new Error('Network timeout'))
+
+        await expect(
+          cacheVerification(mockUserId, mockWalletAddress, 3)
+        ).rejects.toThrow()
+      })
+
+      it('should throw when updateUserNftStatus encounters exception', async () => {
+        mockExecuteQuery.mockRejectedValue(new Error('Connection lost'))
+
+        await expect(
+          updateUserNftStatus(mockUserId, true)
+        ).rejects.toThrow()
+      })
+    })
+
+    describe('verifyNftOwnership complete flow', () => {
+      it('should successfully complete full verification with all database updates', async () => {
+        mockExecuteQuerySingle.mockResolvedValue({ data: null, error: null })
+        mockExecuteQuery.mockResolvedValue({ error: null })
+        mockPublicClient.readContract.mockResolvedValue(BigInt(2))
+
+        const result = await verifyNftOwnership(mockUserId, mockWalletAddress, false)
+
+        expect(result.verified).toBe(true)
+        expect(result.nft_holder).toBe(true)
+        expect(result.balance).toBe(2)
+        expect(result.cached).toBe(false)
+        expect(result.verified_at).toBeDefined()
+        expect(result.expires_at).toBeDefined()
+
+        // Verify all database operations were called
+        expect(mockExecuteQuerySingle).toHaveBeenCalledTimes(1) // getCachedVerification
+        expect(mockExecuteQuery).toHaveBeenCalledTimes(2) // cacheVerification + updateUserNftStatus
+      })
+
+      it('should handle caching failure but still return result', async () => {
+        mockExecuteQuerySingle.mockResolvedValue({ data: null, error: null })
+        mockPublicClient.readContract.mockResolvedValue(BigInt(3))
+        mockExecuteQuery
+          .mockResolvedValueOnce({ error: 'Cache write failed' })
+          .mockResolvedValueOnce({ error: null })
+
+        await expect(
+          verifyNftOwnership(mockUserId, mockWalletAddress, false)
+        ).rejects.toThrow()
+      })
     })
   })
 })
