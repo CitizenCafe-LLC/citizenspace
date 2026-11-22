@@ -9,25 +9,6 @@ import { HERO_SLIDES, ZONES } from '@/lib/site/content'
 
 jest.mock('next/navigation', () => ({ usePathname: () => '/membership' }))
 
-// RainbowKit ships ESM-only; next/jest's blanket node_modules ignore always
-// wins over a custom transformIgnorePatterns entry, so it can't be
-// transformed for tests. Mock it the same way __tests__/lib/web3/wagmi.test.ts
-// does for the config module.
-jest.mock('@rainbow-me/rainbowkit', () => ({
-  ConnectButton: {
-    Custom: ({ children }: { children: (props: any) => React.ReactNode }) =>
-      children({
-        account: undefined,
-        chain: undefined,
-        openAccountModal: jest.fn(),
-        openChainModal: jest.fn(),
-        openConnectModal: jest.fn(),
-        authenticationStatus: undefined,
-        mounted: true,
-      }),
-  },
-}))
-
 describe('Footer', () => {
   it('names the public benefit corporation and its mission', () => {
     render(<Footer />)
@@ -57,13 +38,9 @@ describe('Navigation', () => {
     )
   })
 
-  it('shows Connect Wallet with an explanation of what it is for', () => {
+  it('does not show the unexplained Connect Wallet button', () => {
     render(<Navigation />)
-    const button = screen.getByText(/connect wallet/i)
-    expect(button).toBeInTheDocument()
-    // The wallet connects a founding member's NFT key — explained via a
-    // title tooltip on desktop, not left as an unexplained raw button.
-    expect(button.closest('[title]')).toHaveAttribute('title', expect.stringMatching(/NFT key/i))
+    expect(screen.queryByText(/connect wallet/i)).not.toBeInTheDocument()
   })
 })
 
