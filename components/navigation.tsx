@@ -64,9 +64,9 @@ export function Navigation() {
           <ConnectWallet className="px-3 text-sm md:px-4 md:text-[15px]" />
           <Link
             href="/membership"
-            className="hidden min-h-[44px] items-center rounded-xl bg-brand-brick px-5 text-[15px] font-bold text-brand-bone no-underline hover:bg-[#87493A] md:inline-flex"
+            className="hidden min-h-[44px] items-center whitespace-nowrap rounded-xl bg-brand-brick px-5 text-[15px] font-bold text-brand-bone no-underline hover:bg-[#87493A] md:inline-flex"
           >
-            Join the Founding 50
+            Founding 50
           </Link>
           <button
             type="button"
