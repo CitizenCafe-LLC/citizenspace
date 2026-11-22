@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server'
 import { authenticateRequest } from '@/lib/auth/middleware'
 import { getUserCredits } from '@/lib/db/repositories/booking.repository'
-import { apiResponse, apiError } from '@/lib/api/response'
+import { successResponse, errorResponse } from '@/lib/api/response'
 
 /**
  * GET /api/memberships/credits/meeting-rooms
@@ -12,7 +13,7 @@ export async function GET(request: NextRequest) {
     // Authenticate user
     const authResult = await authenticateRequest(request)
     if (!authResult.user) {
-      return apiError('Unauthorized', 401)
+      return errorResponse('Unauthorized', 401)
     }
 
     const userId = authResult.user.userId
@@ -21,18 +22,18 @@ export async function GET(request: NextRequest) {
     const result = await getUserCredits(userId)
 
     if (result.error) {
-      return apiError('Failed to fetch meeting room credits', 500, result.error)
+      return errorResponse('Failed to fetch meeting room credits', 500, result.error)
     }
 
     if (!result.data) {
-      return apiError('User not found', 404)
+      return errorResponse('User not found', 404)
     }
 
     const credits = result.data
 
     // Check if user has a membership
     if (!credits.membership_plan_id) {
-      return apiResponse({
+      return successResponse({
         user_id: userId,
         has_membership: false,
         credits_available: 0,
@@ -40,7 +41,7 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    return apiResponse({
+    return successResponse({
       user_id: userId,
       has_membership: true,
       credits_available: credits.meeting_room_credits_hours || 0,
@@ -54,6 +55,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Error fetching meeting room credits:', error)
-    return apiError('Internal server error', 500)
+    return errorResponse('Internal server error', 500)
   }
 }

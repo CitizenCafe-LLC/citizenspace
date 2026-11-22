@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server'
 import { authenticateRequest } from '@/lib/auth/middleware'
 import { getCreditTransactions } from '@/lib/db/repositories/booking.repository'
-import { apiResponse, apiError } from '@/lib/api/response'
+import { successResponse, errorResponse } from '@/lib/api/response'
 
 /**
  * GET /api/memberships/credits/transactions
@@ -12,7 +13,7 @@ export async function GET(request: NextRequest) {
     // Authenticate user
     const authResult = await authenticateRequest(request)
     if (!authResult.user) {
-      return apiError('Unauthorized', 401)
+      return errorResponse('Unauthorized', 401)
     }
 
     const userId = authResult.user.userId
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
     const result = await getCreditTransactions(userId, creditType || undefined, limit, offset)
 
     if (result.error) {
-      return apiError('Failed to fetch transaction history', 500, result.error)
+      return errorResponse('Failed to fetch transaction history', 500, result.error)
     }
 
     const transactions = result.data || []
@@ -53,14 +54,15 @@ export async function GET(request: NextRequest) {
           acc[type].total_refunded += txn.amount
         }
 
-        acc[type].net_balance = acc[type].total_allocated - acc[type].total_deducted + acc[type].total_refunded
+        acc[type].net_balance =
+          acc[type].total_allocated - acc[type].total_deducted + acc[type].total_refunded
 
         return acc
       },
       {} as Record<string, any>
     )
 
-    return apiResponse({
+    return successResponse({
       user_id: userId,
       transactions,
       summary,
@@ -73,6 +75,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Error fetching credit transactions:', error)
-    return apiError('Internal server error', 500)
+    return errorResponse('Internal server error', 500)
   }
 }

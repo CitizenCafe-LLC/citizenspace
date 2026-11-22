@@ -12,17 +12,15 @@ import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { verifyNftOwnership } from '@/lib/web3/nft-verification'
 import { executeQuerySingle } from '@/lib/db/postgres'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '../[...nextauth]/route'
+import { requireAuth } from '@/middleware/auth'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   try {
-    // Get authenticated user from session
-    const session = await getServerSession(authOptions)
-
-    if (!session || !session.user?.id) {
+    // Get authenticated user
+    const auth = await requireAuth(request)
+    if (!auth.authorized || !auth.user) {
       return NextResponse.json(
         {
           verified: false,
@@ -38,7 +36,7 @@ export async function GET(request: NextRequest) {
     // Get user's wallet address from database
     const { data: userData, error: userError } = await executeQuerySingle<{
       wallet_address: string
-    }>('SELECT wallet_address FROM users WHERE id = $1', [session.user.id])
+    }>('SELECT wallet_address FROM users WHERE id = $1', [auth.user.userId])
 
     if (userError || !userData) {
       return NextResponse.json(
@@ -73,7 +71,7 @@ export async function GET(request: NextRequest) {
     const forceRefresh = searchParams.get('force_refresh') === 'true'
 
     // Verify NFT ownership
-    const verification = await verifyNftOwnership(session.user.id, walletAddress, forceRefresh)
+    const verification = await verifyNftOwnership(auth.user.userId, walletAddress, forceRefresh)
 
     return NextResponse.json(verification, { status: 200 })
   } catch (error) {
@@ -101,10 +99,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'Invalid action' }, { status: 400 })
     }
 
-    // Get authenticated user from session
-    const session = await getServerSession(authOptions)
-
-    if (!session || !session.user?.id) {
+    // Get authenticated user
+    const auth = await requireAuth(request)
+    if (!auth.authorized || !auth.user) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
@@ -117,7 +114,7 @@ export async function POST(request: NextRequest) {
            nft_holder = false,
            updated_at = NOW()
        WHERE id = $1`,
-      [session.user.id]
+      [auth.user.userId]
     )
 
     if (updateError) {
@@ -126,7 +123,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Delete cached verifications for this user
-    await executeQuery('DELETE FROM nft_verifications WHERE user_id = $1', [session.user.id])
+    await executeQuery('DELETE FROM nft_verifications WHERE user_id = $1', [auth.user.userId])
 
     return NextResponse.json(
       {

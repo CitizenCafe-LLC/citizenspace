@@ -10,11 +10,36 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-manrope)', 'system-ui', 'sans-serif'],
+        sans: ['"DM Sans"', 'Arial', 'system-ui', 'sans-serif'],
+        display: ['Fraunces', 'Georgia', 'serif'],
       },
       colors: {
-        // Citizen Space Brand Colors
+        // Citizen Space design system (brand book: claude.ai artifact "Citizen Space")
+        brand: {
+          paper: '#FAF7F1',
+          bone: '#F0EAE0',
+          ink: '#1E2422',
+          muted: '#554F48',
+          brick: '#9E5640',
+          forest: '#1F3D33',
+          oak: '#B08A5E',
+          moss: '#6F8063',
+          peach: '#E7B49B',
+          mist: '#D9E3DC',
+          hairline: '#D8CFC2',
+        },
+        zone: {
+          lobby: '#8C6D4F',
+          kitchen: '#C8734F',
+          conference: '#2E5E63',
+          'drop-in': '#1F3D33',
+          'hot-desks': '#6F8063',
+          hallway: '#4F7A63',
+          'shared-room': '#4E6A7E',
+          studio: '#1F2A36',
+          founders: '#C49A4A',
+        },
+        // Legacy Citizen Space colors (kept for older dashboard/admin screens)
         cs: {
           blue: '#79AEF2',
           sun: '#F2BE5C',

@@ -1,252 +1,126 @@
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import Link from 'next/link'
-import {
-  Calendar,
-  Clock,
-  MapPin,
-  Users,
-  ExternalLink,
-  ArrowRight,
-  Palette,
-  Code,
-  Coffee,
-} from 'lucide-react'
 import type { Metadata } from 'next'
+import { Eyebrow, Section, H1, H2, Lead, ButtonLink, Photo } from '@/components/site/ui'
 
 export const metadata: Metadata = {
-  title: 'Events',
+  title: 'Events: Builder Night, Colearn classes and tours',
   description:
-    'Join our community events, workshops, and networking sessions. From creative workshops to tech talks.',
+    'Builder Night every Monday, Colearn classes taught by members, and tours of 819 Pacific Ave before Citizen Space opens in March 2027.',
+  alternates: { canonical: '/events' },
 }
 
-const upcomingEvents = [
+const EVENTS = [
   {
-    id: '1',
-    title: 'Digital Art Basics Workshop',
-    slug: 'digital-art-basics',
-    date: '2024-01-15',
-    time: '7:00 PM - 9:00 PM',
-    location: 'Citizen Space Main Floor',
-    host: 'Maya Chen',
-    type: 'Workshop',
-    capacity: 20,
-    price: 25,
-    description:
-      'Learn the fundamentals of digital art creation using Procreate and Adobe Creative Suite.',
-    image: '/events/digital-art.jpg',
-    tags: ['Creative', 'Beginner-Friendly'],
-    rsvpLink: 'https://lu.ma/digital-art-basics',
+    month: 'Dec',
+    day: '1',
+    title: 'Founding sales open',
+    body: 'The Founding 50 go on sale. $1,000 once, lowest rates for life.',
+    href: '/membership',
+    cta: 'Get on the list',
+    primary: true,
   },
   {
-    id: '2',
-    title: 'Entrepreneur Breakfast',
-    slug: 'entrepreneur-breakfast',
-    date: '2024-01-20',
-    time: '8:00 AM - 10:00 AM',
-    location: 'Citizen Space Cafe',
-    host: 'SF Entrepreneurs Guild',
-    type: 'Networking',
-    capacity: 30,
-    price: 0,
-    description:
-      'Monthly networking breakfast for startup founders and entrepreneurs in the Bay Area.',
-    image: '/events/networking.jpg',
-    tags: ['Networking', 'Business'],
-    rsvpLink: 'https://eventbrite.com/entrepreneur-breakfast',
+    month: 'Every',
+    day: 'Mon',
+    title: 'Builder Night',
+    body: 'Demos and building together. At Pleasure Pizza on Pacific Ave until our doors open.',
+    href: '/contact',
+    cta: 'Come by',
   },
   {
-    id: '3',
-    title: 'JavaScript Deep Dive',
-    slug: 'javascript-deep-dive',
-    date: '2024-01-25',
-    time: '6:30 PM - 8:30 PM',
-    location: 'Boardroom',
-    host: 'Alex Kim',
-    type: 'Tech Talk',
-    capacity: 15,
-    price: 15,
-    description: 'Advanced JavaScript concepts, async patterns, and modern ES6+ features.',
-    image: '/events/javascript.jpg',
-    tags: ['Technical', 'Advanced'],
-    rsvpLink: 'https://lu.ma/javascript-deep-dive',
+    month: 'Jan 2027',
+    day: '1',
+    title: 'Keys and early move-in',
+    body: 'Pay a first installment in December or January and move in with the charter founders while we build out.',
+    href: '/membership#join',
+    cta: 'How it works',
   },
   {
-    id: '4',
-    title: 'Coffee Cupping Session',
-    slug: 'coffee-cupping',
-    date: '2024-01-28',
-    time: '10:00 AM - 12:00 PM',
-    location: 'Citizen Space Cafe',
-    host: 'Four Barrel Coffee',
-    type: 'Experience',
-    capacity: 12,
-    price: 20,
-    description: 'Learn to taste coffee like a professional with our partner roasters.',
-    image: '/events/cupping.jpg',
-    tags: ['Coffee', 'Educational'],
-    rsvpLink: 'https://eventbrite.com/coffee-cupping',
+    month: '2027',
+    day: 'March',
+    title: 'Opening day',
+    body: 'Members move in. Founders get their member NFT key.',
+    href: '/membership',
+    cta: 'Join the Founding 50',
   },
-]
-
-const eventTypes = [
-  { id: 'all', name: 'All Events', icon: Calendar },
-  { id: 'workshop', name: 'Workshops', icon: Palette },
-  { id: 'networking', name: 'Networking', icon: Users },
-  { id: 'tech-talk', name: 'Tech Talks', icon: Code },
-  { id: 'experience', name: 'Experiences', icon: Coffee },
+  {
+    month: 'Ongoing',
+    day: 'By appt.',
+    title: 'Tour 819 Pacific Ave',
+    body: 'See the brick, the skylights and the fireplace before the build-out.',
+    href: '/contact',
+    cta: 'Book a tour',
+  },
 ]
 
 export default function EventsPage() {
   return (
-    <div className="py-12">
-      {/* Hero Section */}
-      <section className="pb-20">
-        <div className="container">
-          <div className="mx-auto max-w-4xl text-center">
-            <Badge variant="secondary" className="mb-6">
-              Community Events
-            </Badge>
-            <h1 className="mb-6 font-display text-4xl font-bold lg:text-6xl">
-              Learn, Connect, <span className="gradient-text">Create Together</span>
-            </h1>
-            <p className="mb-8 text-xl text-muted-foreground">
-              Join our vibrant community for workshops, talks, networking events, and unique
-              experiences. From creative sessions to tech deep-dives, there's something for
-              everyone.
-            </p>
-            <Button asChild size="lg" className="btn-primary">
-              <Link href="#upcoming-events">
-                See Upcoming Events
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-          </div>
+    <>
+      <Section innerClassName="flex-row flex-wrap items-center pb-16 md:pb-16">
+        <div className="flex min-w-0 flex-[1_1_440px] flex-col gap-4">
+          <Eyebrow>Events</Eyebrow>
+          <H1>Builder Night, classes and tours.</H1>
+          <Lead>
+            Most events start when doors open in March 2027. Here’s what’s on before then.
+          </Lead>
         </div>
-      </section>
+        <div className="min-w-0 flex-[1_1_480px]">
+          <Photo
+            src="/brand/photos/06-hallway-lounge.jpg"
+            alt="Hallway lounge with the wood-plank wall where event posters will hang"
+            priority
+          />
+        </div>
+      </Section>
 
-      {/* Event Types Filter */}
-      <section className="pb-12" id="upcoming-events">
-        <div className="container">
-          <Tabs defaultValue="all" className="mx-auto max-w-6xl">
-            <div className="mb-8 text-center">
-              <h2 className="mb-4 font-display text-3xl font-bold lg:text-4xl">Upcoming Events</h2>
-              <p className="text-lg text-muted-foreground">
-                Filter by type or browse all our community events
-              </p>
-            </div>
-
-            <TabsList className="mb-12 grid w-full grid-cols-2 lg:grid-cols-5">
-              {eventTypes.map(type => (
-                <TabsTrigger key={type.id} value={type.id} className="flex items-center gap-2">
-                  <type.icon className="h-4 w-4" />
-                  <span className="hidden sm:inline">{type.name}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            <TabsContent value="all">
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                {upcomingEvents.map(event => (
-                  <EventCard key={event.id} event={event} />
-                ))}
+      <Section tone="bone" aria-labelledby="upcoming" innerClassName="gap-8">
+        <H2 id="upcoming">Coming up</H2>
+        <ul className="m-0 list-none p-0">
+          {EVENTS.map((e, i) => (
+            <li
+              key={e.title}
+              className={`flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-brand-hairline py-7 ${i === EVENTS.length - 1 ? 'border-b' : ''}`}
+            >
+              <div className="w-[120px] shrink-0">
+                <Eyebrow>{e.month}</Eyebrow>
+                <p className="m-0 font-display text-[44px] font-semibold leading-none">{e.day}</p>
               </div>
-            </TabsContent>
-
-            {eventTypes.slice(1).map(type => (
-              <TabsContent key={type.id} value={type.id}>
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  {upcomingEvents
-                    .filter(event => event.type.toLowerCase().replace(' ', '-') === type.id)
-                    .map(event => (
-                      <EventCard key={event.id} event={event} />
-                    ))}
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
-        </div>
-      </section>
-
-      {/* Host an Event CTA */}
-      <section className="bg-muted/30 py-20">
-        <div className="container">
-          <div className="mx-auto max-w-4xl text-center">
-            <h2 className="mb-6 font-display text-3xl font-bold lg:text-4xl">
-              Want to Host an Event?
-            </h2>
-            <p className="mb-8 text-xl text-muted-foreground">
-              Share your expertise with our community. We provide the space, you bring the knowledge
-              and passion.
-            </p>
-            <div className="flex flex-col justify-center gap-4 sm:flex-row">
-              <Button asChild size="lg" className="btn-primary">
-                <Link href="/contact">Propose an Event</Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/membership">See Host Benefits</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  )
-}
-
-function EventCard({ event }: { event: (typeof upcomingEvents)[0] }) {
-  return (
-    <Card className="card-hover">
-      <div className="flex aspect-video items-center justify-center rounded-t-lg bg-muted">
-        <Calendar className="h-12 w-12 text-muted-foreground" />
-      </div>
-      <CardHeader>
-        <div className="mb-2 flex items-start justify-between">
-          <Badge variant="outline">{event.type}</Badge>
-          <div className="text-right">
-            {event.price > 0 ? (
-              <span className="text-lg font-bold text-cs-blue">${event.price}</span>
-            ) : (
-              <Badge className="bg-green-100 text-green-800">Free</Badge>
-            )}
-          </div>
-        </div>
-        <CardTitle className="font-display text-xl">
-          <Link href={`/events/${event.slug}`} className="hover:text-cs-blue">
-            {event.title}
-          </Link>
-        </CardTitle>
-        <CardDescription>{event.description}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="flex items-center text-sm text-muted-foreground">
-          <Clock className="mr-2 h-4 w-4" />
-          {new Date(event.date).toLocaleDateString()} • {event.time}
-        </div>
-        <div className="flex items-center text-sm text-muted-foreground">
-          <MapPin className="mr-2 h-4 w-4" />
-          {event.location}
-        </div>
-        <div className="flex items-center text-sm text-muted-foreground">
-          <Users className="mr-2 h-4 w-4" />
-          {event.capacity} spots available • Hosted by {event.host}
-        </div>
-        <div className="flex gap-2">
-          {event.tags.map(tag => (
-            <Badge key={tag} variant="secondary" className="text-xs">
-              {tag}
-            </Badge>
+              <div className="min-w-0 flex-[1_1_360px]">
+                <h3 className="m-0 mb-1.5 text-[22px] font-bold">{e.title}</h3>
+                <p className="m-0 text-[17px] text-brand-muted">{e.body}</p>
+              </div>
+              <ButtonLink href={e.href} variant={e.primary ? 'brick' : 'outlineDark'}>
+                {e.cta}
+              </ButtonLink>
+            </li>
           ))}
+        </ul>
+      </Section>
+
+      <Section
+        tone="forest"
+        aria-labelledby="host"
+        innerClassName="flex-row flex-wrap items-center"
+      >
+        <div className="min-w-0 flex-[1_1_440px]">
+          <Photo
+            src="/brand/photos/12-conference-room.jpg"
+            alt="Conference room with fireplace, a good room for small events"
+          />
         </div>
-        <Button asChild className="btn-primary w-full">
-          <Link href={event.rsvpLink} target="_blank" rel="noopener noreferrer">
-            RSVP on {event.rsvpLink.includes('lu.ma') ? 'Luma' : 'Eventbrite'}
-            <ExternalLink className="ml-2 h-4 w-4" />
-          </Link>
-        </Button>
-      </CardContent>
-    </Card>
+        <div className="flex min-w-0 flex-[1_1_400px] flex-col gap-4">
+          <Eyebrow onDark>Colearn classes</Eyebrow>
+          <H2 id="host" onDark>
+            Members teach members.
+          </H2>
+          <p className="m-0 text-[17px] text-brand-mist">
+            Got something to teach? Pitch a class or a talk for the fireplace room or the drop-in
+            area.
+          </p>
+          <ButtonLink href="/contact" className="self-start">
+            Propose an event
+          </ButtonLink>
+        </div>
+      </Section>
+    </>
   )
 }

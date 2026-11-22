@@ -1,254 +1,169 @@
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ArrowLeft, Clock, Share2, Twitter, Linkedin, Facebook, ArrowRight } from 'lucide-react'
-import type { Metadata } from 'next'
+import { Photo } from '@/components/site/ui'
+import { ArticleBlocks, articleHeadings } from '@/components/site/article-blocks'
+import { getArticleBySlug, getArticles, formatDate } from '@/lib/strapi/articles'
+import { blogPostingJsonLd, jsonLdScript } from '@/lib/site/jsonld'
 
-// This would normally come from your CMS
-const blogPosts = [
-  {
-    slug: 'evolution-of-coworking',
-    title: 'The Evolution of Coworking: From Necessity to Community',
-    excerpt:
-      'How coworking spaces have transformed from simple desk rentals to thriving communities that foster innovation and connection.',
-    content: `The coworking movement has come a long way since its humble beginnings in 2005. What started as a simple solution to the isolation of remote work has evolved into a global phenomenon that's reshaping how we think about work, community, and collaboration.
+export const revalidate = 300
 
-## The Early Days
+export async function generateStaticParams() {
+  const { articles } = await getArticles({ pageSize: 100 })
+  return articles.map(a => ({ slug: a.slug }))
+}
 
-When Brad Neuberg opened the first official coworking space in San Francisco, he was solving a personal problem: the loneliness of working from home combined with the lack of freedom in traditional office environments. His solution was simple—create a space where independent workers could come together while maintaining their autonomy.
-
-## The Community Revolution
-
-Fast-forward to today, and coworking has become about much more than just shared desks and Wi-Fi. Modern coworking spaces like Citizen Space are community hubs that bring together diverse professionals, foster serendipitous connections, and create environments where innovation naturally occurs.
-
-### Key Elements of Modern Coworking:
-
-- **Intentional Community Building**: Events, workshops, and networking opportunities
-- **Flexible Space Design**: Areas for focus work, collaboration, and relaxation
-- **Local Integration**: Partnerships with neighborhood businesses and artists
-- **Holistic Experience**: Combining work with food, culture, and wellness
-
-## The Hybrid Future
-
-The pandemic has accelerated the evolution of coworking once again. Today's professionals don't just need a desk—they need flexibility, community, and experiences that enrich their work life. This is why we've embraced the cafe-coworking hybrid model at Citizen Space.
-
-By blending the accessibility of a neighborhood cafe with the amenities of a premium coworking space, we're creating something new: a place where anyone can drop in for a coffee and end up joining a vibrant professional community.
-
-## Looking Ahead
-
-As remote work becomes permanently embedded in our professional culture, coworking spaces will continue to evolve. We're not just providing desks anymore—we're creating the infrastructure for a new way of working that prioritizes flexibility, community, and human connection over traditional corporate hierarchies.
-
-The future of work is flexible, community-driven, and filled with possibility. And it's happening right here in spaces like ours, one coffee conversation at a time.`,
-    image:
-      'https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1200',
-    author: {
-      name: 'Karsten Wade',
-      avatar: '/team/karsten.jpg',
-      bio: "Founder & CEO of Citizen Space. Karsten started Citizen Space in 2006 as one of San Francisco's first coworking spaces and has been at the forefront of the community-driven workspace movement ever since.",
-    },
-    tags: ['Coworking', 'Community', 'Business', 'Future of Work'],
-    publishedAt: new Date('2025-01-10'),
-    readingTime: 8,
-  },
-]
-
-interface Props {
+export async function generateMetadata({
+  params,
+}: {
   params: { slug: string }
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = blogPosts.find(p => p.slug === params.slug)
-
-  if (!post) {
-    return { title: 'Post Not Found' }
+}): Promise<Metadata> {
+  const a = await getArticleBySlug(params.slug)
+  if (!a) {
+    return {}
   }
-
   return {
-    title: post.title,
-    description: post.excerpt,
-    authors: [{ name: post.author.name }],
+    title: a.title,
+    description: a.excerpt,
+    alternates: { canonical: `/blog/${a.slug}` },
     openGraph: {
-      title: post.title,
-      description: post.excerpt,
       type: 'article',
-      publishedTime: post.publishedAt.toISOString(),
-      authors: [post.author.name],
-      images: [{ url: post.image, width: 1200, height: 630 }],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: post.title,
-      description: post.excerpt,
-      images: [post.image],
+      title: a.title,
+      description: a.excerpt,
+      publishedTime: a.publishedAt,
+      images: [a.cover.src],
     },
   }
 }
 
-export default function BlogPostPage({ params }: Props) {
-  const post = blogPosts.find(p => p.slug === params.slug)
-
-  if (!post) {
+export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+  const article = await getArticleBySlug(params.slug)
+  if (!article) {
     notFound()
   }
+  const headings = articleHeadings(article.blocks)
+  const { articles } = await getArticles({ category: article.category.slug, pageSize: 4 })
+  const related = articles.filter(a => a.slug !== article.slug).slice(0, 3)
 
   return (
-    <div className="py-12">
-      {/* Navigation */}
-      <section className="pb-8">
-        <div className="container">
-          <div className="mx-auto max-w-4xl">
-            <Button asChild variant="ghost" className="mb-6">
-              <Link href="/blog">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Blog
-              </Link>
-            </Button>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLdScript(blogPostingJsonLd(article))}
+      />
+      <article className="bg-brand-paper">
+        <header className="mx-auto flex max-w-[880px] flex-col gap-4 px-4 pb-8 pt-14 sm:px-8">
+          <nav aria-label="Breadcrumb" className="text-sm text-brand-muted">
+            <Link href="/blog" className="text-brand-brick">
+              Blog
+            </Link>{' '}
+            <span aria-hidden>/</span>{' '}
+            <Link href={`/blog?category=${article.category.slug}`} className="text-brand-brick">
+              {article.category.name}
+            </Link>
+          </nav>
+          <p
+            className="m-0 text-[13px] font-bold uppercase tracking-[2.5px]"
+            style={{ color: article.category.color }}
+          >
+            {article.category.name}
+          </p>
+          <h1 className="m-0 font-display text-[40px] font-semibold leading-[1.04] tracking-[-0.5px] md:text-[64px]">
+            {article.title}
+          </h1>
+          <p className="m-0 text-[22px] leading-snug text-brand-muted">{article.excerpt}</p>
+          <div className="flex flex-wrap items-center gap-3 border-y border-brand-hairline py-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={article.author.avatar} alt="" className="h-12 w-12 rounded-full" />
+            <div>
+              <p className="m-0 font-bold">{article.author.name}</p>
+              <p className="m-0 text-sm text-brand-muted">
+                {article.author.role && `${article.author.role} · `}
+                {formatDate(article.publishedAt)} · {article.readingTime} min read
+              </p>
+            </div>
+          </div>
+        </header>
+
+        <figure className="m-0 mx-auto flex max-w-[1200px] flex-col gap-2.5 px-4 pb-12 sm:px-8">
+          <Photo src={article.cover.src} alt={article.cover.alt} ratio="16 / 9" priority />
+        </figure>
+
+        <div className="mx-auto flex max-w-[1200px] flex-wrap items-start gap-14 px-4 pb-20 sm:px-8">
+          {headings.length > 0 && (
+            <aside
+              aria-label="On this page"
+              className="flex min-w-0 flex-[1_1_220px] flex-col gap-1.5 lg:sticky lg:top-28"
+            >
+              <p className="m-0 mb-1.5 text-[13px] font-bold uppercase tracking-[2.5px] text-brand-muted">
+                On this page
+              </p>
+              {headings.map(h => (
+                <a
+                  key={h.id}
+                  href={`#${h.id}`}
+                  className="flex min-h-[36px] items-center border-l-4 border-brand-hairline pl-3 text-brand-ink no-underline hover:border-brand-brick"
+                >
+                  {h.text}
+                </a>
+              ))}
+            </aside>
+          )}
+          <div className="flex min-w-0 max-w-[720px] flex-[999_1_600px] flex-col gap-7 text-[19px] leading-relaxed">
+            <ArticleBlocks blocks={article.blocks} />
+            {article.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {article.tags.map(t => (
+                  <span
+                    key={t}
+                    className="inline-flex min-h-[36px] items-center rounded-full bg-brand-bone px-3.5 text-[15px]"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="flex items-start gap-4 border-t-[6px] border-brand-forest pt-5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={article.author.avatar} alt="" className="h-16 w-16 shrink-0 rounded-full" />
+              <div>
+                <p className="m-0 text-[17px] font-bold">{article.author.name}</p>
+                <p className="m-0 text-base leading-normal text-brand-muted">
+                  {article.author.bio ??
+                    'Founder of Citizen Space. Took over the original Citizen Space in San Francisco in 2010, one of the world’s first coworking spaces, and hosts the Santa Cruz builder meetup.'}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-      </section>
+      </article>
 
-      {/* Article Header */}
-      <section className="pb-12">
-        <div className="container">
-          <div className="mx-auto max-w-4xl">
-            <div className="mb-6 flex flex-wrap gap-2">
-              {post.tags.map(tag => (
-                <Badge key={tag} variant="secondary">
-                  {tag}
-                </Badge>
+      {related.length > 0 && (
+        <section aria-labelledby="related" className="bg-brand-bone">
+          <div className="mx-auto flex max-w-[1280px] flex-col gap-8 px-4 py-20 sm:px-8">
+            <h2 id="related" className="m-0 font-display text-[30px] font-semibold">
+              More in {article.category.name}
+            </h2>
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,320px),1fr))] gap-7">
+              {related.map(r => (
+                <Link
+                  key={r.slug}
+                  href={`/blog/${r.slug}`}
+                  className="flex flex-col gap-3 text-brand-ink no-underline"
+                >
+                  <Photo src={r.cover.src} alt={r.cover.alt} ratio="3 / 2" />
+                  <div className="border-t-[6px] pt-3" style={{ borderTopColor: r.category.color }}>
+                    <h3 className="m-0 text-[22px] font-bold">{r.title}</h3>
+                    <p className="m-0 mt-1.5 text-sm text-brand-muted">
+                      {formatDate(r.publishedAt)} · {r.readingTime} min read
+                    </p>
+                  </div>
+                </Link>
               ))}
             </div>
-
-            <h1 className="mb-6 font-display text-4xl font-bold lg:text-5xl">{post.title}</h1>
-
-            <div className="mb-8 flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src={post.author.avatar} />
-                  <AvatarFallback>
-                    {post.author.name
-                      .split(' ')
-                      .map(n => n[0])
-                      .join('')}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <div className="font-semibold">{post.author.name}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {post.publishedAt.toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                <div className="flex items-center">
-                  <Clock className="mr-1 h-4 w-4" />
-                  {post.readingTime} min read
-                </div>
-                <Button variant="outline" size="sm">
-                  <Share2 className="mr-2 h-4 w-4" />
-                  Share
-                </Button>
-              </div>
-            </div>
-
-            <div className="mb-8 aspect-video overflow-hidden rounded-lg">
-              <img src={post.image} alt={post.title} className="h-full w-full object-cover" />
-            </div>
           </div>
-        </div>
-      </section>
-
-      {/* Article Content */}
-      <section className="pb-12">
-        <div className="container">
-          <div className="mx-auto max-w-4xl">
-            <div className="prose prose-lg max-w-none">
-              <div className="whitespace-pre-wrap leading-relaxed">{post.content}</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Author Bio */}
-      <section className="pb-12">
-        <div className="container">
-          <div className="mx-auto max-w-4xl">
-            <Separator className="mb-8" />
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-start space-x-4">
-                  <Avatar className="h-16 w-16">
-                    <AvatarImage src={post.author.avatar} />
-                    <AvatarFallback className="text-lg">
-                      {post.author.name
-                        .split(' ')
-                        .map(n => n[0])
-                        .join('')}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <h3 className="mb-2 font-display text-xl font-bold">
-                      About {post.author.name}
-                    </h3>
-                    <p className="text-muted-foreground">{post.author.bio}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Share Options */}
-      <section className="pb-12">
-        <div className="container">
-          <div className="mx-auto max-w-4xl">
-            <div className="text-center">
-              <h3 className="mb-4 font-display text-xl font-bold">Share This Article</h3>
-              <div className="flex justify-center gap-4">
-                <Button variant="outline" size="sm">
-                  <Twitter className="mr-2 h-4 w-4" />
-                  Twitter
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Linkedin className="mr-2 h-4 w-4" />
-                  LinkedIn
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Facebook className="mr-2 h-4 w-4" />
-                  Facebook
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Related Posts */}
-      <section className="bg-muted/30 py-20">
-        <div className="container">
-          <div className="mx-auto max-w-6xl">
-            <h2 className="mb-12 text-center font-display text-3xl font-bold">Continue Reading</h2>
-            <div className="text-center">
-              <Button asChild variant="outline">
-                <Link href="/blog">
-                  View All Articles
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      )}
+    </>
   )
 }

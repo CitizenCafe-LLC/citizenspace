@@ -3,7 +3,7 @@
  * Handles capacity tracking, waitlist, and payment for paid events
  */
 
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import {
   successResponse,
   createdResponse,
@@ -28,12 +28,9 @@ interface RSVPRequestBody {
   guest_email?: string
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { slug: string } }) {
   try {
-    const { id: eventId } = params
+    const { slug: eventId } = params
 
     if (!eventId) {
       return badRequestResponse('Event ID is required')
@@ -223,21 +220,16 @@ export async function POST(
     )
   } catch (error) {
     console.error('Error in POST /api/events/:id/rsvp:', error)
-    return serverErrorResponse(
-      error instanceof Error ? error.message : 'Internal server error'
-    )
+    return serverErrorResponse(error instanceof Error ? error.message : 'Internal server error')
   }
 }
 
 /**
  * DELETE /api/events/:id/rsvp - Cancel RSVP to an event
  */
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { slug: string } }) {
   try {
-    const { id: eventId } = params
+    const { slug: eventId } = params
 
     if (!eventId) {
       return badRequestResponse('Event ID is required')
@@ -286,8 +278,6 @@ export async function DELETE(
     )
   } catch (error) {
     console.error('Error in DELETE /api/events/:id/rsvp:', error)
-    return serverErrorResponse(
-      error instanceof Error ? error.message : 'Internal server error'
-    )
+    return serverErrorResponse(error instanceof Error ? error.message : 'Internal server error')
   }
 }
