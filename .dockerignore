@@ -65,4 +65,6 @@ docker-compose*.yml
 # Other
 nftsale/
 photos/
-public/
+# public/ intentionally NOT excluded — the Dockerfile's runner stage copies
+# it (COPY --from=builder /app/public ./public); excluding it breaks the
+# build with "/app/public": not found.
