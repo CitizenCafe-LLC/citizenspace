@@ -22,7 +22,7 @@ Branch `feat/citizen-space-redesign` rebuilds the public site from the **Citizen
 | `/cafe/menu`, `/cafe/partners` | redirects | → `/cafe#menu`, `/cafe` (the old partners were San Francisco shops) |
 | `/faq` | `app/faq/page.tsx` | ~49 Q&As incl. LLM-discovery questions; FAQPage JSON-LD |
 | layout | `app/layout.tsx` | Brand fonts, new metadata, LocalBusiness/CoworkingSpace JSON-LD |
-| header/footer | `components/navigation.tsx`, `components/footer.tsx` | Workspaces is linked, Connect Wallet removed, footer says Citizen Space, PBC |
+| header/footer | `components/navigation.tsx`, `components/footer.tsx` | Workspaces is linked, Connect Wallet kept (RainbowKit modal via `components/site/connect-wallet.tsx`, header + mobile menu) so members can buy the NFT key, footer says Citizen Space, PBC |
 
 Single source of truth for copy and prices: `lib/site/content.ts` (tests forbid `[PLACEHOLDER]` text and check
 founding rates stay ≤ 55% of typical prices). Structured data: `lib/site/jsonld.ts`.

@@ -9,6 +9,22 @@ import { HERO_SLIDES, ZONES } from '@/lib/site/content'
 
 jest.mock('next/navigation', () => ({ usePathname: () => '/membership' }))
 
+// RainbowKit ships ESM; stand in for its render-prop ConnectButton.Custom.
+const mockOpenConnectModal = jest.fn()
+jest.mock('@rainbow-me/rainbowkit', () => ({
+  ConnectButton: {
+    Custom: ({ children }: { children: (p: unknown) => React.ReactNode }) =>
+      children({
+        account: undefined,
+        chain: undefined,
+        mounted: true,
+        openConnectModal: mockOpenConnectModal,
+        openAccountModal: jest.fn(),
+        openChainModal: jest.fn(),
+      }),
+  },
+}))
+
 describe('Footer', () => {
   it('names the public benefit corporation and its mission', () => {
     render(<Footer />)
@@ -38,10 +54,6 @@ describe('Navigation', () => {
     )
   })
 
-  it('does not show the unexplained Connect Wallet button', () => {
-    render(<Navigation />)
-    expect(screen.queryByText(/connect wallet/i)).not.toBeInTheDocument()
-  })
 })
 
 describe('HeroCarousel', () => {
@@ -113,5 +125,18 @@ describe('ArticleBlocks', () => {
       'href',
       '/membership'
     )
+  })
+})
+
+describe('Connect Wallet', () => {
+  it('stays in the header and the mobile menu so members can buy the NFT key', () => {
+    render(<Navigation />)
+    const header = screen.getByRole('banner')
+    fireEvent.click(within(header).getAllByRole('button', { name: 'Connect Wallet' })[0])
+    expect(mockOpenConnectModal).toHaveBeenCalled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open menu' }))
+    const mobile = screen.getByRole('navigation', { name: 'Mobile' })
+    expect(within(mobile).getByRole('button', { name: 'Connect Wallet' })).toBeInTheDocument()
   })
 })
