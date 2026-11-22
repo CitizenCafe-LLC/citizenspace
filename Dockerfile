@@ -27,6 +27,8 @@ RUN echo "cache bust: $CACHE_BUST"
 
 # Copy source code
 COPY . .
+RUN echo "=== app/page.tsx first 20 lines in build context ===" && head -20 app/page.tsx
+RUN echo "=== next.config.js in build context ===" && cat next.config.js
 
 # Set environment to production
 ENV NODE_ENV=production
