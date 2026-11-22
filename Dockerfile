@@ -20,12 +20,34 @@ WORKDIR /app
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 
+# Cache-bust: force this layer and everything after it to re-run even when
+# BuildKit would otherwise treat COPY . . as a cache hit.
+ARG CACHE_BUST=unset
+RUN echo "cache bust: $CACHE_BUST"
+
 # Copy source code
 COPY . .
 
 # Set environment to production
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+
+# Build-time secrets: several lib/ modules validate env vars at import time,
+# so next build needs them even though they're only used at request time.
+# Every NEXT_PUBLIC_* var also needs to be present at build time regardless —
+# Next.js inlines those into the client bundle during the build, not at
+# runtime. Railway injects these as build args when declared here and set as
+# service variables.
+ARG JWT_SECRET
+ARG NEXTAUTH_SECRET
+ARG DATABASE_URL
+ARG NEXT_PUBLIC_APP_URL
+ARG NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+ENV JWT_SECRET=$JWT_SECRET
+ENV NEXTAUTH_SECRET=$NEXTAUTH_SECRET
+ENV DATABASE_URL=$DATABASE_URL
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=$NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
 
 # Build the application
 RUN npm run build
