@@ -1,120 +1,95 @@
 import Link from 'next/link'
-import { Coffee, MapPin, Clock, Phone, Mail } from 'lucide-react'
+import { SITE } from '@/lib/site/content'
 
-const footerSections = [
+const COLUMNS = [
   {
     title: 'Spaces',
     links: [
-      { name: 'Desks', href: '/workspaces/desks' },
-      { name: 'Meeting Rooms', href: '/workspaces/meeting-rooms' },
-      { name: 'Communications Pods', href: '/workspaces/communications-pods' },
-      { name: 'Membership', href: '/membership' },
+      ['/workspaces#desks', 'Desks'],
+      ['/workspaces#conference', 'Conference room'],
+      ['/workspaces#studio', 'Content studio'],
+      ['/membership', 'Membership'],
     ],
   },
   {
-    title: 'Cafe',
+    title: 'Community',
     links: [
-      { name: 'Menu', href: '/cafe/menu' },
-      { name: 'Partners', href: '/cafe/partners' },
-      { name: 'Events', href: '/events' },
+      ['/events', 'Events'],
+      ['/cafe', 'Cafe menu'],
+      ['/blog', 'Blog'],
+      ['/gallery', 'Gallery'],
     ],
   },
   {
-    title: 'Company',
+    title: 'Visit',
     links: [
-      { name: 'About', href: '/about' },
-      { name: 'Blog', href: '/blog' },
-      { name: 'Gallery', href: '/gallery' },
-      { name: 'Contact', href: '/contact' },
+      ['/location', 'Location'],
+      ['/contact', 'Contact'],
+      ['/about', 'About'],
+      ['/faq', 'FAQ'],
     ],
   },
-  {
-    title: 'Support',
-    links: [
-      { name: 'FAQ', href: '/faq' },
-      { name: 'Location', href: '/location' },
-      { name: 'App', href: '/app' },
-      { name: 'Terms', href: '/legal/terms' },
-      { name: 'Privacy', href: '/legal/privacy' },
-    ],
-  },
-]
+] as const
+
+const eyebrow = 'm-0 text-[13px] font-bold uppercase tracking-[2.5px] text-brand-peach'
 
 export function Footer() {
   return (
-    <footer className="border-t bg-muted/30">
-      <div className="container py-12">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-6">
-          {/* Brand Section */}
-          <div className="lg:col-span-2">
-            <Link href="/" className="mb-4 flex items-center space-x-2">
-              <Coffee className="h-8 w-8 text-cs-blue" />
-              <span className="font-display text-xl font-bold">Citizen Space</span>
-            </Link>
-            <p className="mb-4 max-w-sm text-sm text-muted-foreground">
-              Where coffee meets power in the heart of Santa Cruz. Part of the global Open Coworking
-              movement, committed to collaboration, openness, community, accessibility, and
-              sustainability.
+    <footer className="mt-auto bg-brand-forest text-brand-bone">
+      <div className="mx-auto flex max-w-[1280px] flex-col gap-12 px-4 pb-10 pt-16 sm:px-8">
+        <div className="flex flex-wrap justify-between gap-12">
+          <div className="flex min-w-0 max-w-[400px] flex-[1_1_320px] flex-col gap-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/brand/logos/logo-on-dark.png"
+              alt="Citizen Space · Santa Cruz Builder Lab"
+              className="h-14 w-auto self-start"
+            />
+            <p className="m-0 text-[17px] leading-normal text-brand-mist">
+              Where Santa Cruz builders work side by side, run the place together, and ship.
             </p>
-
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <div className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4" />
-                <span>420 Pacific Ave, Santa Cruz, CA</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Clock className="h-4 w-4" />
-                <span>Mon-Fri 7am-10pm, Sat-Sun 8am-8pm</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Phone className="h-4 w-4" />
-                <span>(831) 295-1482</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Mail className="h-4 w-4" />
-                <span>hello@citizenspace.com</span>
-              </div>
+            <p className={eyebrow}>819 Pacific Ave · Santa Cruz</p>
+            <p className="m-0 text-sm text-brand-mist">
+              Founding sales open {SITE.foundingSalesOpen} · Doors open {SITE.doorsOpen}
+            </p>
+            <div className="flex flex-col gap-1.5 border-t-[6px] border-brand-oak pt-3">
+              <p className={eyebrow}>A public benefit corporation</p>
+              <p className="m-0 text-sm leading-normal text-brand-mist">
+                Our public benefit:{' '}
+                {SITE.publicBenefit.charAt(0).toLowerCase() + SITE.publicBenefit.slice(1)}
+              </p>
             </div>
           </div>
-
-          {/* Navigation Sections */}
-          {footerSections.map(section => (
-            <div key={section.title}>
-              <h3 className="mb-3 font-semibold">{section.title}</h3>
-              <ul className="space-y-2">
-                {section.links.map(link => (
-                  <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                      {link.name}
-                    </Link>
-                  </li>
+          <nav
+            aria-label="Footer"
+            className="grid min-w-0 flex-[2_1_560px] grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-8"
+          >
+            {COLUMNS.map(col => (
+              <div key={col.title} className="flex flex-col gap-1">
+                <p className={`${eyebrow} mb-2`}>{col.title}</p>
+                {col.links.map(([href, label]) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className="flex min-h-[32px] items-center text-brand-bone no-underline hover:underline"
+                  >
+                    {label}
+                  </Link>
                 ))}
-              </ul>
-            </div>
-          ))}
+              </div>
+            ))}
+          </nav>
         </div>
-
-        <div className="mt-8 flex flex-col items-center justify-between border-t pt-8 sm:flex-row">
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Citizen Space. All rights reserved.
-          </p>
-          <div className="mt-4 flex space-x-4 sm:mt-0">
-            <Link
-              href="/legal/terms"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
+        <div className="flex flex-wrap justify-between gap-3 border-t border-[#2E5A4B] pt-6 text-sm text-brand-mist">
+          <p className="m-0">© 2026 {SITE.legalName} · a public benefit corporation</p>
+          <p className="m-0 flex gap-5">
+            <Link href="/legal/terms" className="text-brand-mist">
               Terms
             </Link>
-            <Link
-              href="/legal/privacy"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
+            <Link href="/legal/privacy" className="text-brand-mist">
               Privacy
             </Link>
-          </div>
+          </p>
         </div>
       </div>
     </footer>

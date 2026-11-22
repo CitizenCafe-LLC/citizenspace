@@ -1,277 +1,214 @@
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import Link from 'next/link'
-import { Search, Clock, ArrowRight, Coffee, Users, Zap } from 'lucide-react'
 import type { Metadata } from 'next'
+import Link from 'next/link'
+import { Eyebrow, Section, H1, H2, Lead, Photo } from '@/components/site/ui'
+import { getArticles, CATEGORIES, formatDate } from '@/lib/strapi/articles'
+import { NewsletterForm } from '@/components/site/newsletter-form'
+import { cn } from '@/lib/utils'
 
 export const metadata: Metadata = {
-  title: 'Blog',
+  title: 'Blog: building 819 Pacific, in public',
   description:
-    'Insights on coworking, remote work, San Francisco culture, and coffee. Stories from our community and industry thoughts.',
+    'Builder profiles, Builder Night recaps and every step of Citizen Space’s move into 819 Pacific Ave, Santa Cruz.',
+  alternates: { canonical: '/blog' },
 }
 
-const blogPosts = [
-  {
-    id: 1,
-    title: 'The Evolution of Coworking: From Necessity to Community',
-    slug: 'evolution-of-coworking',
-    excerpt:
-      'How coworking spaces have transformed from simple desk rentals to thriving communities that foster innovation and connection.',
-    content: 'Full blog post content would go here...',
-    image:
-      'https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=800',
-    author: {
-      name: 'Karsten Wade',
-      avatar: '/team/karsten.jpg',
-      bio: 'Founder & CEO of Citizen Space',
-    },
-    tags: ['Coworking', 'Community', 'Business'],
-    publishedAt: new Date('2025-01-10'),
-    readingTime: 8,
-  },
-  {
-    id: 2,
-    title: 'Coffee Culture and Productivity: The Perfect Blend',
-    slug: 'coffee-culture-productivity',
-    excerpt:
-      'Exploring the relationship between coffee culture and creative productivity in modern workspaces.',
-    content: 'Full blog post content would go here...',
-    image:
-      'https://images.pexels.com/photos/3183197/pexels-photo-3183197.jpeg?auto=compress&cs=tinysrgb&w=800',
-    author: {
-      name: 'Maria Rodriguez',
-      avatar: '/team/maria.jpg',
-      bio: 'Head of Community at Citizen Space',
-    },
-    tags: ['Coffee', 'Productivity', 'Culture'],
-    publishedAt: new Date('2025-01-08'),
-    readingTime: 6,
-  },
-  {
-    id: 3,
-    title: 'Building Remote Team Culture in Hybrid Workspaces',
-    slug: 'remote-team-culture',
-    excerpt:
-      'Strategies for maintaining strong team connections when your workforce spans home offices and coworking spaces.',
-    content: 'Full blog post content would go here...',
-    image:
-      'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800',
-    author: {
-      name: 'James Kim',
-      avatar: '/team/james.jpg',
-      bio: 'Community Manager',
-    },
-    tags: ['Remote Work', 'Team Building', 'Hybrid'],
-    publishedAt: new Date('2025-01-05'),
-    readingTime: 10,
-  },
-  {
-    id: 4,
-    title: "San Francisco's Entrepreneurial Renaissance",
-    slug: 'sf-entrepreneurial-renaissance',
-    excerpt:
-      'How the post-pandemic landscape has created new opportunities for startups and independent workers in SF.',
-    content: 'Full blog post content would go here...',
-    image:
-      'https://images.pexels.com/photos/3183153/pexels-photo-3183153.jpeg?auto=compress&cs=tinysrgb&w=800',
-    author: {
-      name: 'Karsten Wade',
-      avatar: '/team/karsten.jpg',
-      bio: 'Founder & CEO of Citizen Space',
-    },
-    tags: ['San Francisco', 'Entrepreneurship', 'Startups'],
-    publishedAt: new Date('2025-01-02'),
-    readingTime: 7,
-  },
+export const revalidate = 300
+
+const SERIES = [
+  ['Part 1 · Dec 2026', 'Founding sales open', '#9E5640'],
+  ['Part 2 · Jan 2027', 'We get the keys', '#1F3D33'],
+  ['Part 3 · Feb 2027', 'Paint, light and the studio', '#6F8063'],
+  ['Part 4 · Mar 2027', 'Opening day', '#B08A5E'],
 ]
 
-const categories = [
-  { id: 'coworking', name: 'Coworking', icon: Users, count: 8 },
-  { id: 'remote-work', name: 'Remote Work', icon: Zap, count: 12 },
-  { id: 'coffee-culture', name: 'Coffee Culture', icon: Coffee, count: 6 },
-  { id: 'san-francisco', name: 'San Francisco', icon: Users, count: 4 },
-]
+export default async function BlogPage({
+  searchParams,
+}: {
+  searchParams: { category?: string; page?: string }
+}) {
+  const category = CATEGORIES.some(c => c.slug === searchParams.category)
+    ? searchParams.category
+    : undefined
+  const page = Math.max(1, Number(searchParams.page) || 1)
+  const { articles, pageCount } = await getArticles({ category, page, pageSize: 12 })
+  const featured = !category && page === 1 ? articles.find(a => a.featured) : undefined
+  const list = featured ? articles.filter(a => a !== featured) : articles
+  const href = (p: { category?: string; page?: number }) => {
+    const q = new URLSearchParams()
+    if (p.category) {
+      q.set('category', p.category)
+    }
+    if (p.page && p.page > 1) {
+      q.set('page', String(p.page))
+    }
+    const s = q.toString()
+    return s ? `/blog?${s}` : '/blog'
+  }
 
-export default function BlogPage() {
   return (
-    <div className="py-12">
-      {/* Hero Section */}
-      <section className="pb-20">
-        <div className="container">
-          <div className="mx-auto max-w-4xl text-center">
-            <Badge variant="secondary" className="mb-6">
-              Blog & Insights
-            </Badge>
-            <h1 className="mb-6 font-display text-4xl font-bold lg:text-6xl">
-              Stories from Our <span className="gradient-text">Community</span>
-            </h1>
-            <p className="mb-8 text-xl text-muted-foreground">
-              Insights on coworking, remote work, Santa Cruz culture, and the intersection of coffee
-              and creativity. Written by our team and community members.
-            </p>
+    <>
+      <Section innerClassName="flex-row flex-wrap items-end justify-between gap-8 pb-10 md:pb-10">
+        <div className="flex min-w-0 flex-[1_1_560px] flex-col gap-4">
+          <Eyebrow>Stories from the space</Eyebrow>
+          <H1 className="max-w-[860px]">Building 819 Pacific, in public.</H1>
+          <Lead>
+            Builder profiles, Builder Night recaps, and every step of the move into our permanent
+            home.
+          </Lead>
+        </div>
+      </Section>
 
-            {/* Search Bar */}
-            <div className="relative mx-auto max-w-md">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
-              <Input placeholder="Search articles..." className="pl-10" />
-            </div>
-          </div>
+      <section aria-label="Categories" className="bg-brand-paper">
+        <div className="mx-auto flex max-w-[1280px] flex-wrap gap-2 px-4 pb-10 sm:px-8">
+          {[{ name: 'All posts', slug: undefined, color: '#1E2422' }, ...CATEGORIES].map(c => {
+            const active = c.slug === category
+            return (
+              <Link
+                key={c.name}
+                href={href({ category: c.slug })}
+                aria-current={active ? 'page' : undefined}
+                className={cn(
+                  'inline-flex min-h-[44px] items-center gap-2 rounded-full border-2 px-4 text-[15px] font-semibold no-underline',
+                  active
+                    ? 'border-brand-forest bg-brand-forest text-brand-bone'
+                    : 'border-brand-hairline bg-brand-paper text-brand-ink'
+                )}
+              >
+                <span
+                  aria-hidden
+                  className="h-2.5 w-2.5 rounded-full"
+                  style={{ background: c.color }}
+                />
+                {c.name}
+              </Link>
+            )
+          })}
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="pb-12">
-        <div className="container">
-          <div className="mx-auto max-w-6xl">
-            <h2 className="mb-8 text-center font-display text-2xl font-bold">Browse by Category</h2>
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-              {categories.map(category => (
-                <Card key={category.id} className="card-hover cursor-pointer">
-                  <CardContent className="p-6 text-center">
-                    <category.icon className="mx-auto mb-3 h-8 w-8 text-cs-blue" />
-                    <h3 className="mb-1 font-semibold">{category.name}</h3>
-                    <p className="text-sm text-muted-foreground">{category.count} articles</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+      {featured && (
+        <section aria-label="Featured post" className="bg-brand-paper">
+          <div className="mx-auto max-w-[1280px] px-4 pb-14 sm:px-8">
+            <Link
+              href={`/blog/${featured.slug}`}
+              className="flex flex-wrap items-center gap-10 rounded-3xl bg-brand-bone p-6 text-brand-ink no-underline"
+            >
+              <div className="min-w-0 flex-[1.4_1_520px]">
+                <Photo src={featured.cover.src} alt={featured.cover.alt} ratio="16 / 9" priority />
+              </div>
+              <div className="flex min-w-0 flex-[1_1_340px] flex-col gap-3.5 py-2 pr-2">
+                <Eyebrow>
+                  Featured ·{' '}
+                  <span style={{ color: featured.category.color }}>{featured.category.name}</span>
+                </Eyebrow>
+                <h2 className="m-0 font-display text-[36px] font-semibold leading-[1.08] md:text-[44px]">
+                  {featured.title}
+                </h2>
+                <p className="m-0 text-[17px] text-brand-muted">{featured.excerpt}</p>
+                <p className="m-0 text-[15px] text-brand-muted">
+                  <strong className="text-brand-ink">{featured.author.name}</strong> ·{' '}
+                  {formatDate(featured.publishedAt)} · {featured.readingTime} min read
+                </p>
+                <span className="font-bold text-brand-brick">Read the story →</span>
+              </div>
+            </Link>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* Featured Post */}
-      <section className="pb-12">
-        <div className="container">
-          <div className="mx-auto max-w-6xl">
-            <h2 className="mb-8 font-display text-2xl font-bold">Featured Article</h2>
-            <Card className="card-hover overflow-hidden">
-              <div className="grid grid-cols-1 lg:grid-cols-2">
-                <div className="aspect-video lg:aspect-square">
-                  <img
-                    src={blogPosts[0].image}
-                    alt={blogPosts[0].title}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="p-8">
-                  <div className="mb-4 flex gap-2">
-                    {blogPosts[0].tags.map(tag => (
-                      <Badge key={tag} variant="secondary">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                  <h3 className="mb-4 font-display text-2xl font-bold">
-                    <Link href={`/blog/${blogPosts[0].slug}`} className="hover:text-cs-blue">
-                      {blogPosts[0].title}
+      <Section aria-labelledby="latest" innerClassName="gap-8 pt-0 md:pt-0">
+        <H2 id="latest" className="md:text-[30px]">
+          {category ? CATEGORIES.find(c => c.slug === category)!.name : 'Latest posts'}
+        </H2>
+        {list.length === 0 ? (
+          <p className="m-0 text-[17px] text-brand-muted">
+            No posts here yet. Check back soon, or subscribe below.
+          </p>
+        ) : (
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,340px),1fr))] gap-x-7 gap-y-12">
+            {list.map(a => (
+              <article key={a.slug} className="flex flex-col gap-3.5">
+                <Link href={`/blog/${a.slug}`} className="block">
+                  <Photo src={a.cover.src} alt={a.cover.alt} ratio="3 / 2" />
+                </Link>
+                <div
+                  className="flex flex-col gap-2 border-t-[6px] pt-3.5"
+                  style={{ borderTopColor: a.category.color }}
+                >
+                  <Eyebrow>{a.category.name}</Eyebrow>
+                  <h3 className="m-0 text-[22px] font-bold leading-tight">
+                    <Link
+                      href={`/blog/${a.slug}`}
+                      className="text-brand-ink no-underline hover:text-brand-brick"
+                    >
+                      {a.title}
                     </Link>
                   </h3>
-                  <p className="mb-6 text-muted-foreground">{blogPosts[0].excerpt}</p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={blogPosts[0].author.avatar} />
-                        <AvatarFallback>
-                          {blogPosts[0].author.name
-                            .split(' ')
-                            .map(n => n[0])
-                            .join('')}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="text-sm font-semibold">{blogPosts[0].author.name}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {blogPosts[0].publishedAt.toLocaleDateString()}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Clock className="mr-1 h-4 w-4" />
-                      {blogPosts[0].readingTime} min read
-                    </div>
-                  </div>
+                  <p className="m-0 text-base text-brand-muted">{a.excerpt}</p>
+                  <p className="m-0 mt-1 text-sm text-brand-muted">
+                    {formatDate(a.publishedAt)} · {a.readingTime} min read
+                  </p>
                 </div>
-              </div>
-            </Card>
+              </article>
+            ))}
           </div>
-        </div>
-      </section>
+        )}
+        {pageCount > 1 && (
+          <nav aria-label="Pagination" className="flex justify-center gap-2 pt-4">
+            {Array.from({ length: pageCount }, (_, i) => i + 1).map(p => (
+              <Link
+                key={p}
+                href={href({ category, page: p })}
+                aria-current={p === page ? 'page' : undefined}
+                className={cn(
+                  'inline-flex h-11 min-w-[44px] items-center justify-center rounded-xl font-bold no-underline',
+                  p === page
+                    ? 'bg-brand-forest text-brand-bone'
+                    : 'border border-brand-hairline text-brand-ink'
+                )}
+              >
+                {p}
+              </Link>
+            ))}
+          </nav>
+        )}
+      </Section>
 
-      {/* Recent Posts */}
-      <section className="pb-20">
-        <div className="container">
-          <div className="mx-auto max-w-6xl">
-            <h2 className="mb-8 font-display text-2xl font-bold">Recent Articles</h2>
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {blogPosts.slice(1).map(post => (
-                <Card key={post.id} className="card-hover overflow-hidden">
-                  <div className="aspect-video">
-                    <img src={post.image} alt={post.title} className="h-full w-full object-cover" />
-                  </div>
-                  <CardHeader className="pb-4">
-                    <div className="mb-2 flex gap-2">
-                      {post.tags.slice(0, 2).map(tag => (
-                        <Badge key={tag} variant="outline" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                    <CardTitle className="font-display text-lg">
-                      <Link href={`/blog/${post.slug}`} className="hover:text-cs-blue">
-                        {post.title}
-                      </Link>
-                    </CardTitle>
-                    <CardDescription>{post.excerpt}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center space-x-2">
-                        <Avatar className="h-6 w-6">
-                          <AvatarImage src={post.author.avatar} />
-                          <AvatarFallback className="text-xs">
-                            {post.author.name
-                              .split(' ')
-                              .map(n => n[0])
-                              .join('')}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="text-muted-foreground">{post.author.name}</span>
-                      </div>
-                      <div className="flex items-center text-muted-foreground">
-                        <Clock className="mr-1 h-3 w-3" />
-                        {post.readingTime} min
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
+      <Section tone="bone" aria-labelledby="series" innerClassName="gap-8">
+        <div className="flex max-w-[720px] flex-col gap-2">
+          <Eyebrow>A series · Building 819 Pacific</Eyebrow>
+          <H2 id="series">From keys to opening day</H2>
+          <p className="m-0 text-[17px] text-brand-muted">
+            One post per milestone, December through March.
+          </p>
         </div>
-      </section>
+        <ol className="m-0 grid list-none grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6 p-0">
+          {SERIES.map(([when, title, color]) => (
+            <li key={title} className="border-t-[6px] pt-3.5" style={{ borderTopColor: color }}>
+              <p className="m-0 text-[13px] font-bold uppercase tracking-[2.5px] text-brand-muted">
+                {when}
+              </p>
+              <p className="m-0 mt-1.5 text-[19px] font-bold">{title}</p>
+            </li>
+          ))}
+        </ol>
+      </Section>
 
-      {/* Newsletter CTA */}
-      <section className="bg-muted/30 py-20">
-        <div className="container">
-          <div className="mx-auto max-w-4xl text-center">
-            <h2 className="mb-6 font-display text-3xl font-bold lg:text-4xl">Stay in the Loop</h2>
-            <p className="mb-8 text-xl text-muted-foreground">
-              Get our latest articles, community updates, and event announcements delivered to your
-              inbox monthly.
-            </p>
-            <div className="mx-auto flex max-w-md flex-col justify-center gap-4 sm:flex-row">
-              <Input placeholder="Your email address" className="flex-1" />
-              <Button className="btn-primary">
-                Subscribe
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+      <Section
+        tone="forest"
+        aria-labelledby="nl"
+        innerClassName="flex-row flex-wrap items-end justify-between gap-8 py-20 md:py-20"
+      >
+        <div className="flex min-w-0 flex-[1_1_360px] flex-col gap-2">
+          <H2 id="nl" onDark>
+            Get new posts by email.
+          </H2>
+          <p className="m-0 text-[17px] text-brand-mist">
+            Founding sales, Builder Night and the move. About once a month.
+          </p>
         </div>
-      </section>
-    </div>
+        <NewsletterForm />
+      </Section>
+    </>
   )
 }

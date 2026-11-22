@@ -1,200 +1,106 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
+import { useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from '@/components/ui/navigation-menu'
-import { Menu, Coffee, Users, Calendar, Camera, MapPin, Phone, Wallet } from 'lucide-react'
 
-const navigation = [
-  { name: 'Cafe', href: '/cafe' },
-  {
-    name: 'Workspaces',
-    href: '/workspaces',
-    children: [
-      { name: 'Desks', href: '/workspaces/desks', description: 'Hourly & daily workspace options' },
-      {
-        name: 'Meeting Rooms',
-        href: '/workspaces/meeting-rooms',
-        description: 'Private rooms for teams',
-      },
-      {
-        name: 'Communications Pods',
-        href: '/workspaces/communications-pods',
-        description: 'Private phone booths',
-      },
-    ],
-  },
-  { name: 'Membership', href: '/membership' },
-  { name: 'Events', href: '/events' },
-  { name: 'Gallery', href: '/gallery' },
-  { name: 'Blog', href: '/blog' },
-  { name: 'Location', href: '/location' },
-  { name: 'Contact', href: '/contact' },
+export const NAV_LINKS = [
+  { href: '/cafe', label: 'Cafe' },
+  { href: '/workspaces', label: 'Workspaces' },
+  { href: '/membership', label: 'Membership' },
+  { href: '/events', label: 'Events' },
+  { href: '/gallery', label: 'Gallery' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/location', label: 'Location' },
+  { href: '/contact', label: 'Contact' },
 ]
 
 export function Navigation() {
-  const pathname = usePathname()
-  const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname() ?? '/'
+  const [open, setOpen] = useState(false)
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`)
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center space-x-2">
-          <Coffee className="h-8 w-8 text-cs-blue" />
-          <span className="font-display text-xl font-bold">Citizen Space</span>
+    <header className="sticky top-0 z-40 border-b border-brand-hairline bg-brand-paper/95 backdrop-blur">
+      <div className="mx-auto flex min-h-[80px] max-w-[1280px] items-center justify-between gap-6 px-4 sm:px-8">
+        <Link href="/" aria-label="Citizen Space home" className="flex min-h-[44px] items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/brand/logos/logo-primary.png"
+            alt="Citizen Space · Santa Cruz Builder Lab"
+            className="h-10 w-auto md:h-12"
+          />
         </Link>
 
-        {/* Desktop Navigation */}
-        <NavigationMenu className="hidden lg:flex">
-          <NavigationMenuList>
-            {navigation.map(item => (
-              <NavigationMenuItem key={item.name}>
-                {item.children ? (
-                  <>
-                    <NavigationMenuTrigger className="bg-transparent">
-                      {item.name}
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <ul className="grid w-[400px] gap-3 p-4">
-                        {item.children.map(child => (
-                          <li key={child.name}>
-                            <NavigationMenuLink asChild>
-                              <Link
-                                href={child.href}
-                                className={cn(
-                                  'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
-                                  pathname === child.href && 'bg-accent text-accent-foreground'
-                                )}
-                              >
-                                <div className="text-sm font-medium leading-none">{child.name}</div>
-                                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                                  {child.description}
-                                </p>
-                              </Link>
-                            </NavigationMenuLink>
-                          </li>
-                        ))}
-                      </ul>
-                    </NavigationMenuContent>
-                  </>
-                ) : (
-                  <Link href={item.href} legacyBehavior passHref>
-                    <NavigationMenuLink
-                      className={cn(
-                        'group inline-flex h-9 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50',
-                        pathname === item.href && 'bg-accent text-accent-foreground'
-                      )}
-                    >
-                      {item.name}
-                    </NavigationMenuLink>
-                  </Link>
-                )}
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
-
-        <div className="flex items-center space-x-4">
-          <Button asChild variant="ghost" className="hidden md:inline-flex">
-            <Link href="#" target="_blank" rel="noopener noreferrer">
-              <Wallet className="mr-2 h-4 w-4" />
-              Connect Wallet
+        <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
+          {NAV_LINKS.map(l => (
+            <Link
+              key={l.href}
+              href={l.href}
+              aria-current={isActive(l.href) ? 'page' : undefined}
+              className={cn(
+                'inline-flex min-h-[44px] items-center border-b-2 px-3 text-[15px] font-semibold no-underline',
+                isActive(l.href)
+                  ? 'border-brand-brick text-brand-brick'
+                  : 'border-transparent text-brand-ink hover:text-brand-brick'
+              )}
+            >
+              {l.label}
             </Link>
-          </Button>
+          ))}
+        </nav>
 
-          <Button asChild className="btn-primary hidden sm:inline-flex">
-            <Link href="/booking">Book Now</Link>
-          </Button>
-
-          {/* Mobile Navigation */}
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild className="lg:hidden">
-              <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-80">
-              <SheetTitle className="sr-only">Citizen Space Mobile Navigation</SheetTitle>
-              <div className="mt-4 flex flex-col space-y-4">
-                <Link
-                  href="/"
-                  className="flex items-center space-x-2 border-b pb-4"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <Coffee className="h-6 w-6 text-cs-blue" />
-                  <span className="font-display text-lg font-bold">Citizen Space</span>
-                </Link>
-
-                <nav className="flex flex-col space-y-2">
-                  {navigation.map(item => (
-                    <div key={item.name}>
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          'block rounded-md px-2 py-2 text-sm font-medium transition-colors hover:bg-accent',
-                          pathname === item.href && 'bg-accent text-accent-foreground'
-                        )}
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {item.name}
-                      </Link>
-                      {item.children && (
-                        <div className="ml-4 mt-2 space-y-1">
-                          {item.children.map(child => (
-                            <Link
-                              key={child.name}
-                              href={child.href}
-                              className={cn(
-                                'block rounded-md px-2 py-1 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground',
-                                pathname === child.href && 'bg-accent text-accent-foreground'
-                              )}
-                              onClick={() => setIsOpen(false)}
-                            >
-                              {child.name}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </nav>
-
-                <div className="border-t pt-4">
-                  <Button asChild variant="outline" className="w-full">
-                    <Link
-                      href="#"
-                      onClick={() => setIsOpen(false)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Wallet className="mr-2 h-4 w-4" />
-                      Connect Wallet
-                    </Link>
-                  </Button>
-
-                  <Button asChild className="btn-primary w-full">
-                    <Link href="/booking" onClick={() => setIsOpen(false)}>
-                      Book Now
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/membership"
+            className="hidden min-h-[44px] items-center rounded-xl bg-brand-brick px-5 text-[15px] font-bold text-brand-bone no-underline hover:bg-[#87493A] sm:inline-flex"
+          >
+            Join the Founding 50
+          </Link>
+          <button
+            type="button"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-brand-ink lg:hidden"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            onClick={() => setOpen(o => !o)}
+          >
+            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
       </div>
+
+      {open && (
+        <nav
+          id="mobile-nav"
+          aria-label="Mobile"
+          className="border-t border-brand-hairline bg-brand-paper px-4 pb-4 lg:hidden"
+        >
+          {NAV_LINKS.map(l => (
+            <Link
+              key={l.href}
+              href={l.href}
+              onClick={() => setOpen(false)}
+              aria-current={isActive(l.href) ? 'page' : undefined}
+              className={cn(
+                'flex min-h-[48px] items-center text-lg font-semibold no-underline',
+                isActive(l.href) ? 'text-brand-brick' : 'text-brand-ink'
+              )}
+            >
+              {l.label}
+            </Link>
+          ))}
+          <Link
+            href="/membership"
+            onClick={() => setOpen(false)}
+            className="mt-2 flex min-h-[48px] items-center justify-center rounded-xl bg-brand-brick font-bold text-brand-bone no-underline"
+          >
+            Join the Founding 50
+          </Link>
+        </nav>
+      )}
     </header>
   )
 }

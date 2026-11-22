@@ -1,205 +1,104 @@
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Coffee, Smartphone, Clock, MapPin, ArrowRight } from 'lucide-react'
 import type { Metadata } from 'next'
+import { Eyebrow, Section, H1, H2, RuleCard } from '@/components/site/ui'
+import { CafeMenu } from '@/components/site/cafe-menu'
+import { ZACHARYS_HOURS } from '@/lib/site/content'
 
 export const metadata: Metadata = {
-  title: 'Cafe',
+  title: 'Cafe: the member menu from Zachary’s, delivered to your desk',
   description:
-    'Premium coffee, fresh pastries, and light meals in our welcoming cafe space. Order from your seat with our app.',
+    'Citizen Space members order breakfast and lunch from Zachary’s, downstairs at 819 Pacific Ave since 1985, and it comes up to their seat. Tue–Sun 7am–2:30pm.',
+  alternates: { canonical: '/cafe' },
 }
-
-const highlights = [
-  {
-    title: 'Artisan Coffee',
-    description: 'Sourced from local roasters with single-origin options and house blends',
-    icon: Coffee,
-  },
-  {
-    title: 'Fresh Daily',
-    description: 'Pastries and light meals made fresh every morning by local partners',
-    icon: Clock,
-  },
-  {
-    title: 'Order from Your Seat',
-    description: 'Use our mobile app to order without leaving your workspace',
-    icon: Smartphone,
-  },
-]
-
-const todaysSpecials = [
-  {
-    name: 'Ethiopian Yirgacheffe',
-    description: 'Single-origin with bright citrus notes and floral aroma',
-    price: '$4.50',
-    badge: "Today's Brew",
-  },
-  {
-    name: 'Almond Croissant',
-    description: 'Buttery pastry with almond cream from Arsicault Bakery',
-    price: '$3.75',
-    badge: 'Fresh Today',
-  },
-  {
-    name: 'Avocado Toast',
-    description: 'Sourdough with smashed avocado, radish, and everything seasoning',
-    price: '$12.00',
-    badge: 'Local Favorite',
-  },
-]
 
 export default function CafePage() {
   return (
-    <div className="py-12">
-      {/* Hero Section */}
-      <section className="pb-20">
-        <div className="container">
-          <div className="mx-auto max-w-4xl text-center">
-            <Badge variant="secondary" className="mb-6">
-              Cafe & Kitchen
-            </Badge>
-            <h1 className="mb-6 font-display text-4xl font-bold lg:text-6xl">
-              Great Coffee, <span className="gradient-text">Great Community</span>
-            </h1>
-            <p className="mb-8 text-xl text-muted-foreground">
-              Start your day with expertly crafted coffee and fresh food from local artisans.
-              Whether you're grabbing and going or settling in to work, we've got you covered.
+    <>
+      <Section tone="forest" aria-labelledby="k-title" innerClassName="gap-10 pt-16 md:pt-20">
+        <div className="flex max-w-[820px] flex-col gap-4">
+          <Eyebrow onDark>Cafe · Kitchen pantry · Member menu</Eyebrow>
+          <H1 id="k-title" onDark>
+            Breakfast from downstairs, brought to your desk.
+          </H1>
+          <p className="m-0 text-[22px] leading-snug text-brand-mist">
+            Zachary’s has cooked on this block since 1985, right below us at 819 Pacific. Order from
+            the member menu here and it comes up to you in the space.
+          </p>
+          <div className="flex flex-wrap gap-x-7 gap-y-3 text-[15px] text-brand-mist">
+            <span>
+              <strong className="text-brand-bone">Kitchen hours</strong> · {ZACHARYS_HOURS}
+            </span>
+            <span>
+              <strong className="text-brand-bone">Coffee bar</strong> · open to members whenever the
+              space is
+            </span>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-6">
+          {[
+            [
+              '/brand/photos/14-kitchen-utility.jpg',
+              'The kitchen pantry today: tile floor, old sink, exposed conduit',
+              'Today.',
+              'Tile floor, plumbing in place, wiring to tidy.',
+            ],
+            [
+              '/brand/renderings/kitchen-pantry.jpg',
+              'Rendering of the planned kitchen pantry: terracotta tile backsplash, oak cabinets, new sink and dishwasher, espresso machine, fridge, globe pendants and a chalkboard menu',
+              'The plan.',
+              'Terracotta tile, oak cabinets, a new sink and dishwasher, the coffee bar and a chalkboard menu.',
+            ],
+          ].map(([src, alt, lead, rest]) => (
+            <figure key={src} className="m-0 flex min-w-0 flex-[1_1_380px] flex-col gap-2.5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={src}
+                alt={alt}
+                className="w-full rounded-3xl object-cover"
+                style={{ aspectRatio: '4 / 3' }}
+              />
+              <figcaption className="text-[15px] text-brand-mist">
+                <strong className="text-brand-bone">{lead}</strong> {rest}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </Section>
+
+      <Section id="menu" aria-labelledby="menu-h" className="scroll-mt-24" innerClassName="gap-8">
+        <div className="flex flex-col items-center gap-2 text-center">
+          <Eyebrow>The member menu · from Zachary’s</Eyebrow>
+          <H2 id="menu-h" className="md:text-[56px]">
+            Menu
+          </H2>
+          <p className="m-0 max-w-[640px] text-[17px] text-brand-muted">
+            Everything homemade, from the three house breads to the sourdough pancakes. Add what you
+            want, pick your seat, and send the order.
+          </p>
+        </div>
+        <CafeMenu />
+      </Section>
+
+      <Section tone="bone" aria-labelledby="k-in" innerClassName="gap-10">
+        <H2 id="k-in">The kitchen pantry</H2>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-8">
+          <RuleCard color="#C8734F" title="Coffee bar">
+            <p className="m-0 text-[17px] text-brand-muted">
+              Espresso and drip for members, any time the space is open.
             </p>
-            <div className="flex flex-col justify-center gap-4 sm:flex-row">
-              <Button asChild size="lg" className="btn-primary">
-                <Link href="/cafe/menu">
-                  View Full Menu
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/app">Download App</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Highlights */}
-      <section className="bg-muted/30 py-20">
-        <div className="container">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            {highlights.map((highlight, index) => (
-              <Card key={index} className="text-center">
-                <CardHeader>
-                  <div className="mx-auto mb-4 rounded-full bg-primary/10 p-3">
-                    <highlight.icon className="h-8 w-8 text-primary" />
-                  </div>
-                  <CardTitle className="font-display text-xl">{highlight.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">{highlight.description}</CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Today's Specials */}
-      <section className="py-20">
-        <div className="container">
-          <div className="mb-16 text-center">
-            <h2 className="mb-4 font-display text-3xl font-bold lg:text-4xl">Today's Specials</h2>
-            <p className="text-lg text-muted-foreground">
-              Fresh selections that change daily, featuring seasonal ingredients and local
-              partnerships
+          </RuleCard>
+          <RuleCard color="#9E5640" title="New sink and dishwasher">
+            <p className="m-0 text-[17px] text-brand-muted">Rinse it, load it, done.</p>
+          </RuleCard>
+          <RuleCard color="#1F3D33" title="Fridge">
+            <p className="m-0 text-[17px] text-brand-muted">Bring lunch. Label it.</p>
+          </RuleCard>
+          <RuleCard color="#6F8063" title="On the bounty board">
+            <p className="m-0 text-[17px] text-brand-muted">
+              Restocking and the weekly clean, picked up by members for credits.
             </p>
-          </div>
-
-          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-3">
-            {todaysSpecials.map((item, index) => (
-              <Card key={index} className="card-hover">
-                <CardHeader>
-                  <div className="mb-2 flex items-start justify-between">
-                    <Badge variant="secondary">{item.badge}</Badge>
-                    <span className="text-lg font-bold text-cs-blue">{item.price}</span>
-                  </div>
-                  <CardTitle className="font-display text-xl">{item.name}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">{item.description}</CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          </RuleCard>
         </div>
-      </section>
-
-      {/* App Ordering CTA */}
-      <section className="bg-gradient-to-r from-cs-blue/10 to-cs-sun/10 py-20">
-        <div className="container">
-          <div className="mx-auto max-w-4xl text-center">
-            <div className="mb-8">
-              <Smartphone className="mx-auto mb-6 h-16 w-16 text-cs-blue" />
-              <h2 className="mb-4 font-display text-3xl font-bold lg:text-4xl">
-                Order from Your Seat
-              </h2>
-              <p className="text-xl text-muted-foreground">
-                Skip the line and get your coffee delivered right to your workspace. Perfect for
-                those deep focus sessions when you can't break concentration.
-              </p>
-            </div>
-
-            <div className="flex flex-col justify-center gap-4 sm:flex-row">
-              <Button asChild size="lg" className="btn-primary">
-                <Link href="/app">Download Our App</Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/cafe/menu">Browse Menu First</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Quick Links */}
-      <section className="py-20">
-        <div className="container">
-          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
-            <Card className="card-hover">
-              <Link href="/cafe/menu">
-                <CardHeader>
-                  <CardTitle className="flex items-center font-display text-2xl">
-                    Full Menu
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Explore our complete selection of coffee, tea, pastries, and light meals with
-                    prices and dietary information.
-                  </p>
-                </CardContent>
-              </Link>
-            </Card>
-
-            <Card className="card-hover">
-              <Link href="/cafe/partners">
-                <CardHeader>
-                  <CardTitle className="flex items-center font-display text-2xl">
-                    Our Partners
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Meet the local roasters, bakeries, and artisans who help us create an authentic
-                    San Francisco cafe experience.
-                  </p>
-                </CardContent>
-              </Link>
-            </Card>
-          </div>
-        </div>
-      </section>
-    </div>
+      </Section>
+    </>
   )
 }
