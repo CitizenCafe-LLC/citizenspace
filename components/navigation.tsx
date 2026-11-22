@@ -54,7 +54,10 @@ export function Navigation() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <div className="hidden sm:block">
+          <div
+            className="hidden sm:block"
+            title="Members connect a wallet to use their founding membership NFT key — see Membership for details"
+          >
             <WalletConnectButton />
           </div>
           <Link
@@ -103,6 +106,9 @@ export function Navigation() {
           >
             Join the Founding 50
           </Link>
+          <p className="mt-4 text-sm text-brand-muted">
+            Members connect a wallet to use their founding membership NFT key.
+          </p>
           <div className="mt-2">
             <WalletConnectButton />
           </div>
