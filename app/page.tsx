@@ -13,6 +13,16 @@ import {
 } from '@/components/site/ui'
 import { HERO_SLIDES, ZONES, MEMBERSHIP_RATES, SITE } from '@/lib/site/content'
 
+// Forces this route to render per-request instead of being statically
+// exported at build time. Root-caused: Next.js 13.5.1's static-export
+// worker pool wrote /app's rendered HTML into this route's index.html on
+// Railway's build infra (confirmed byte-for-byte on the deployed
+// container — /.next/server/app/index.html literally contained /app's
+// <title> and body), while the compiled page.js module itself was always
+// correct. Forcing dynamic rendering skips that broken static-export path
+// entirely.
+export const dynamic = 'force-dynamic'
+
 const rate = (name: string) => MEMBERSHIP_RATES.find(r => r.name === name)!
 
 export default function HomePage() {
