@@ -288,7 +288,7 @@ export function mapStrapiArticle(raw: Raw, base: string): Article {
 }
 
 export function articlesQuery(
-  opts: { page?: number; pageSize?: number; category?: string; slug?: string } = {}
+  opts: { page?: number; pageSize?: number; category?: string; slug?: string; q?: string } = {}
 ) {
   const p = new URLSearchParams()
   p.set('sort[0]', 'publishedAt:desc')
@@ -302,6 +302,10 @@ export function articlesQuery(
   }
   if (opts.category) {
     p.set('filters[category][slug][$eq]', opts.category)
+  }
+  if (opts.q) {
+    p.set('filters[$or][0][title][$containsi]', opts.q)
+    p.set('filters[$or][1][excerpt][$containsi]', opts.q)
   }
   p.set('pagination[page]', String(opts.page ?? 1))
   p.set('pagination[pageSize]', String(opts.pageSize ?? 9))
@@ -323,11 +327,16 @@ async function strapiFetch(query: string): Promise<Raw> {
 }
 
 export async function getArticles(
-  opts: { page?: number; pageSize?: number; category?: string } = {}
+  opts: { page?: number; pageSize?: number; category?: string; q?: string } = {}
 ): Promise<ArticleList> {
   const base = process.env.STRAPI_URL
   if (!base) {
-    const all = SAMPLE_ARTICLES.filter(a => !opts.category || a.category.slug === opts.category)
+    const q = opts.q?.trim().toLowerCase()
+    const all = SAMPLE_ARTICLES.filter(
+      a =>
+        (!opts.category || a.category.slug === opts.category) &&
+        (!q || `${a.title} ${a.excerpt}`.toLowerCase().includes(q))
+    )
     return { articles: all, page: 1, pageCount: 1, total: all.length }
   }
   const json = await strapiFetch(articlesQuery(opts))

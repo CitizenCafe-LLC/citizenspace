@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { HeroCarousel } from '@/components/site/hero-carousel'
+import { SwipeRow } from '@/components/site/swipe-row'
 import {
   Eyebrow,
   Section,
@@ -32,7 +33,7 @@ export default function HomePage() {
         aria-label="Welcome"
         className="relative overflow-hidden bg-brand-forest text-brand-bone"
       >
-        <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-14 px-4 pb-20 pt-16 sm:px-8 md:pt-20">
+        <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-8 px-4 pb-12 pt-8 sm:px-8 md:gap-14 md:pb-20 md:pt-20">
           <div className="relative z-10 flex min-w-0 flex-[1_1_420px] flex-col gap-6">
             <Eyebrow onDark>Santa Cruz Builder Lab · 819 Pacific Ave</Eyebrow>
             <H1 onDark className="md:text-[72px]">
@@ -42,7 +43,7 @@ export default function HomePage() {
               Exposed brick, skylights, a gas fireplace and a chandelier. Run by the people who use
               it.
             </Lead>
-            <div className="mt-2 flex flex-wrap gap-3">
+            <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <ButtonLink href="/membership">Join the Founding 50</ButtonLink>
               <ButtonLink href="/contact" variant="outlineLight">
                 Book a tour
@@ -51,7 +52,13 @@ export default function HomePage() {
             <p className="m-0 mt-2 text-sm text-brand-mist">
               Founding sales open {SITE.foundingSalesOpen} · Doors open {SITE.doorsOpen}
             </p>
-            <svg width="300" height="72" viewBox="0 0 300 72" aria-hidden className="mt-4">
+            <svg
+              width="300"
+              height="72"
+              viewBox="0 0 300 72"
+              aria-hidden
+              className="mt-4 hidden sm:block"
+            >
               <rect x="0" y="16" width="160" height="40" rx="20" fill="#9E5640" />
               <rect x="120" y="28" width="120" height="40" rx="20" fill="#B08A5E" />
               <rect x="210" y="8" width="90" height="40" rx="20" fill="#6F8063" />
@@ -71,7 +78,7 @@ export default function HomePage() {
           <Eyebrow>The Founding 50</Eyebrow>
           <H2 id="f50">Join early, move in early.</H2>
         </div>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-8">
+        <SwipeRow label="The Founding 50 at a glance">
           <RuleCard color="#9E5640">
             <p className="m-0 font-display text-[56px] font-semibold leading-none">$1,000</p>
             <p className="m-0 text-[17px] text-brand-muted">Once, or 3 payments of $333.</p>
@@ -86,9 +93,9 @@ export default function HomePage() {
             <p className="m-0 font-display text-[56px] font-semibold leading-none">Only 50</p>
             <p className="m-0 text-[17px] text-brand-muted">Sales open {SITE.foundingSalesOpen}.</p>
           </RuleCard>
-        </div>
+        </SwipeRow>
         <div className="flex flex-col gap-3">
-          <dl className="m-0 grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-6 rounded-3xl bg-brand-bone p-7">
+          <dl className="m-0 grid grid-cols-2 gap-5 rounded-3xl bg-brand-bone p-5 md:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] md:gap-6 md:p-7">
             {[
               ['Day pass', usd(rate('Day pass').founding)],
               ['10-day flex', `${usd(rate('10-day flex').founding)}/mo`],
@@ -100,7 +107,9 @@ export default function HomePage() {
             ].map(([k, v]) => (
               <div key={k}>
                 <dt className="text-sm text-brand-muted">{k}</dt>
-                <dd className="m-0 mt-1 font-display text-[30px] font-semibold">{v}</dd>
+                <dd className="m-0 mt-1 font-display text-[26px] font-semibold md:text-[30px]">
+                  {v}
+                </dd>
               </div>
             ))}
           </dl>
@@ -129,7 +138,11 @@ export default function HomePage() {
             All workspaces →
           </Link>
         </div>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-x-6 gap-y-8">
+        <SwipeRow
+          label="Rooms"
+          gridClassName="md:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] md:gap-x-6 md:gap-y-8"
+          itemClassName="basis-[72%]"
+        >
           {ZONES.map(z => (
             <Link
               key={z.id}
@@ -144,14 +157,14 @@ export default function HomePage() {
           ))}
           <Link
             href="/workspaces"
-            className="flex min-h-[260px] flex-col justify-between rounded-3xl bg-brand-forest p-7 text-brand-bone no-underline"
+            className="flex h-full min-h-[260px] flex-col justify-between rounded-3xl bg-brand-forest p-7 text-brand-bone no-underline"
           >
             <Eyebrow onDark>Floor plan</Eyebrow>
             <span className="font-display text-[30px] font-semibold leading-tight">
               See the whole floor, furnished →
             </span>
           </Link>
-        </div>
+        </SwipeRow>
       </Section>
 
       <Section aria-labelledby="plan">
@@ -226,7 +239,7 @@ export default function HomePage() {
           <p className="m-0 text-[17px] text-brand-mist">
             Questions? Talk to Toby. Or come see the space before doors open.
           </p>
-          <div className="mt-2 flex flex-wrap gap-3">
+          <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <ButtonLink href="/contact">Book a tour</ButtonLink>
             <ButtonLink href="/location" variant="outlineLight">
               Get directions

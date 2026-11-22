@@ -52,8 +52,9 @@ Pages revalidate every 300s and tag fetches with `articles`. Next step: add `app
 
 ## Tests
 
-`npx jest __tests__/site` (32 tests): content rules, JSON-LD, cafe cart, Strapi client, and components (header,
-footer, hero carousel, room picker, cafe menu, article blocks).
+`npx jest __tests__/site` (47 tests): content rules, JSON-LD, cafe cart, Strapi client, and components (header,
+footer, hero carousel, room picker, cafe menu, article blocks), plus the mobile shell in `mobile.test.tsx`.
+The phone layout is documented in `docs/MOBILE_HANDOFF.md`.
 
 ## Pre-existing problems on `main` (not introduced here)
 

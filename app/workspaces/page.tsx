@@ -23,6 +23,23 @@ export default function WorkspacesPage() {
           {SITE.squareFeet.toLocaleString()} sq ft: 24 work seats, a conference room for 8 and a
           content studio. Tap a room to see it today and the plan for it.
         </Lead>
+        <dl className="m-0 grid max-w-[520px] grid-cols-3 gap-2">
+          {(
+            [
+              ['8', 'Hot desks'],
+              ['12', 'Drop-in seats'],
+              ['4', 'Founding desks'],
+            ] as const
+          ).map(([n, label]) => (
+            <div
+              key={label}
+              className="flex flex-col-reverse items-center rounded-2xl border border-brand-hairline bg-white px-2 py-3 text-center"
+            >
+              <dt className="text-[13px] text-brand-muted">{label}</dt>
+              <dd className="m-0 font-display text-[28px] font-semibold leading-none">{n}</dd>
+            </div>
+          ))}
+        </dl>
       </Section>
 
       <Section aria-label="Floor plan and room picker" innerClassName="pt-0 md:pt-0">
@@ -87,7 +104,7 @@ export default function WorkspacesPage() {
           <p className="m-0 text-[17px] font-bold">
             $7 / hour founding rate · typical Santa Cruz price $15
           </p>
-          <ButtonLink href="/contact" variant="forest" className="self-start">
+          <ButtonLink href="/contact" variant="forest" className="sm:self-start">
             Ask about booking
           </ButtonLink>
         </div>

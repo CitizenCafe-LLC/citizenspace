@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 type Slide = { src: string; title: string; line: string; alt: string }
@@ -16,6 +16,20 @@ export function HeroCarousel({
   const [paused, setPaused] = useState(false)
   const n = slides.length
   const go = (i: number) => setIndex(((i % n) + n) % n)
+  // Swipe like a native pager: a 40px horizontal flick moves one photo.
+  const touchX = useRef<number | null>(null)
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchX.current = e.touches[0]?.clientX ?? null
+    setPaused(true)
+  }
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const start = touchX.current
+    const end = e.changedTouches[0]?.clientX
+    touchX.current = null
+    if (start !== null && end !== undefined && Math.abs(end - start) > 40) {
+      go(end < start ? index + 1 : index - 1)
+    }
+  }
 
   useEffect(() => {
     if (paused || n < 2) {
@@ -45,7 +59,9 @@ export function HeroCarousel({
         role="region"
         aria-roledescription="carousel"
         aria-label="Photos of 819 Pacific Ave"
-        className="relative overflow-hidden rounded-3xl bg-[#2A4A3F]"
+        className="relative touch-pan-y overflow-hidden rounded-3xl bg-[#2A4A3F]"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
         style={{ aspectRatio: '4 / 3' }}
       >
         {slides.map((s, i) => (
@@ -63,7 +79,7 @@ export function HeroCarousel({
         <div className="absolute inset-x-4 bottom-4 flex flex-wrap items-end justify-between gap-3">
           <p
             aria-live="polite"
-            className="m-0 max-w-[420px] rounded-xl bg-brand-bone px-3.5 py-2.5 text-sm leading-snug text-brand-ink"
+            className="m-0 max-w-[420px] rounded-xl bg-brand-bone px-3 py-2 text-[13px] leading-snug text-brand-ink sm:px-3.5 sm:py-2.5 sm:text-sm"
           >
             <strong className="font-bold">{current.title}</strong>
             <br />

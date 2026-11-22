@@ -78,19 +78,29 @@ export default function EventsPage() {
           {EVENTS.map((e, i) => (
             <li
               key={e.title}
-              className={`flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-brand-hairline py-7 ${i === EVENTS.length - 1 ? 'border-b' : ''}`}
+              className={`flex items-start gap-4 border-t border-brand-hairline py-6 md:items-center md:gap-8 md:py-7 ${i === EVENTS.length - 1 ? 'border-b' : ''}`}
             >
-              <div className="w-[120px] shrink-0">
-                <Eyebrow>{e.month}</Eyebrow>
-                <p className="m-0 font-display text-[44px] font-semibold leading-none">{e.day}</p>
+              <div className="w-[76px] shrink-0 rounded-2xl bg-brand-paper px-1 py-2.5 text-center md:w-[120px] md:bg-transparent md:p-0 md:text-left">
+                <Eyebrow className="text-[11px] tracking-[1.5px] md:text-[13px] md:tracking-[2.5px]">
+                  {e.month}
+                </Eyebrow>
+                <p className="m-0 font-display text-[22px] font-semibold leading-tight md:text-[44px] md:leading-none">
+                  {e.day}
+                </p>
               </div>
-              <div className="min-w-0 flex-[1_1_360px]">
-                <h3 className="m-0 mb-1.5 text-[22px] font-bold">{e.title}</h3>
-                <p className="m-0 text-[17px] text-brand-muted">{e.body}</p>
+              <div className="flex min-w-0 flex-1 flex-col gap-3 md:flex-row md:items-center md:gap-8">
+                <div className="min-w-0 flex-1">
+                  <h3 className="m-0 mb-1.5 text-[19px] font-bold md:text-[22px]">{e.title}</h3>
+                  <p className="m-0 text-base text-brand-muted md:text-[17px]">{e.body}</p>
+                </div>
+                <ButtonLink
+                  href={e.href}
+                  variant={e.primary ? 'brick' : 'outlineDark'}
+                  className="min-h-[44px] self-start px-4 text-[15px] md:min-h-[48px] md:self-auto md:px-6 md:text-base"
+                >
+                  {e.cta}
+                </ButtonLink>
               </div>
-              <ButtonLink href={e.href} variant={e.primary ? 'brick' : 'outlineDark'}>
-                {e.cta}
-              </ButtonLink>
             </li>
           ))}
         </ul>
@@ -116,7 +126,7 @@ export default function EventsPage() {
             Got something to teach? Pitch a class or a talk for the fireplace room or the drop-in
             area.
           </p>
-          <ButtonLink href="/contact" className="self-start">
+          <ButtonLink href="/contact" className="sm:self-start">
             Propose an event
           </ButtonLink>
         </div>

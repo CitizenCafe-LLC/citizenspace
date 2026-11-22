@@ -25,7 +25,7 @@ export default function LocationPage() {
         aria-label="Address and map"
         innerClassName="flex-row flex-wrap items-stretch gap-6 pt-0 md:pt-0"
       >
-        <div className="flex min-w-0 flex-[1_1_340px] flex-col gap-5 rounded-3xl bg-brand-bone p-8">
+        <div className="flex min-w-0 flex-[1_1_340px] flex-col gap-5 rounded-3xl bg-brand-bone p-5 md:p-8">
           <RuleCard color="#9E5640" title="Address" className="pt-4">
             <address className="text-[17px] not-italic leading-normal">
               Citizen Space
@@ -50,19 +50,26 @@ export default function LocationPage() {
               Parking, bus and bike details →
             </Link>
           </RuleCard>
-          <ButtonLink
-            href="https://maps.google.com/?q=819+Pacific+Ave+Santa+Cruz+CA"
-            variant="forest"
-            className="self-start"
-          >
-            Open in Google Maps
-          </ButtonLink>
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <ButtonLink
+              href="https://maps.apple.com/?address=819+Pacific+Ave,Santa+Cruz,CA+95060&q=Citizen+Space"
+              variant="forest"
+            >
+              Open in Apple Maps
+            </ButtonLink>
+            <ButtonLink
+              href="https://maps.google.com/?q=819+Pacific+Ave+Santa+Cruz+CA"
+              variant="outlineDark"
+            >
+              Open in Google Maps
+            </ButtonLink>
+          </div>
         </div>
         <div className="flex min-w-0 flex-[1.6_1_520px] flex-col gap-6">
           <iframe
             title="Map of 819 Pacific Ave, Santa Cruz"
             src={MAP_SRC}
-            className="min-h-[360px] w-full flex-1 rounded-3xl border-0"
+            className="min-h-[280px] w-full flex-1 rounded-3xl border-0 md:min-h-[360px]"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           />
@@ -88,7 +95,7 @@ export default function LocationPage() {
             specific about access before you visit? Talk to Toby.
           </p>
         </div>
-        <ButtonLink href="/contact" variant="outlineDark">
+        <ButtonLink href="/contact" variant="outlineDark" className="w-full sm:w-auto">
           Talk to Toby
         </ButtonLink>
       </Section>

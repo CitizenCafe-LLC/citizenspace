@@ -191,3 +191,21 @@
     @apply bg-gradient-to-r from-cs-blue to-cs-sun bg-clip-text text-transparent;
   }
 }
+
+/* Mobile shell: swipe rows hide their scrollbar; pages leave room for the bottom tab bar. */
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+:root {
+  --tabbar-space: calc(env(safe-area-inset-bottom) + 62px);
+}
+@media (min-width: 768px) {
+  :root {
+    --tabbar-space: 0px;
+  }
+}

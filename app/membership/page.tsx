@@ -8,6 +8,9 @@ import {
   SITE,
 } from '@/lib/site/content'
 import { FoundingSignup } from '@/components/site/founding-signup'
+import { SwipeRow } from '@/components/site/swipe-row'
+import { StickyCta } from '@/components/site/sticky-cta'
+import { ConnectWallet } from '@/components/site/connect-wallet'
 
 export const metadata: Metadata = {
   title: 'Membership and pricing: the Founding 50',
@@ -31,11 +34,11 @@ export default function MembershipPage() {
           <H1 id="m-title" onDark>
             $1,000 once. Lowest rates for life.
           </H1>
-          <p className="m-0 max-w-[560px] text-[22px] leading-snug text-brand-mist">
+          <p className="m-0 max-w-[560px] text-[19px] leading-snug text-brand-mist md:text-[22px]">
             Only 50 spots. Can’t do $1,000 up front? Pay 3 payments of $333, then you’re on founding
             rates for life.
           </p>
-          <div className="mt-2 flex flex-wrap gap-3">
+          <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <ButtonLink href="#join">Claim your founding spot</ButtonLink>
             <ButtonLink href="#rates" variant="outlineLight">
               See the rates
@@ -49,7 +52,7 @@ export default function MembershipPage() {
         <img
           src="/brand/logos/sticker-founding-50.png"
           alt="Founding 50 sticker"
-          className="w-full max-w-[320px] flex-[0_1_320px]"
+          className="order-first w-full max-w-[150px] flex-[0_1_150px] sm:order-none sm:max-w-[320px] sm:flex-[0_1_320px]"
         />
       </Section>
 
@@ -82,6 +85,19 @@ export default function MembershipPage() {
             </p>
           </RuleCard>
         </div>
+        <div
+          id="crypto"
+          className="flex scroll-mt-24 flex-col gap-4 rounded-3xl bg-brand-bone p-6 md:flex-row md:items-center md:justify-between md:p-8"
+        >
+          <div className="flex max-w-[640px] flex-col gap-2">
+            <h3 className="m-0 font-display text-[26px] font-semibold">Paying with crypto?</h3>
+            <p className="m-0 text-[17px] text-brand-muted">
+              Connect your wallet to buy the founding membership as an NFT. It’s your member key:
+              your phone shows a QR code that opens the door. No profit share, not an investment.
+            </p>
+          </div>
+          <ConnectWallet className="min-h-[52px] w-full shrink-0 text-[17px] md:w-auto" />
+        </div>
       </Section>
 
       <Section
@@ -98,7 +114,31 @@ export default function MembershipPage() {
             After the Founding 50 sell out, new members pay standard rates.
           </p>
         </div>
-        <div className="overflow-x-auto rounded-3xl bg-brand-paper px-7 py-2">
+        <ul
+          aria-label="Membership prices"
+          className="m-0 list-none overflow-hidden rounded-2xl border border-brand-hairline bg-white p-0 md:hidden"
+        >
+          {MEMBERSHIP_RATES.map((r, i) => (
+            <li
+              key={r.name}
+              className={`flex min-h-[60px] items-center gap-3 px-4 py-3 ${i ? 'border-t border-[#EDE6DA]' : ''}`}
+            >
+              <span className="min-w-0 flex-1 text-base font-semibold leading-snug">{r.name}</span>
+              <span className="shrink-0 text-right">
+                <span className="block font-display text-[22px] font-semibold leading-tight">
+                  {usd(r.founding)}
+                  {r.unit}
+                </span>
+                <s className="text-[13px] text-brand-muted">
+                  <span className="sr-only">Typical price </span>
+                  {usd(r.typical)}
+                  {r.unit}
+                </s>
+              </span>
+            </li>
+          ))}
+        </ul>
+        <div className="hidden overflow-x-auto rounded-3xl bg-brand-paper px-7 py-2 md:block">
           <table className="w-full min-w-[600px] border-collapse text-[17px]">
             <thead>
               <tr className="text-left text-[13px] uppercase tracking-[2.5px]">
@@ -146,7 +186,7 @@ export default function MembershipPage() {
             </tbody>
           </table>
         </div>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-8">
+        <div className="grid grid-cols-2 gap-6 md:grid-cols-[repeat(auto-fit,minmax(220px,1fr))] md:gap-8">
           {HOURLY_RATES.map((r, i) => (
             <RuleCard
               key={r.name}
@@ -179,7 +219,7 @@ export default function MembershipPage() {
             comes through: members, Builder Night crowds, workshop guests.
           </p>
         </div>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-8">
+        <SwipeRow label="Sponsor tiers" itemClassName="basis-[80%]">
           {SPONSOR_TIERS.map(t => (
             <RuleCard
               key={t.name}
@@ -199,7 +239,7 @@ export default function MembershipPage() {
               <p className="m-0 text-[17px] text-brand-muted">{t.perks}</p>
             </RuleCard>
           ))}
-        </div>
+        </SwipeRow>
         <p className="m-0 text-sm text-brand-muted">
           Rooms on offer: the content studio, the conference room and the main shared room.
         </p>
@@ -233,6 +273,7 @@ export default function MembershipPage() {
         </ol>
         <FoundingSignup />
       </Section>
+      <StickyCta href="#join" label="Join the Founding 50 · $1,000" hideWhenVisible="#join" />
     </>
   )
 }

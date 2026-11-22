@@ -18,14 +18,18 @@ export function RoomPicker({ zones, initial = 'conference' }: { zones: Zone[]; i
           className="w-full rounded-3xl bg-brand-bone object-cover"
           style={{ aspectRatio: '16 / 9' }}
         />
-        <div role="group" aria-label="Rooms" className="flex flex-wrap gap-2">
+        <div
+          role="group"
+          aria-label="Rooms"
+          className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:-mx-8 sm:px-8 md:mx-0 md:flex-wrap md:overflow-visible md:px-0"
+        >
           {zones.map(z => (
             <button
               key={z.id}
               type="button"
               aria-pressed={z.id === sel.id}
               onClick={() => setPicked(z.id)}
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border-2 px-3.5 text-[15px] font-semibold text-brand-ink"
+              className="inline-flex min-h-[44px] shrink-0 items-center gap-2 whitespace-nowrap rounded-full border-2 px-3.5 text-[15px] font-semibold text-brand-ink md:rounded-xl"
               style={{
                 borderColor: z.id === sel.id ? '#1E2422' : '#D8CFC2',
                 background: z.id === sel.id ? '#F0EAE0' : '#FAF7F1',
@@ -39,13 +43,15 @@ export function RoomPicker({ zones, initial = 'conference' }: { zones: Zone[]; i
       </div>
       <article
         aria-live="polite"
-        className="flex min-w-0 flex-[1_1_380px] flex-col gap-4 rounded-3xl bg-brand-bone p-7"
+        className="flex min-w-0 flex-[1_1_380px] flex-col gap-4 rounded-3xl bg-brand-bone p-5 md:p-7"
       >
         <div className="h-1.5 rounded-full" style={{ background: sel.color }} />
         <p className="m-0 text-[13px] font-bold uppercase tracking-[2.5px] text-brand-brick">
           {sel.meta}
         </p>
-        <h2 className="m-0 font-display text-[30px] font-semibold leading-tight">{sel.name}</h2>
+        <h2 className="m-0 font-display text-[26px] font-semibold leading-tight md:text-[30px]">
+          {sel.name}
+        </h2>
         <p className="m-0 text-[17px] leading-normal text-brand-muted">{sel.summary}</p>
         <figure className="m-0 flex flex-col gap-1.5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -71,7 +77,7 @@ export function RoomPicker({ zones, initial = 'conference' }: { zones: Zone[]; i
         )}
         <Link
           href={sel.href}
-          className="inline-flex min-h-[48px] items-center self-start rounded-xl bg-brand-forest px-6 font-bold text-brand-bone no-underline"
+          className="inline-flex min-h-[52px] items-center justify-center rounded-xl bg-brand-forest px-6 font-bold text-brand-bone no-underline md:min-h-[48px] md:self-start"
         >
           {sel.cta}
         </Link>

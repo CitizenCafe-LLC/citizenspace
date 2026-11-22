@@ -20,7 +20,7 @@ export function ContactForm() {
   return (
     <form
       aria-label="Send a message"
-      className="grid min-w-0 flex-[1.6_1_520px] grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-5 rounded-3xl bg-brand-bone p-8"
+      className="grid min-w-0 flex-[1.6_1_520px] grid-cols-1 gap-4 rounded-3xl bg-brand-bone p-5 sm:grid-cols-[repeat(auto-fit,minmax(240px,1fr))] sm:gap-5 md:p-8"
       onSubmit={async e => {
         e.preventDefault()
         setState('sending')
@@ -43,7 +43,14 @@ export function ContactForm() {
       </label>
       <label className="flex flex-col gap-1.5 text-sm font-bold">
         Email
-        <input name="email" type="email" autoComplete="email" required className={field} />
+        <input
+          name="email"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          required
+          className={field}
+        />
       </label>
       <label className="col-span-full flex flex-col gap-1.5 text-sm font-bold">
         What’s it about?
@@ -61,7 +68,7 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={state === 'sending'}
-          className="min-h-[48px] rounded-xl bg-brand-brick px-7 font-bold text-brand-bone disabled:opacity-60"
+          className="min-h-[52px] w-full rounded-xl bg-brand-brick px-7 text-[17px] font-bold text-brand-bone disabled:opacity-60 sm:w-auto"
         >
           {state === 'sending' ? 'Sending…' : 'Send message'}
         </button>

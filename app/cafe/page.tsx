@@ -13,13 +13,17 @@ export const metadata: Metadata = {
 export default function CafePage() {
   return (
     <>
-      <Section tone="forest" aria-labelledby="k-title" innerClassName="gap-10 pt-16 md:pt-20">
+      <Section
+        tone="forest"
+        aria-labelledby="k-title"
+        innerClassName="gap-8 pt-8 md:gap-10 md:pt-20"
+      >
         <div className="flex max-w-[820px] flex-col gap-4">
           <Eyebrow onDark>Cafe · Kitchen pantry · Member menu</Eyebrow>
           <H1 id="k-title" onDark>
             Breakfast from downstairs, brought to your desk.
           </H1>
-          <p className="m-0 text-[22px] leading-snug text-brand-mist">
+          <p className="m-0 text-[19px] leading-snug text-brand-mist md:text-[22px]">
             Zachary’s has cooked on this block since 1985, right below us at 819 Pacific. Order from
             the member menu here and it comes up to you in the space.
           </p>
@@ -33,7 +37,7 @@ export default function CafePage() {
             </span>
           </div>
         </div>
-        <div className="flex flex-wrap gap-6">
+        <div className="grid grid-cols-2 gap-3 md:flex md:flex-wrap md:gap-6">
           {[
             [
               '/brand/photos/14-kitchen-utility.jpg',
@@ -48,15 +52,18 @@ export default function CafePage() {
               'Terracotta tile, oak cabinets, a new sink and dishwasher, the coffee bar and a chalkboard menu.',
             ],
           ].map(([src, alt, lead, rest]) => (
-            <figure key={src} className="m-0 flex min-w-0 flex-[1_1_380px] flex-col gap-2.5">
+            <figure
+              key={src}
+              className="m-0 flex min-w-0 flex-col gap-2 md:flex-[1_1_380px] md:gap-2.5"
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={src}
                 alt={alt}
-                className="w-full rounded-3xl object-cover"
+                className="w-full rounded-2xl object-cover md:rounded-3xl"
                 style={{ aspectRatio: '4 / 3' }}
               />
-              <figcaption className="text-[15px] text-brand-mist">
+              <figcaption className="text-[13px] text-brand-mist md:text-[15px]">
                 <strong className="text-brand-bone">{lead}</strong> {rest}
               </figcaption>
             </figure>
@@ -64,7 +71,12 @@ export default function CafePage() {
         </div>
       </Section>
 
-      <Section id="menu" aria-labelledby="menu-h" className="scroll-mt-24" innerClassName="gap-8">
+      <Section
+        id="menu"
+        aria-labelledby="menu-h"
+        className="scroll-mt-24"
+        innerClassName="gap-6 md:gap-8"
+      >
         <div className="flex flex-col items-center gap-2 text-center">
           <Eyebrow>The member menu · from Zachary’s</Eyebrow>
           <H2 id="menu-h" className="md:text-[56px]">

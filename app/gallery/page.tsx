@@ -21,12 +21,19 @@ export default function GalleryPage() {
       </Section>
 
       <Section aria-label="Photos" innerClassName="pt-0 md:pt-0">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-14 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 md:gap-y-14">
           {GALLERY_PHOTOS.map((p, i) => (
-            <figure key={p.src} className="m-0 flex flex-col gap-3.5">
-              <Photo src={p.src} alt={p.alt} priority={i < 2} />
-              <figcaption className="flex flex-col gap-1">
-                <span className="text-[22px] font-bold leading-tight text-brand-ink">{p.room}</span>
+            <figure key={p.src} className="-mx-4 my-0 flex flex-col gap-3 sm:mx-0 sm:gap-3.5">
+              <Photo
+                src={p.src}
+                alt={p.alt}
+                priority={i < 2}
+                className="rounded-none sm:rounded-3xl"
+              />
+              <figcaption className="flex flex-col gap-1 px-5 sm:px-0">
+                <span className="text-[19px] font-bold leading-tight text-brand-ink sm:text-[22px]">
+                  {p.room}
+                </span>
                 <span className="text-[17px] text-brand-muted">{p.note}</span>
               </figcaption>
             </figure>
@@ -45,7 +52,7 @@ export default function GalleryPage() {
           </H2>
           <p className="m-0 text-[17px] text-brand-mist">Founding sales open December 1, 2026.</p>
         </div>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap">
           <ButtonLink href="/contact">Schedule a tour</ButtonLink>
           <ButtonLink href="/location" variant="outlineLight">
             Get directions

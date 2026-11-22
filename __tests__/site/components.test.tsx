@@ -53,7 +53,6 @@ describe('Navigation', () => {
       'page'
     )
   })
-
 })
 
 describe('HeroCarousel', () => {
@@ -97,7 +96,7 @@ describe('CafeMenu', () => {
     render(<CafeMenu />)
     fireEvent.click(screen.getByRole('tab', { name: 'Brunch specials' }))
     fireEvent.click(screen.getByRole('button', { name: 'Add Mike’s Mess' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Add Mike’s Mess' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Add another Mike’s Mess' }))
     expect(screen.getByText('2×')).toBeInTheDocument()
     expect(screen.getByText('Subtotal').parentElement).toHaveTextContent('$31.00')
     fireEvent.click(screen.getByRole('button', { name: /Send order to Zachary’s/ }))
@@ -129,14 +128,14 @@ describe('ArticleBlocks', () => {
 })
 
 describe('Connect Wallet', () => {
-  it('stays in the header and the mobile menu so members can buy the NFT key', () => {
+  it('stays in the header and the menu sheet so members can buy the NFT key', () => {
     render(<Navigation />)
     const header = screen.getByRole('banner')
     fireEvent.click(within(header).getAllByRole('button', { name: 'Connect Wallet' })[0])
     expect(mockOpenConnectModal).toHaveBeenCalled()
 
     fireEvent.click(screen.getByRole('button', { name: 'Open menu' }))
-    const mobile = screen.getByRole('navigation', { name: 'Mobile' })
-    expect(within(mobile).getByRole('button', { name: 'Connect Wallet' })).toBeInTheDocument()
+    const sheet = screen.getByRole('dialog', { name: 'Site menu' })
+    expect(within(sheet).getByRole('button', { name: 'Connect Wallet' })).toBeInTheDocument()
   })
 })

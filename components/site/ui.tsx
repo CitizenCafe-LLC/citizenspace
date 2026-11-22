@@ -44,7 +44,7 @@ export function Section({
     <section className={cn(tones[tone], className)} {...rest}>
       <div
         className={cn(
-          'mx-auto flex max-w-[1280px] flex-col gap-12 px-4 py-20 sm:px-8 md:py-24',
+          'mx-auto flex max-w-[1280px] flex-col gap-8 px-4 py-12 sm:px-8 sm:py-16 md:gap-12 md:py-24',
           innerClassName
         )}
       >
@@ -69,7 +69,7 @@ export function H1({
     <h1
       id={id}
       className={cn(
-        'm-0 font-display text-[44px] font-semibold leading-[1.02] tracking-[-0.5px] md:text-[64px]',
+        'm-0 font-display text-[38px] font-semibold leading-[1.05] tracking-[-0.5px] sm:text-[44px] md:text-[64px]',
         onDark ? 'text-brand-bone' : 'text-brand-ink',
         className
       )}
@@ -94,7 +94,7 @@ export function H2({
     <h2
       id={id}
       className={cn(
-        'm-0 font-display text-[34px] font-semibold leading-[1.1] md:text-[44px]',
+        'm-0 font-display text-[28px] font-semibold leading-[1.12] sm:text-[34px] md:text-[44px]',
         onDark ? 'text-brand-bone' : 'text-brand-ink',
         className
       )}
@@ -116,7 +116,7 @@ export function Lead({
   return (
     <p
       className={cn(
-        'm-0 max-w-[720px] text-[20px] leading-[1.4] md:text-[22px]',
+        'm-0 max-w-[720px] text-[18px] leading-[1.45] sm:text-[20px] md:text-[22px]',
         onDark ? 'text-brand-mist' : 'text-brand-muted',
         className
       )}
@@ -171,7 +171,7 @@ export function ButtonLink({
     <Link
       href={href}
       className={cn(
-        'inline-flex min-h-[48px] items-center rounded-xl px-6 text-base font-bold no-underline transition-colors',
+        'inline-flex min-h-[52px] items-center justify-center rounded-xl px-6 text-[17px] font-bold no-underline transition-colors md:min-h-[48px] md:text-base',
         buttonStyles[variant],
         className
       )}
@@ -190,7 +190,8 @@ export function Photo({
 }: {
   src: string
   alt: string
-  ratio?: string
+  /** CSS aspect-ratio; pass null to size it with classes (e.g. square on phones). */
+  ratio?: string | null
   className?: string
   priority?: boolean
 }) {
@@ -202,7 +203,7 @@ export function Photo({
       alt={alt}
       loading={priority ? 'eager' : 'lazy'}
       className={cn('block w-full rounded-3xl bg-brand-bone object-cover', className)}
-      style={{ aspectRatio: ratio }}
+      style={ratio ? { aspectRatio: ratio } : undefined}
     />
   )
 }

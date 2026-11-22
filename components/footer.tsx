@@ -36,7 +36,10 @@ const eyebrow = 'm-0 text-[13px] font-bold uppercase tracking-[2.5px] text-brand
 export function Footer() {
   return (
     <footer className="mt-auto bg-brand-forest text-brand-bone">
-      <div className="mx-auto flex max-w-[1280px] flex-col gap-12 px-4 pb-10 pt-16 sm:px-8">
+      <div
+        className="mx-auto flex max-w-[1280px] flex-col gap-10 px-5 pt-12 sm:px-8 md:gap-12 md:pt-16"
+        style={{ paddingBottom: 'calc(var(--tabbar-space) + 2.5rem)' }}
+      >
         <div className="flex flex-wrap justify-between gap-12">
           <div className="flex min-w-0 max-w-[400px] flex-[1_1_320px] flex-col gap-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -62,7 +65,7 @@ export function Footer() {
           </div>
           <nav
             aria-label="Footer"
-            className="grid min-w-0 flex-[2_1_560px] grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-8"
+            className="grid min-w-0 flex-[2_1_560px] grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-[repeat(auto-fit,minmax(140px,1fr))] sm:gap-8"
           >
             {COLUMNS.map(col => (
               <div key={col.title} className="flex flex-col gap-1">
@@ -71,7 +74,7 @@ export function Footer() {
                   <Link
                     key={href}
                     href={href}
-                    className="flex min-h-[32px] items-center text-brand-bone no-underline hover:underline"
+                    className="flex min-h-[44px] items-center text-brand-bone no-underline hover:underline md:min-h-[32px]"
                   >
                     {label}
                   </Link>

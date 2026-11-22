@@ -39,7 +39,11 @@ export function ConnectWallet({ className, onOpen }: { className?: string; onOpe
 
         if (chain.unsupported) {
           return (
-            <button type="button" className={cn(base, 'border-brand-brick text-brand-brick', className)} onClick={open(openChainModal)}>
+            <button
+              type="button"
+              className={cn(base, 'border-brand-brick text-brand-brick', className)}
+              onClick={open(openChainModal)}
+            >
               Wrong network
             </button>
           )

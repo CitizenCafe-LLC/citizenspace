@@ -12,7 +12,7 @@ export default function ContactPage() {
           <H1>Questions? Talk to Toby.</H1>
           <Lead>Ask about founding memberships, book a tour or pitch an event.</Lead>
         </div>
-        <div className="min-w-0 flex-[1_1_420px]">
+        <div className="hidden min-w-0 flex-[1_1_420px] sm:block">
           <Photo
             src="/brand/photos/05-french-doors-anteroom.jpg"
             alt="Glass French doors opening into the conference room"

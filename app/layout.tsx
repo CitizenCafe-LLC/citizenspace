@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Navigation } from '@/components/navigation'
 import { Footer } from '@/components/footer'
 import { Web3Provider } from '@/components/providers/web3-provider'
+import { MobileTabBar } from '@/components/site/mobile-tab-bar'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeProvider } from 'next-themes'
 import { Toaster } from '@/components/ui/sonner'
@@ -16,6 +17,10 @@ const description =
 export const metadata: Metadata = {
   title: { default: title, template: '%s | Citizen Space' },
   description,
+  // Edge-to-edge on phones so the tab bar can sit in the safe area, like a native app.
+  viewport: { width: 'device-width', initialScale: 1, viewportFit: 'cover' },
+  themeColor: '#FAF7F1',
+  appleWebApp: { capable: true, title: 'Citizen Space', statusBarStyle: 'default' },
   keywords: [
     'coworking Santa Cruz',
     'affordable coworking Santa Cruz',
@@ -88,6 +93,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Navigation />
               <main className="flex-1">{children}</main>
               <Footer />
+              <MobileTabBar />
               <Toaster />
             </AuthProvider>
           </Web3Provider>

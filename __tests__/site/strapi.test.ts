@@ -64,6 +64,18 @@ describe('Strapi articles client', () => {
     expect(articles.every(a => a.category.slug === 'builder-night')).toBe(true)
   })
 
+  it('adds a case-insensitive title/excerpt search for the mobile search box', () => {
+    const q = decodeURIComponent(articlesQuery({ q: 'Cruzio' }))
+    expect(q).toContain('filters[$or][0][title][$containsi]=Cruzio')
+    expect(q).toContain('filters[$or][1][excerpt][$containsi]=Cruzio')
+  })
+
+  it('searches sample articles by title or excerpt', async () => {
+    delete process.env.STRAPI_URL
+    const { articles } = await getArticles({ q: 'cruzio' })
+    expect(articles.map(a => a.slug)).toEqual(['two-cruzio-lines'])
+  })
+
   it('reads from Strapi when configured', async () => {
     process.env.STRAPI_URL = 'https://cms.example.com'
     const fetchMock = jest.fn().mockResolvedValue({

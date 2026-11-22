@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { ShareButton } from '@/components/site/share-button'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Photo } from '@/components/site/ui'
@@ -52,7 +53,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         dangerouslySetInnerHTML={jsonLdScript(blogPostingJsonLd(article))}
       />
       <article className="bg-brand-paper">
-        <header className="mx-auto flex max-w-[880px] flex-col gap-4 px-4 pb-8 pt-14 sm:px-8">
+        <header className="mx-auto flex max-w-[880px] flex-col gap-4 px-4 pb-6 pt-6 sm:px-8 md:pb-8 md:pt-14">
           <nav aria-label="Breadcrumb" className="text-sm text-brand-muted">
             <Link href="/blog" className="text-brand-brick">
               Blog
@@ -68,10 +69,12 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
           >
             {article.category.name}
           </p>
-          <h1 className="m-0 font-display text-[40px] font-semibold leading-[1.04] tracking-[-0.5px] md:text-[64px]">
+          <h1 className="m-0 font-display text-[34px] font-semibold leading-[1.06] tracking-[-0.5px] sm:text-[40px] md:text-[64px]">
             {article.title}
           </h1>
-          <p className="m-0 text-[22px] leading-snug text-brand-muted">{article.excerpt}</p>
+          <p className="m-0 text-[19px] leading-snug text-brand-muted md:text-[22px]">
+            {article.excerpt}
+          </p>
           <div className="flex flex-wrap items-center gap-3 border-y border-brand-hairline py-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={article.author.avatar} alt="" className="h-12 w-12 rounded-full" />
@@ -82,18 +85,25 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                 {formatDate(article.publishedAt)} · {article.readingTime} min read
               </p>
             </div>
+            <ShareButton title={article.title} text={article.excerpt} />
           </div>
         </header>
 
-        <figure className="m-0 mx-auto flex max-w-[1200px] flex-col gap-2.5 px-4 pb-12 sm:px-8">
-          <Photo src={article.cover.src} alt={article.cover.alt} ratio="16 / 9" priority />
+        <figure className="mx-auto my-0 flex max-w-[1200px] flex-col gap-2.5 pb-8 sm:px-8 md:pb-12">
+          <Photo
+            src={article.cover.src}
+            alt={article.cover.alt}
+            ratio="16 / 9"
+            priority
+            className="rounded-none sm:rounded-3xl"
+          />
         </figure>
 
-        <div className="mx-auto flex max-w-[1200px] flex-wrap items-start gap-14 px-4 pb-20 sm:px-8">
+        <div className="mx-auto flex max-w-[1200px] flex-wrap items-start gap-14 px-4 pb-12 sm:px-8 md:pb-20">
           {headings.length > 0 && (
             <aside
               aria-label="On this page"
-              className="flex min-w-0 flex-[1_1_220px] flex-col gap-1.5 lg:sticky lg:top-28"
+              className="hidden min-w-0 flex-[1_1_220px] flex-col gap-1.5 lg:sticky lg:top-28 lg:flex"
             >
               <p className="m-0 mb-1.5 text-[13px] font-bold uppercase tracking-[2.5px] text-brand-muted">
                 On this page
@@ -109,7 +119,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
               ))}
             </aside>
           )}
-          <div className="flex min-w-0 max-w-[720px] flex-[999_1_600px] flex-col gap-7 text-[19px] leading-relaxed">
+          <div className="flex min-w-0 max-w-[720px] flex-[999_1_600px] flex-col gap-6 text-[18px] leading-relaxed md:gap-7 md:text-[19px]">
             <ArticleBlocks blocks={article.blocks} />
             {article.tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
@@ -140,7 +150,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
       {related.length > 0 && (
         <section aria-labelledby="related" className="bg-brand-bone">
-          <div className="mx-auto flex max-w-[1280px] flex-col gap-8 px-4 py-20 sm:px-8">
+          <div className="mx-auto flex max-w-[1280px] flex-col gap-6 px-4 py-12 sm:px-8 md:gap-8 md:py-20">
             <h2 id="related" className="m-0 font-display text-[30px] font-semibold">
               More in {article.category.name}
             </h2>
