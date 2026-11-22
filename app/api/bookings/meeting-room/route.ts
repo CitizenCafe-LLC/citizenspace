@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
+import type { NextRequest} from 'next/server';
+import { NextResponse } from 'next/server'
 import { authenticateRequest } from '@/lib/auth/middleware'
 import {
   createBooking,
@@ -7,7 +8,7 @@ import {
   deductCredits,
 } from '@/lib/db/repositories/booking.repository'
 import { getWorkspaceById } from '@/lib/db/repositories/workspace.repository'
-import { apiResponse, apiError } from '@/lib/api/response'
+import { successResponse, errorResponse } from '@/lib/api/response'
 import { z } from 'zod'
 
 const meetingRoomBookingSchema = z.object({
@@ -28,7 +29,7 @@ export async function POST(request: NextRequest) {
     // Authenticate user
     const authResult = await authenticateRequest(request)
     if (!authResult.user) {
-      return apiError('Unauthorized', 401)
+      return errorResponse('Unauthorized', 401)
     }
 
     const userId = authResult.user.userId
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
     const validation = meetingRoomBookingSchema.safeParse(body)
 
     if (!validation.success) {
-      return apiError('Invalid request data', 400, validation.error.errors)
+      return errorResponse('Invalid request data', 400, validation.error.errors)
     }
 
     const { workspace_id, booking_date, start_time, end_time, attendees, special_requests } =
@@ -47,14 +48,14 @@ export async function POST(request: NextRequest) {
     // Get workspace details
     const workspaceResult = await getWorkspaceById(workspace_id)
     if (workspaceResult.error || !workspaceResult.data) {
-      return apiError('Meeting room not found', 404)
+      return errorResponse('Meeting room not found', 404)
     }
 
     const workspace = workspaceResult.data
 
     // Verify it's a meeting room
     if (workspace.resource_category !== 'meeting-room') {
-      return apiError('Workspace is not a meeting room', 400)
+      return errorResponse('Workspace is not a meeting room', 400)
     }
 
     // Calculate duration in hours
@@ -64,26 +65,26 @@ export async function POST(request: NextRequest) {
     const durationHours = durationMinutes / 60
 
     if (durationHours <= 0) {
-      return apiError('End time must be after start time', 400)
+      return errorResponse('End time must be after start time', 400)
     }
 
     // Get user with membership details
     const userResult = await getUserWithMembership(userId)
     if (userResult.error || !userResult.data) {
-      return apiError('User not found', 404)
+      return errorResponse('User not found', 404)
     }
 
     const user = userResult.data
 
     // Check if user has a membership
     if (!user.membership_plan_id) {
-      return apiError('Meeting room bookings require an active membership', 403)
+      return errorResponse('Meeting room bookings require an active membership', 403)
     }
 
     // Get user's available meeting room credits
     const creditsResult = await getUserCredits(userId)
     if (creditsResult.error) {
-      return apiError('Failed to fetch credit balance', 500)
+      return errorResponse('Failed to fetch credit balance', 500)
     }
 
     const availableCredits = creditsResult.data?.meeting_room_credits_hours || 0
@@ -149,7 +150,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (bookingResult.error || !bookingResult.data) {
-      return apiError('Failed to create booking', 500, bookingResult.error)
+      return errorResponse('Failed to create booking', 500, bookingResult.error)
     }
 
     const booking = bookingResult.data
@@ -166,11 +167,11 @@ export async function POST(request: NextRequest) {
 
       if (deductResult.error) {
         // Rollback booking creation would happen here in a transaction
-        return apiError('Failed to deduct credits', 500)
+        return errorResponse('Failed to deduct credits', 500)
       }
     }
 
-    return apiResponse({
+    return successResponse({
       booking,
       pricing: {
         hourly_rate: hourlyRate,
@@ -192,6 +193,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('Error creating meeting room booking:', error)
-    return apiError('Internal server error', 500)
+    return errorResponse('Internal server error', 500)
   }
 }

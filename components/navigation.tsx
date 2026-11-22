@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { WalletConnectButton } from '@/components/auth/WalletConnectButton'
 
 export const NAV_LINKS = [
   { href: '/cafe', label: 'Cafe' },
@@ -53,6 +54,9 @@ export function Navigation() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <div className="hidden sm:block">
+            <WalletConnectButton />
+          </div>
           <Link
             href="/membership"
             className="hidden min-h-[44px] items-center rounded-xl bg-brand-brick px-5 text-[15px] font-bold text-brand-bone no-underline hover:bg-[#87493A] sm:inline-flex"
@@ -99,6 +103,9 @@ export function Navigation() {
           >
             Join the Founding 50
           </Link>
+          <div className="mt-2">
+            <WalletConnectButton />
+          </div>
         </nav>
       )}
     </header>
