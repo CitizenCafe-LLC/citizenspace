@@ -82,7 +82,7 @@ export default function BookingPage() {
                   </div>
                 </div>
                 <Button asChild variant="outline">
-                  <Link href="/app">Download App</Link>
+                  <Link href="/mobile-app-info">Download App</Link>
                 </Button>
               </div>
             </CardContent>
