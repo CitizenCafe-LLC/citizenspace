@@ -1,0 +1,14 @@
+{
+  "name": "Citizen Space",
+  "legal_name": "Citizen Space, PBC",
+  "description": "A member-run coworking space at 819 Pacific Ave, Santa Cruz, CA, opening March 2027.",
+  "homepage": "https://citizenspace.ainative.studio",
+  "resources": {
+    "llms_txt": "https://citizenspace.ainative.studio/llms.txt",
+    "skill_md": "https://citizenspace.ainative.studio/SKILL.md",
+    "openapi": "https://citizenspace.ainative.studio/openapi.json",
+    "ask": "https://citizenspace.ainative.studio/ask?q={query}",
+    "sitemap": "https://citizenspace.ainative.studio/sitemap.xml"
+  },
+  "contact": "https://citizenspace.ainative.studio/contact"
+}

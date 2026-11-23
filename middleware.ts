@@ -13,10 +13,25 @@ import { siteMarkdown } from '@/lib/site/markdown'
 export function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl
 
+  const bypassPaths = new Set([
+    '/favicon.ico',
+    '/llms.txt',
+    '/agents.txt',
+    '/agent.md',
+    '/humans.txt',
+    '/robots.txt',
+    '/sitemap.xml',
+    '/openapi.json',
+    '/SKILL.md',
+    '/auth.md',
+  ])
+
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
-    pathname === '/favicon.ico'
+    pathname.startsWith('/ask') ||
+    pathname.startsWith('/.well-known') ||
+    bypassPaths.has(pathname)
   ) {
     return NextResponse.next()
   }

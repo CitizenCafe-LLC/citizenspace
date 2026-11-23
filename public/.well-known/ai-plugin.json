@@ -1,0 +1,14 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Citizen Space",
+  "name_for_model": "citizen_space",
+  "description_for_human": "Look up Citizen Space membership pricing, location, cafe menu and events — a Santa Cruz coworking space opening March 2027.",
+  "description_for_model": "Plugin for answering questions about Citizen Space, a Santa Cruz coworking space at 819 Pacific Ave opening March 2027. Use it to look up membership pricing (founding vs. standard rates), the space's address and directions, the Zachary's cafe menu, event dates (Builder Night, founding sale, doors opening), and FAQ content. Facts are sourced from https://citizenspace.ainative.studio/llms.txt.",
+  "api": {
+    "type": "openapi",
+    "url": "https://citizenspace.ainative.studio/openapi.json"
+  },
+  "logo_url": "https://citizenspace.ainative.studio/brand/logos/logo-badge.png",
+  "contact_email": "toby@ainative.studio",
+  "legal_info_url": "https://citizenspace.ainative.studio/legal/terms"
+}
