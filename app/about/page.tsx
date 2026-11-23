@@ -1,285 +1,145 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Separator } from '@/components/ui/separator'
+import { Eyebrow, Section, H1, H2, Lead, ButtonLink, RuleCard } from '@/components/site/ui'
+import { BRAND } from '@/lib/site/content'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'About Us',
+  title: 'About',
   description:
-    "Learn about Citizen Space's history, mission, and the team behind San Francisco's unique coffee and coworking hybrid.",
+    'Citizen Space began in San Francisco in 2006, grown out of the Bay Area’s original coworking scene. We own the original brand and are reopening it in Santa Cruz at 819 Pacific Ave.',
 }
 
 const timeline = [
   {
+    year: '2005',
+    title: 'Where it started',
+    description:
+      'Brad Neuberg, Chris Messina and Tara Hunt are part of the Bay Area’s first coworking scene, starting with Spiral Muse and continuing through The Hat Factory.',
+  },
+  {
     year: '2006',
-    title: 'The Beginning',
+    title: 'Citizen Space, San Francisco',
     description:
-      "Started as one of Santa Cruz's first coworking spaces, fostering community among entrepreneurs and creators.",
+      'That same group founds Citizen Space — Brad Neuberg a founding member, Chris Messina and Tara Hunt founding it as its own space.',
   },
   {
-    year: '2015',
-    title: 'Growing the Community',
-    description:
-      'Expanded to support hundreds of members, hosting events and building lasting professional relationships.',
+    year: '2011',
+    title: 'The brand changes hands',
+    description: 'Toby Morning acquires the Citizen Space brand and the citizenspace.us domain.',
   },
   {
-    year: '2023',
-    title: 'The Hybrid Vision',
+    year: '2012',
+    title: 'Connections SF',
     description:
-      'Reimagined as a coffee-forward space that welcomes everyone while maintaining our coworking roots.',
-  },
-  {
-    year: '2024',
-    title: 'Pop-Up Era',
-    description:
-      'Started operating pop-ups in San Francisco and Santa Cruz to build community and test our hybrid model.',
-  },
-  {
-    year: '2025',
-    title: 'Community Building',
-    description: 'Continued doing pop-ups and events, launched NFT and fundraising efforts begin.',
+      'Toby Morning and Ralph Bahna co-found Connections SF, a coworking space inside Club Quarters’ San Francisco hotel. Bahna is also the founder of Club Quarters Hotels.',
   },
   {
     year: '2026',
-    title: 'The Rebirth',
+    title: 'Santa Cruz',
     description:
-      'New Santa Cruz, CA space opening Spring 2026 with our perfected cafe-coworking hybrid model.',
-  },
-]
-
-const team = [
-  {
-    name: 'Alex Chen',
-    role: 'Founder & CEO',
-    image: '/team/alex.jpg',
-    bio: 'Started Citizen Space in 2006 with a vision of democratizing workspace access in San Francisco.',
+      'Citizen Space reopens at 819 Pacific Ave, Santa Cruz. Founding sales open December 1, 2026.',
   },
   {
-    name: 'Maria Rodriguez',
-    role: 'Head of Community',
-    image: '/team/maria.jpg',
-    bio: 'Former event organizer who joined in 2015 and has built our vibrant community programming.',
-  },
-  {
-    name: 'James Kim',
-    role: 'Coffee Director',
-    image: '/team/james.jpg',
-    bio: 'Award-winning barista who curates our coffee program and partners with local roasters.',
-  },
-]
-
-const values = [
-  {
-    title: 'Collaboration',
-    description:
-      'We believe great work happens when people connect, share ideas, and build together across disciplines and backgrounds.',
-  },
-  {
-    title: 'Openness',
-    description:
-      'Transparency in our operations, welcoming to all perspectives, and open to new ideas that strengthen our community.',
-  },
-  {
-    title: 'Community',
-    description:
-      'Building genuine connections and fostering an environment where everyone feels they belong and can thrive.',
-  },
-  {
-    title: 'Accessibility',
-    description:
-      "Quality workspace shouldn't be exclusive. We offer options from $2/hour to dedicated desks for everyone.",
-  },
-  {
-    title: 'Sustainability',
-    description:
-      'Building a business that serves our community for decades while supporting local partners and responsible practices.',
+    year: '2027',
+    title: 'Doors open',
+    description: 'Charter founders move in January. Doors open to everyone in March.',
   },
 ]
 
 export default function AboutPage() {
   return (
     <div className="py-12">
-      {/* Hero Section */}
-      <section className="pb-20">
-        <div className="container">
-          <div className="mx-auto max-w-3xl text-center">
-            <Badge variant="secondary" className="mb-6">
-              Our Story
-            </Badge>
-            <h1 className="mb-6 font-display text-4xl font-bold lg:text-6xl">
-              Building Community Since 2006
-            </h1>
-            <p className="text-xl text-muted-foreground">
-              From Santa Cruz's coworking pioneers to today's coffee-forward hybrid space, we've
-              always believed that great work happens when people come together.
-            </p>
-          </div>
+      {/* Hero */}
+      <Section className="pb-20">
+        <div className="mx-auto max-w-3xl text-center">
+          <Eyebrow>Our story</Eyebrow>
+          <H1>A Santa Cruz home for a name with real history.</H1>
+          <Lead className="mx-auto">
+            Citizen Space isn’t a new brand borrowing an old name. It’s the original San Francisco
+            coworking space, under the same ownership since 2011, reopening in Santa Cruz.
+          </Lead>
         </div>
-      </section>
+      </Section>
 
       {/* Timeline */}
-      <section className="bg-muted/30 py-20">
-        <div className="container">
-          <div className="mx-auto max-w-4xl">
-            <h2 className="mb-16 text-center font-display text-3xl font-bold lg:text-4xl">
-              Our Journey
-            </h2>
-
-            <div className="space-y-12">
-              {timeline.map((item, index) => (
-                <div key={index} className="flex flex-col items-start gap-8 md:flex-row">
-                  <div className="flex-shrink-0 md:w-32">
-                    <Badge variant="outline" className="px-4 py-2 text-lg">
-                      {item.year}
-                    </Badge>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="mb-3 font-display text-2xl font-semibold">{item.title}</h3>
-                    <p className="text-lg text-muted-foreground">{item.description}</p>
-                  </div>
+      <Section className="bg-brand-bone py-20">
+        <div className="mx-auto max-w-3xl">
+          <H2 className="mb-16 text-center">Where the name comes from</H2>
+          <div className="space-y-12">
+            {timeline.map(item => (
+              <div key={item.year} className="flex flex-col items-start gap-6 md:flex-row">
+                <div className="flex-shrink-0 md:w-24">
+                  <span className="inline-block rounded-full bg-brand-forest px-4 py-1 text-sm font-bold text-brand-bone">
+                    {item.year}
+                  </span>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Mission & Values */}
-      <section className="py-20">
-        <div className="container">
-          <div className="mx-auto max-w-4xl">
-            {/* Open Coworking Introduction */}
-            <div className="mb-16 text-center">
-              <Badge variant="secondary" className="mb-6">
-                Open Coworking Movement
-              </Badge>
-              <h2 className="mb-6 font-display text-3xl font-bold lg:text-4xl">
-                Part of Something Bigger
-              </h2>
-              <div className="prose prose-lg mx-auto max-w-3xl text-muted-foreground">
-                <p>
-                  The members of this Community are engaged with and working on a model and approach
-                  that we call <strong>Open Coworking</strong>. We are spaces all over the world, we
-                  work in many different languages and our businesses all look very different. So
-                  how can we all be part of one big community?
-                </p>
-                <p>
-                  Here's how. We have all committed to the same core values that guide everything we
-                  do:
-                </p>
+                <div className="flex-1">
+                  <h3 className="mb-2 font-display text-xl font-semibold text-brand-ink">
+                    {item.title}
+                  </h3>
+                  <p className="text-brand-muted">{item.description}</p>
+                </div>
               </div>
-            </div>
+            ))}
+          </div>
+        </div>
+      </Section>
 
-            <div className="mb-16 text-center">
-              <h3 className="mb-6 font-display text-2xl font-bold lg:text-3xl">Our Core Values</h3>
-              <p className="text-xl text-muted-foreground">
-                These five principles shape our community and connect us to coworking spaces
-                worldwide.
+      {/* The lineage */}
+      <Section className="py-20">
+        <div className="mx-auto max-w-3xl">
+          <H2 className="mb-10 text-center">The people behind the name</H2>
+          <div className="space-y-8">
+            <RuleCard color={BRAND.forest} title="Same scene, same people">
+              <p className="text-brand-muted">
+                Citizen Space grew out of the Bay Area’s original coworking scene — Spiral Muse,
+                then The Hat Factory, then Citizen Space itself in 2006. Brad Neuberg was a
+                founding member; Chris Messina and Tara Hunt founded Citizen Space as its own
+                space. It’s the same throughline, not three unrelated ventures.
               </p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {values.map((value, index) => (
-                <Card key={index}>
-                  <CardHeader>
-                    <CardTitle className="font-display text-xl">{value.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">{value.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Local Application */}
-            <div className="mt-16 text-center">
-              <Card className="bg-muted/30">
-                <CardContent className="p-8">
-                  <h4 className="mb-4 font-display text-xl font-semibold">
-                    How We Live These Values in Santa Cruz
-                  </h4>
-                  <p className="text-muted-foreground">
-                    From our partnerships with local roasters and bakeries, to our flexible pricing
-                    that welcomes everyone, to our commitment to building lasting community
-                    connections— these values aren't just words on a wall. They're the foundation of
-                    everything we do.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Team */}
-      <section className="bg-muted/30 py-20">
-        <div className="container">
-          <div className="mx-auto max-w-4xl">
-            <div className="mb-16 text-center">
-              <h2 className="mb-6 font-display text-3xl font-bold lg:text-4xl">Meet the Team</h2>
-              <p className="text-xl text-muted-foreground">
-                The people behind the space, dedicated to creating the best experience for our
-                community.
+            </RuleCard>
+            <RuleCard color={BRAND.brick} title="The brand, the same one">
+              <p className="text-brand-muted">
+                Toby Morning acquired the Citizen Space brand and the citizenspace.us domain in
+                2011. This Santa Cruz space, opening at 819 Pacific Ave, is that same brand under
+                that same ownership — reopening, not reusing a name.
               </p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-              {team.map((member, index) => (
-                <Card key={index} className="text-center">
-                  <CardHeader>
-                    <Avatar className="mx-auto mb-4 h-24 w-24">
-                      <AvatarImage src={member.image} alt={member.name} />
-                      <AvatarFallback className="text-lg">
-                        {member.name
-                          .split(' ')
-                          .map(n => n[0])
-                          .join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    <CardTitle className="font-display text-xl">{member.name}</CardTitle>
-                    <p className="font-medium text-cs-blue">{member.role}</p>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">{member.bio}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            </RuleCard>
+            <RuleCard color={BRAND.moss} title="The hashtag">
+              <p className="text-brand-muted">
+                Chris Messina, Citizen Space’s co-founder, proposed the hashtag convention on
+                Twitter in 2007 — a year after Citizen Space opened, and part of the same
+                scene that built this space in the first place.
+              </p>
+            </RuleCard>
+            <RuleCard color={BRAND.oak} title="Connections SF">
+              <p className="text-brand-muted">
+                In 2012, Toby Morning co-founded Connections SF with Ralph Bahna, one of the first
+                coworking spaces built inside a hotel — the Club Quarters hotel in San Francisco.
+                Bahna was the founder of Club Quarters Hotels. Connections SF carried the same idea
+                Citizen Space started — shared, flexible workspace — into a hotel setting.
+              </p>
+            </RuleCard>
           </div>
         </div>
-      </section>
+      </Section>
 
-      {/* Press Section */}
-      <section className="py-20">
-        <div className="container">
-          <div className="mx-auto max-w-4xl text-center">
-            <h2 className="mb-12 font-display text-3xl font-bold lg:text-4xl">In the Press</h2>
-
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              <Card>
-                <CardContent className="p-8">
-                  <blockquote className="mb-4 text-lg italic">
-                    "Citizen Space represents the evolution of coworking—accessible,
-                    community-driven, and coffee-forward."
-                  </blockquote>
-                  <footer className="text-muted-foreground">— SF Business Journal</footer>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-8">
-                  <blockquote className="mb-4 text-lg italic">
-                    "A perfect blend of productivity and community that welcomes everyone from
-                    freelancers to established teams."
-                  </blockquote>
-                  <footer className="text-muted-foreground">— TechCrunch</footer>
-                </CardContent>
-              </Card>
-            </div>
+      {/* CTA */}
+      <Section className="bg-brand-forest py-20">
+        <div className="mx-auto max-w-3xl text-center">
+          <H2 className="mb-6 text-brand-bone">Join the next chapter.</H2>
+          <p className="mb-8 text-lg text-brand-mist">
+            Founding sales open December 1, 2026. Doors open March 2027.
+          </p>
+          <div className="flex flex-col justify-center gap-4 sm:flex-row">
+            <ButtonLink href="/membership" variant="brick">
+              Join the Founding 50
+            </ButtonLink>
+            <ButtonLink href="/contact" variant="outlineLight">
+              Talk to Toby
+            </ButtonLink>
           </div>
         </div>
-      </section>
+      </Section>
     </div>
   )
 }
