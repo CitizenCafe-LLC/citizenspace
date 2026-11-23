@@ -56,7 +56,7 @@ export function GettingHere() {
             <li>That’s a short walk up Pacific to our door.</li>
             <li>
               Plan a trip at{' '}
-              <a href="https://scmtd.com" className="text-brand-brick">
+              <a href="https://scmtd.com" className="text-brand-brick underline">
                 scmtd.com
               </a>
               .

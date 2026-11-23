@@ -28,6 +28,8 @@ export function ConnectWallet({ className, onOpen }: { className?: string; onOpe
             <button
               type="button"
               aria-hidden={!ready}
+              tabIndex={ready ? undefined : -1}
+              disabled={!ready}
               className={cn(base, !ready && 'pointer-events-none opacity-0', className)}
               onClick={open(openConnectModal)}
             >

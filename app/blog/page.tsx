@@ -122,7 +122,14 @@ export default async function BlogPage({
               <div className="flex min-w-0 flex-[1_1_340px] flex-col gap-3.5 py-2 pr-2">
                 <Eyebrow>
                   Featured ·{' '}
-                  <span style={{ color: featured.category.color }}>{featured.category.name}</span>
+                  <span className="text-brand-ink">
+                    <span
+                      aria-hidden
+                      className="mr-1 inline-block h-2 w-2 rounded-full align-middle"
+                      style={{ backgroundColor: featured.category.color }}
+                    />
+                    {featured.category.name}
+                  </span>
                 </Eyebrow>
                 <h2 className="m-0 font-display text-[36px] font-semibold leading-[1.08] md:text-[44px]">
                   {featured.title}
@@ -176,7 +183,14 @@ export default async function BlogPage({
                   style={{ borderTopColor: a.category.color }}
                 >
                   <Eyebrow className="text-[12px] tracking-[1.5px] md:text-[13px] md:tracking-[2.5px]">
-                    <span style={{ color: a.category.color }}>{a.category.name}</span>
+                    <span className="text-brand-ink">
+                      <span
+                        aria-hidden
+                        className="mr-1 inline-block h-2 w-2 rounded-full align-middle"
+                        style={{ backgroundColor: a.category.color }}
+                      />
+                      {a.category.name}
+                    </span>
                   </Eyebrow>
                   <h3 className="m-0 text-[18px] font-bold leading-tight md:text-[22px]">
                     <Link

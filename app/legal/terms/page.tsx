@@ -205,7 +205,7 @@ export default function TermsPage() {
                   Policy.
                 </p>
                 <p>
-                  <Link href="/legal/privacy" className="text-cs-blue hover:underline">
+                  <Link href="/legal/privacy" className="text-brand-brick underline">
                     Read our Privacy Policy
                   </Link>
                 </p>
