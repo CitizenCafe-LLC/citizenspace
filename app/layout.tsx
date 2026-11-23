@@ -4,6 +4,7 @@ import { Navigation } from '@/components/navigation'
 import { Footer } from '@/components/footer'
 import { Web3Provider } from '@/components/providers/web3-provider'
 import { MobileTabBar } from '@/components/site/mobile-tab-bar'
+import { WebMCPRegistration } from '@/components/site/web-mcp'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeProvider } from 'next-themes'
 import { Toaster } from '@/components/ui/sonner'
@@ -95,6 +96,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Footer />
               <MobileTabBar />
               <Toaster />
+              <WebMCPRegistration />
             </AuthProvider>
           </Web3Provider>
         </ThemeProvider>

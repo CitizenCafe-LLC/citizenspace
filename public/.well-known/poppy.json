@@ -1,0 +1,6 @@
+{
+  "name": "Citizen Space",
+  "homepage": "https://citizenspace.ainative.studio",
+  "supported": false,
+  "note": "No Poppy (Personal Agent Protocol) capability is implemented yet. This file exists for discovery purposes only."
+}

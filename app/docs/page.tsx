@@ -93,7 +93,31 @@ export default function DocsPage() {
             <a href="/SKILL.md" className="underline">
               /SKILL.md
             </a>{' '}
-            for a structured summary of this site's content and capabilities.
+            for a structured summary of this site's content and capabilities. A machine-readable
+            OpenAPI spec for the endpoints above is at{' '}
+            <a href="/openapi.json" className="underline">
+              /openapi.json
+            </a>
+            .
+          </p>
+        </div>
+      </Section>
+
+      <Section className="py-10">
+        <div className="mx-auto max-w-3xl">
+          <H2 className="mb-4">Open source</H2>
+          <p className="text-brand-muted">
+            This site's source is public and forkable at{' '}
+            <a
+              href="https://github.com/CitizenCafe-LLC/citizenspace"
+              className="underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              github.com/CitizenCafe-LLC/citizenspace
+            </a>
+            . Anyone can clone it, deploy their own copy, and open a pull request — no account or
+            membership required to contribute code.
           </p>
         </div>
       </Section>

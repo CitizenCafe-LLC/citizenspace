@@ -1,0 +1,8 @@
+{
+  "name": "Citizen Space",
+  "homepage": "https://citizenspace.ainative.studio",
+  "ucp_version": null,
+  "supported": false,
+  "mandates": [],
+  "note": "No Universal Commerce Protocol capability is implemented yet. There is no agent-payable checkout flow on this site — membership and bookings are completed by a person through the site's own forms. This file exists for discovery purposes only and does not advertise an AP2 payment mandate."
+}
