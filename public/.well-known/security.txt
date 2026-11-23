@@ -1,0 +1,3 @@
+Contact: https://citizenspace.ainative.studio/contact
+Preferred-Languages: en
+Canonical: https://citizenspace.ainative.studio/.well-known/security.txt

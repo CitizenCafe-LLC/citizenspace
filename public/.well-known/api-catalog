@@ -1,0 +1,11 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://citizenspace.ainative.studio/",
+      "service-desc": [
+        { "href": "https://citizenspace.ainative.studio/api/health", "type": "application/json", "title": "Health check" },
+        { "href": "https://citizenspace.ainative.studio/api/contact", "type": "application/json", "title": "Contact form submission" }
+      ]
+    }
+  ]
+}
